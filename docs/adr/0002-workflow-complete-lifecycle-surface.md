@@ -13,6 +13,7 @@ The upgrade goal is operational usability across the whole lifecycle, not full p
 ADLC exposes a workflow-complete but lean skill surface:
 
 - setup and operating contract
+- explicit plan orchestration
 - probe and anchor
 - map and deepen
 - shape and slice

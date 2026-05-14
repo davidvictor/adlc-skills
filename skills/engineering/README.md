@@ -1,6 +1,7 @@
 # Engineering Skills
 
 - [adlc-setup](./adlc-setup/SKILL.md) - Establish a repo-local ADLC operating contract.
+- [adlc-plan](./adlc-plan/SKILL.md) - Create a plan from intent by routing through interview, shaping, slicing, and readiness.
 - [adlc-probe](./adlc-probe/SKILL.md) - Interrogate a plan one decision at a time until the design tree is resolved.
 - [adlc-anchor](./adlc-anchor/SKILL.md) - Probe a plan against `CONTEXT.md`, ADRs, and code; update docs as decisions crystallize.
 - [adlc-map](./adlc-map/SKILL.md) - Zoom out and explain modules, callers, data flow, ownership, and verification surfaces.

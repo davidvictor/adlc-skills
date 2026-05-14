@@ -2,6 +2,7 @@
   "name": "adlc-skills",
   "skills": [
     "./skills/engineering/adlc-setup",
+    "./skills/engineering/adlc-plan",
     "./skills/engineering/adlc-probe",
     "./skills/engineering/adlc-anchor",
     "./skills/engineering/adlc-map",

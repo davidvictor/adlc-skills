@@ -7,8 +7,8 @@ cd "$repo_root"
 scripts/validate-skills.sh
 
 skill_count="$(scripts/list-skills.sh | wc -l | tr -d ' ')"
-if [[ "$skill_count" != "19" ]]; then
-  echo "Expected 19 public skills, found $skill_count" >&2
+if [[ "$skill_count" != "20" ]]; then
+  echo "Expected 20 public skills, found $skill_count" >&2
   exit 1
 fi
 
@@ -17,7 +17,8 @@ import json
 from pathlib import Path
 
 plugin = json.loads(Path(".claude-plugin/plugin.json").read_text())
-assert len(plugin["skills"]) == 19
+assert len(plugin["skills"]) == 20
+assert Path("skills/engineering/adlc-plan/PLAN-WORKFLOW.md").is_file()
 assert Path("docs/examples/lifecycle-thread.md").is_file()
 assert Path("skills/engineering/adlc-setup/TRACKER-ADAPTERS.md").is_file()
 assert Path("skills/engineering/adlc-build/TDD-LOOP.md").is_file()

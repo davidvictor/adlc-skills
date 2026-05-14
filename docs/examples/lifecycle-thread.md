@@ -11,7 +11,19 @@ Scenario: OpsDesk is a lightweight SaaS operations app. Managers review intake r
 - verification: `pnpm test`, `pnpm lint`, Playwright for approval flow UI
 - release: required for user-facing workflow changes
 
-## 2. Probe
+## 2. Plan
+
+`adlc-plan` routes the request into `adlc-probe` because the policy boundary is unresolved.
+
+Planning intake:
+
+- outcome: require notes only where they reduce approval risk
+- current state: approvals can be completed without a note
+- target behavior: high-risk approvals require an audit-visible note
+- non-goal: note templates
+- likely artifacts: PRD, vertical slices, release plan
+
+## 3. Probe
 
 Resolved decision:
 
@@ -24,7 +36,7 @@ Deferred:
 
 - note templates for regulated teams
 
-## 3. Shape
+## 4. Shape
 
 PRD outcome:
 
@@ -33,7 +45,7 @@ PRD outcome:
 - audit trail records actor, timestamp, request id, and note text
 - verification includes behavior tests plus browser flow
 
-## 4. Slice
+## 5. Slice
 
 Slices:
 
@@ -42,7 +54,7 @@ Slices:
 3. Update approval dialog and validation states (`HITL` for design review)
 4. Release behind `approval_notes_required` (`AFK` after flag exists)
 
-## 5. Build
+## 6. Build
 
 Feedback loop:
 
@@ -50,7 +62,7 @@ Feedback loop:
 - passing policy tests for low/medium requests
 - Playwright approval dialog check for disabled submit state
 
-## 6. Audit And Close
+## 7. Audit And Close
 
 Finding:
 
@@ -62,7 +74,7 @@ Closeout:
 - regression test added
 - Playwright screenshot captured for error state
 
-## 7. Prove
+## 8. Prove
 
 Claim: "approval notes are verified."
 
@@ -70,7 +82,7 @@ Verdict: strong for policy and UI submit state; partial for audit trail because 
 
 Next check: add or run an audit-trail retrieval assertion.
 
-## 8. Release
+## 9. Release
 
 Release plan:
 
@@ -81,7 +93,7 @@ Release plan:
 - watch approval error logs and audit write failures
 - rollback by disabling flag
 
-## 9. Handoff
+## 10. Handoff
 
 Handoff records:
 

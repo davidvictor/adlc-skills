@@ -22,32 +22,52 @@ npx skills@latest add davidvictor/adlc-skills
 ## Quickstart
 
 1. Run `adlc-setup` in the target repo to record the local operating contract.
-2. Use `adlc-probe` or `adlc-anchor` when decisions or repo language are unresolved.
-3. Use `adlc-shape` and `adlc-slice` to turn resolved context into ready work.
-4. Use `adlc-build` or `adlc-diagnose` for implementation.
-5. Use `adlc-audit`, `adlc-close`, and `adlc-prove` before claiming done.
-6. Use `adlc-release` when the change has production, data, integration, migration, scheduled-job, or user-facing risk.
+2. Use `adlc-plan` when the user needs an explicit planning path from intent to PRD, slices, or agent-ready work.
+3. Use `adlc-probe` or `adlc-anchor` when decisions or repo language are unresolved.
+4. Use `adlc-shape` and `adlc-slice` to turn resolved context into ready work.
+5. Use `adlc-build` or `adlc-diagnose` for implementation.
+6. Use `adlc-audit`, `adlc-close`, and `adlc-prove` before claiming done.
+7. Use `adlc-release` when the change has production, data, integration, migration, scheduled-job, or user-facing risk.
 
 New users can skim [the example lifecycle](./docs/examples/lifecycle-thread.md) and [golden outputs](./docs/examples/README.md) before using the suite.
+
+## Planning Path
+
+Use `adlc-plan` as the default entrypoint when a user asks to create a plan. It routes fuzzy intent through the existing primitives instead of replacing them:
+
+1. `adlc-probe` for unresolved decisions.
+2. `adlc-anchor` for repo language, ADR, or architecture alignment.
+3. `adlc-shape` for the PRD or implementation contract.
+4. `adlc-slice` for vertical implementation steps.
+5. `adlc-triage` for AFK/HITL readiness and agent briefs.
+
+Example:
+
+```text
+$adlc-plan
+Create a repo-grounded implementation plan for: <idea>. Write the PRD under docs/adlc/prds/<slug>.md, create local vertical issue drafts if ready, and do not implement.
+```
 
 ## Lifecycle
 
 1. [adlc-setup](./skills/engineering/adlc-setup/SKILL.md) - establish the repo operating contract.
-2. [adlc-probe](./skills/engineering/adlc-probe/SKILL.md) or [adlc-anchor](./skills/engineering/adlc-anchor/SKILL.md) - resolve decisions and language.
-3. [adlc-map](./skills/engineering/adlc-map/SKILL.md) or [adlc-deepen](./skills/engineering/adlc-deepen/SKILL.md) - understand or improve the codebase shape.
-4. [adlc-shape](./skills/engineering/adlc-shape/SKILL.md) - write the execution-ready PRD.
-5. [adlc-slice](./skills/engineering/adlc-slice/SKILL.md) and [adlc-triage](./skills/engineering/adlc-triage/SKILL.md) - create or classify ready work.
-6. [adlc-spike](./skills/engineering/adlc-spike/SKILL.md), [adlc-interface](./skills/engineering/adlc-interface/SKILL.md), or [adlc-polish](./skills/engineering/adlc-polish/SKILL.md) - explore and build product surfaces.
-7. [adlc-build](./skills/engineering/adlc-build/SKILL.md) or [adlc-diagnose](./skills/engineering/adlc-diagnose/SKILL.md) - implement or fix with a strong feedback loop.
-8. [adlc-audit](./skills/engineering/adlc-audit/SKILL.md), [adlc-close](./skills/engineering/adlc-close/SKILL.md), and [adlc-prove](./skills/engineering/adlc-prove/SKILL.md) - review, resolve, and prove.
-9. [adlc-release](./skills/engineering/adlc-release/SKILL.md) - handle rollout, rollback, and operational evidence when risk warrants it.
-10. [adlc-handoff](./skills/engineering/adlc-handoff/SKILL.md) - preserve continuity for future agents or sessions.
+2. [adlc-plan](./skills/engineering/adlc-plan/SKILL.md) - route intent through interview, shaping, slicing, and readiness.
+3. [adlc-probe](./skills/engineering/adlc-probe/SKILL.md) or [adlc-anchor](./skills/engineering/adlc-anchor/SKILL.md) - resolve decisions and language.
+4. [adlc-map](./skills/engineering/adlc-map/SKILL.md) or [adlc-deepen](./skills/engineering/adlc-deepen/SKILL.md) - understand or improve the codebase shape.
+5. [adlc-shape](./skills/engineering/adlc-shape/SKILL.md) - write the execution-ready PRD.
+6. [adlc-slice](./skills/engineering/adlc-slice/SKILL.md) and [adlc-triage](./skills/engineering/adlc-triage/SKILL.md) - create or classify ready work.
+7. [adlc-spike](./skills/engineering/adlc-spike/SKILL.md), [adlc-interface](./skills/engineering/adlc-interface/SKILL.md), or [adlc-polish](./skills/engineering/adlc-polish/SKILL.md) - explore and build product surfaces.
+8. [adlc-build](./skills/engineering/adlc-build/SKILL.md) or [adlc-diagnose](./skills/engineering/adlc-diagnose/SKILL.md) - implement or fix with a strong feedback loop.
+9. [adlc-audit](./skills/engineering/adlc-audit/SKILL.md), [adlc-close](./skills/engineering/adlc-close/SKILL.md), and [adlc-prove](./skills/engineering/adlc-prove/SKILL.md) - review, resolve, and prove.
+10. [adlc-release](./skills/engineering/adlc-release/SKILL.md) - handle rollout, rollback, and operational evidence when risk warrants it.
+11. [adlc-handoff](./skills/engineering/adlc-handoff/SKILL.md) - preserve continuity for future agents or sessions.
 
 ## Skills
 
 ### Setup And Intake
 
 - [adlc-setup](./skills/engineering/adlc-setup/SKILL.md) - Establish a repo-local ADLC operating contract.
+- [adlc-plan](./skills/engineering/adlc-plan/SKILL.md) - Create a plan from intent by routing through interview, shaping, slicing, and readiness.
 - [adlc-triage](./skills/engineering/adlc-triage/SKILL.md) - Classify incoming work and prepare agent-ready briefs.
 
 ### Alignment And Design

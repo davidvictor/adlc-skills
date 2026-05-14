@@ -1,0 +1,15 @@
+{
+  "name": "adlc-skills",
+  "skills": [
+    "./skills/engineering/adlc-probe",
+    "./skills/engineering/adlc-anchor",
+    "./skills/engineering/adlc-map",
+    "./skills/engineering/adlc-deepen",
+    "./skills/engineering/adlc-shape",
+    "./skills/engineering/adlc-slice",
+    "./skills/engineering/adlc-spike",
+    "./skills/engineering/adlc-audit",
+    "./skills/engineering/adlc-close",
+    "./skills/engineering/adlc-prove"
+  ]
+}

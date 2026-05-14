@@ -39,6 +39,10 @@ What should be true when this issue is complete.
 
 Commands, tests, screenshots, manual checks, or other evidence required.
 
+## Release
+
+Whether `adlc-release` is required, and why.
+
 ## Blocked By
 
 None, or a list of issue drafts / decisions.

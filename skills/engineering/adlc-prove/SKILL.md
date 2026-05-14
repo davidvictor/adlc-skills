@@ -16,6 +16,7 @@ Check whether the evidence proves the claim.
 - CI status
 - intended behavior or PRD
 - screenshots or manual QA notes
+- release, migration, or monitoring evidence when applicable
 
 ## Process
 
@@ -30,6 +31,8 @@ Check whether the evidence proves the claim.
    - tests unrelated to changed behavior
    - manual checks without observable evidence
    - CI/local mismatch
+   - browser screenshots that miss the changed state
+   - release claims without smoke or rollback evidence
 5. Classify evidence:
    - strong
    - partial
@@ -51,3 +54,10 @@ Check whether the evidence proves the claim.
 - "Not verified" is better than implied confidence.
 - Blocked checks must name the missing condition.
 - Recommendations should be executable by an agent or human.
+
+## Escalation
+
+- Use `adlc-build` if evidence is missing because implementation skipped the feedback loop.
+- Use `adlc-diagnose` if a verification failure reveals an unexplained bug.
+- Use `adlc-interface` or `adlc-polish` if visual proof exposes UI quality gaps.
+- Use `adlc-release` if the claim is really about production readiness.

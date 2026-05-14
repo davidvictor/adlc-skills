@@ -15,6 +15,17 @@ Use for business logic, state transitions, data models, and interface feel.
 5. Render the full relevant state after every action.
 6. Add one command to run it.
 7. Capture the answer.
+8. If promoted, rewrite as production code through `adlc-build`.
+
+## Harness Quality
+
+The harness should make hard cases easy to drive:
+
+- invalid inputs
+- repeated or reversed actions
+- time/order edge cases
+- concurrency or duplicate events, if relevant
+- persistence boundaries only when persistence is the question
 
 ## Anti-Patterns
 

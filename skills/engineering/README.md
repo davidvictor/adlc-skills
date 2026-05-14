@@ -1,12 +1,21 @@
 # Engineering Skills
 
-- [adlc-probe](./adlc-probe/SKILL.md) — Interrogate a plan one decision at a time until the design tree is resolved.
-- [adlc-anchor](./adlc-anchor/SKILL.md) — Probe a plan against `CONTEXT.md`, ADRs, and code; update docs as decisions crystallize.
-- [adlc-map](./adlc-map/SKILL.md) — Zoom out and explain the relevant modules, callers, data flow, and ownership.
-- [adlc-deepen](./adlc-deepen/SKILL.md) — Find architecture improvements that increase module depth, locality, and testability.
-- [adlc-shape](./adlc-shape/SKILL.md) — Turn resolved context into an execution-ready PRD.
-- [adlc-slice](./adlc-slice/SKILL.md) — Break a PRD or plan into vertical-slice Markdown issue drafts.
-- [adlc-spike](./adlc-spike/SKILL.md) — Build a throwaway prototype that answers one design, state, logic, or UI question.
-- [adlc-audit](./adlc-audit/SKILL.md) — Review a diff against both repo standards and the originating spec.
-- [adlc-close](./adlc-close/SKILL.md) — Convert review findings into fixes, deferrals, or accepted risks with fresh evidence.
-- [adlc-prove](./adlc-prove/SKILL.md) — Audit verification claims and identify weak, skipped, or no-op checks.
+- [adlc-setup](./adlc-setup/SKILL.md) - Establish a repo-local ADLC operating contract.
+- [adlc-probe](./adlc-probe/SKILL.md) - Interrogate a plan one decision at a time until the design tree is resolved.
+- [adlc-anchor](./adlc-anchor/SKILL.md) - Probe a plan against `CONTEXT.md`, ADRs, and code; update docs as decisions crystallize.
+- [adlc-map](./adlc-map/SKILL.md) - Zoom out and explain modules, callers, data flow, ownership, and verification surfaces.
+- [adlc-deepen](./adlc-deepen/SKILL.md) - Find architecture improvements that increase module depth, locality, and testability.
+- [adlc-shape](./adlc-shape/SKILL.md) - Turn resolved context into an execution-ready PRD.
+- [adlc-slice](./adlc-slice/SKILL.md) - Break a PRD or plan into vertical-slice work items.
+- [adlc-triage](./adlc-triage/SKILL.md) - Classify incoming work and prepare agent-ready briefs.
+- [adlc-spike](./adlc-spike/SKILL.md) - Build a throwaway prototype that answers one design, state, logic, or UI question.
+- [adlc-interface](./adlc-interface/SKILL.md) - Design and implement domain-shaped frontend interfaces.
+- [adlc-polish](./adlc-polish/SKILL.md) - Refine frontend details through concrete tactile review.
+- [adlc-build](./adlc-build/SKILL.md) - Implement a vertical slice with a strong feedback loop.
+- [adlc-diagnose](./adlc-diagnose/SKILL.md) - Diagnose bugs and regressions before fixing them.
+- [adlc-audit](./adlc-audit/SKILL.md) - Review a diff against both repo standards and the originating spec.
+- [adlc-close](./adlc-close/SKILL.md) - Convert review findings into fixes, deferrals, blockers, or accepted risks.
+- [adlc-prove](./adlc-prove/SKILL.md) - Audit verification claims and identify weak, skipped, or no-op checks.
+- [adlc-release](./adlc-release/SKILL.md) - Plan and verify rollout, rollback, and monitoring evidence.
+- [adlc-handoff](./adlc-handoff/SKILL.md) - Create durable handoffs for another agent or future session.
+- [adlc-skill-maintain](./adlc-skill-maintain/SKILL.md) - Maintain ADLC-style skill collections.

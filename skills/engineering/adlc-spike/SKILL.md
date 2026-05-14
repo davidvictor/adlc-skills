@@ -26,6 +26,7 @@ If the question is ambiguous and the user is present, ask. If not, choose the br
 - Do not wire real production mutations.
 - Capture the answer when done.
 - Delete the spike or fold the validated decision into production code.
+- If the spike becomes production work, switch to `adlc-build`.
 
 ## Durable Output
 
@@ -38,3 +39,7 @@ When complete, record:
 - the decision made
 - what should be deleted or absorbed
 - whether an ADR, PRD update, or issue draft should follow
+
+## Closeout
+
+Report the run command, the observed answer, the winning direction if any, and the cleanup or promotion path.

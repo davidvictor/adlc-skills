@@ -25,6 +25,7 @@ Keep the axes separate so one does not hide the other.
    - if absent, say no spec source was found
 4. Find standards sources:
    - `AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING.md`
+   - `docs/adlc/operating-contract.md`
    - `CONTEXT.md`, `CONTEXT-MAP.md`
    - `docs/adr/`
    - style or tooling config
@@ -37,7 +38,7 @@ Lead with findings, ordered by severity.
 For each finding include:
 
 - axis: Standards or Spec
-- severity
+- severity: critical, high, medium, low
 - file or behavior affected
 - evidence
 - why it matters
@@ -47,6 +48,14 @@ Then include:
 
 - open questions
 - test gaps
+- release or rollback gaps when applicable
 - what aligned well
 
 If there are no issues, say so clearly and name residual risk.
+
+## Special Cases
+
+- UI diffs: check `adlc-interface` and `adlc-polish` expectations for visual proof and interaction quality.
+- Build diffs: check that a strong feedback loop was used.
+- Bug-fix diffs: check that diagnosis or regression proof is credible.
+- Release-risk diffs: check whether `adlc-release` is needed.

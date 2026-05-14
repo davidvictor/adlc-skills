@@ -13,6 +13,7 @@ This is `adlc-probe` plus documentation discipline. Ask one question at a time, 
 
 Before asking, inspect:
 
+- `docs/adlc/operating-contract.md`, if present
 - `CONTEXT.md`
 - `CONTEXT-MAP.md`, if present
 - `docs/adr/`, if present
@@ -29,6 +30,7 @@ If there is no `CONTEXT.md`, create it lazily only after the first project-speci
 - If the user uses a term that conflicts with `CONTEXT.md`, surface the conflict immediately.
 - Stress-test relationships with concrete scenarios.
 - Cross-check claims against code when possible.
+- Maintain an assumption ledger for unresolved terminology, contracts, and decisions.
 - Update `CONTEXT.md` inline when terminology is resolved.
 - Offer ADRs sparingly.
 
@@ -60,6 +62,12 @@ Offer an ADR only when all three are true:
 3. The result of a real trade-off.
 
 Skip ADRs for obvious, easy-to-change, or temporary choices.
+
+## Multi-Context Repos
+
+If `CONTEXT-MAP.md` exists, resolve which context owns the term or decision before editing. If a term crosses contexts, record the relationship in the map or ask which context owns the canonical language.
+
+If no context docs exist, create them lazily only after the first real term or relationship is resolved.
 
 ## Closeout
 

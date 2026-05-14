@@ -11,7 +11,7 @@ Use the vocabulary in [LANGUAGE.md](./LANGUAGE.md).
 
 ## Explore
 
-Read `CONTEXT.md` and relevant ADRs first when present. Then inspect the code organically.
+Read `docs/adlc/operating-contract.md`, `CONTEXT.md`, `CONTEXT-MAP.md`, and relevant ADRs first when present. Then inspect the code organically.
 
 Look for:
 
@@ -30,11 +30,13 @@ Apply the deletion test: if deleting a module makes complexity vanish, it was pr
 Return a numbered list. For each candidate include:
 
 - **Area**: the concept or module cluster
+- **Files**: only the useful navigation points
 - **Friction**: why the current shape hurts understanding, change, or tests
 - **Deepening move**: what changes
 - **Leverage**: what callers gain
 - **Locality**: where change and verification concentrate
 - **Risk**: what could make the refactor unsafe
+- **ADR conflict**: any decision that would need reopening
 
 Do not implement. Ask which candidate the user wants to explore.
 
@@ -46,6 +48,7 @@ Drop into a probe:
 - classify dependencies using [DEEPENING.md](./DEEPENING.md)
 - identify adapters and test stand-ins
 - decide what old tests can be deleted or replaced
+- consider alternative interfaces using [INTERFACE-DESIGN.md](./INTERFACE-DESIGN.md)
 - decide whether a prototype or ADR is needed
 
 Only write a plan or code if the user asks.

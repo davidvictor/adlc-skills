@@ -1,15 +1,24 @@
 {
   "name": "adlc-skills",
   "skills": [
+    "./skills/engineering/adlc-setup",
     "./skills/engineering/adlc-probe",
     "./skills/engineering/adlc-anchor",
     "./skills/engineering/adlc-map",
     "./skills/engineering/adlc-deepen",
     "./skills/engineering/adlc-shape",
     "./skills/engineering/adlc-slice",
+    "./skills/engineering/adlc-triage",
     "./skills/engineering/adlc-spike",
+    "./skills/engineering/adlc-interface",
+    "./skills/engineering/adlc-polish",
+    "./skills/engineering/adlc-build",
+    "./skills/engineering/adlc-diagnose",
     "./skills/engineering/adlc-audit",
     "./skills/engineering/adlc-close",
-    "./skills/engineering/adlc-prove"
+    "./skills/engineering/adlc-prove",
+    "./skills/engineering/adlc-release",
+    "./skills/engineering/adlc-handoff",
+    "./skills/engineering/adlc-skill-maintain"
   ]
 }

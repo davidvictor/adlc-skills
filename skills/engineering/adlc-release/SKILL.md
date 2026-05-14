@@ -34,6 +34,7 @@ Read:
 ## Release Plan
 
 Use [RELEASE-CHECKLIST.md](./RELEASE-CHECKLIST.md). Keep the plan proportional to risk.
+Use [MIGRATIONS-AND-FLAGS.md](./MIGRATIONS-AND-FLAGS.md) when data changes, backfills, or feature flags are involved.
 
 ## Verification
 

@@ -1,0 +1,7 @@
+interface:
+  display_name: "ADLC Probe"
+  short_description: "Resolve plan decisions one by one"
+  default_prompt: "Use $adlc-probe to interview me one decision at a time until this plan is resolved."
+
+policy:
+  allow_implicit_invocation: true

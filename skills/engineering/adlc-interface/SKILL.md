@@ -31,6 +31,8 @@ Default to domain-shaped design:
 
 Avoid generic AI aesthetics and avoid novelty that fights the product job.
 
+Use [VISUAL-DIRECTION.md](./VISUAL-DIRECTION.md) when choosing between plausible directions.
+
 ## Implement
 
 Use existing primitives and tokens, but raise the bar through:
@@ -41,6 +43,7 @@ Use existing primitives and tokens, but raise the bar through:
 - accessible controls and focus
 - typography, spacing, density, and motion
 - tactile details delegated to `adlc-polish` when the work is refinement-heavy
+- responsive and state coverage from [RESPONSIVE-STATES.md](./RESPONSIVE-STATES.md)
 
 For exploratory directions, use `adlc-spike` UI variants first. For production implementation, keep the diff scoped and production-quality.
 

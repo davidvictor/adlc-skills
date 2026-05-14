@@ -1,0 +1,7 @@
+interface:
+  display_name: "ADLC Interface"
+  short_description: "Design domain-shaped frontend UI"
+  default_prompt: "Use $adlc-interface to design and implement this frontend surface for its product job."
+
+policy:
+  allow_implicit_invocation: true

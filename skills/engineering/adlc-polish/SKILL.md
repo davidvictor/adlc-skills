@@ -12,6 +12,8 @@ Make existing UI feel deliberate without redesigning the product around it.
 Review the rendered interface when feasible. Read existing component and token patterns before changing details.
 
 Use [POLISH-CHECKLIST.md](./POLISH-CHECKLIST.md) as the working checklist.
+Use [VISUAL-QA.md](./VISUAL-QA.md) before claiming visual work is verified.
+Use [REVIEW-REPORT.md](./REVIEW-REPORT.md) for review output.
 
 ## Rules
 

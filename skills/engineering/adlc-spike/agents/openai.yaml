@@ -1,0 +1,7 @@
+interface:
+  display_name: "ADLC Spike"
+  short_description: "Prototype one risky question"
+  default_prompt: "Use $adlc-spike to build a throwaway prototype that answers this one design or logic question."
+
+policy:
+  allow_implicit_invocation: true

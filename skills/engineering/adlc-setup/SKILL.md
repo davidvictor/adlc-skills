@@ -29,6 +29,8 @@ Walk only unresolved decisions, one at a time:
 
 Default to a hybrid contract: local artifacts first, optional tracker publishing.
 
+Use [TRACKER-ADAPTERS.md](./TRACKER-ADAPTERS.md) for Local Markdown, GitHub, and Linear conventions.
+
 ## Write
 
 Create or update:

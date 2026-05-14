@@ -38,7 +38,8 @@ States:
 4. Check out-of-scope records before re-litigating rejected enhancements.
 5. Recommend category and state with evidence.
 6. If the work can become `ready-for-agent`, write a brief using [AGENT-BRIEF.md](./AGENT-BRIEF.md).
-7. If rejected as `wontfix`, record durable scope memory only for real strategic rejections.
+7. Use [LABELS.md](./LABELS.md) when mapping category/state to a tracker.
+8. If rejected as `wontfix`, record durable scope memory only for real strategic rejections using [OUT-OF-SCOPE.md](./OUT-OF-SCOPE.md).
 
 Ask only for missing decisions that block classification or agent readiness.
 

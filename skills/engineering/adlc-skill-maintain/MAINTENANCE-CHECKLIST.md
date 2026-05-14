@@ -9,6 +9,7 @@ For each public skill:
 - [ ] references are one level deep
 - [ ] task-critical templates live beside the skill
 - [ ] large examples are central or deferred
+- [ ] `agents/openai.yaml` exists and matches the skill purpose
 - [ ] README lists the skill
 - [ ] engineering README lists the skill
 - [ ] plugin manifest lists the skill

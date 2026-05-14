@@ -1,0 +1,7 @@
+interface:
+  display_name: "ADLC Prove"
+  short_description: "Audit verification claims"
+  default_prompt: "Use $adlc-prove to check whether these verification claims actually prove the intended behavior."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,7 @@
+interface:
+  display_name: "ADLC Diagnose"
+  short_description: "Diagnose bugs before fixing them"
+  default_prompt: "Use $adlc-diagnose to reproduce this bug, test hypotheses, and fix it with regression proof."
+
+policy:
+  allow_implicit_invocation: true

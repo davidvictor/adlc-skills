@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$repo_root"
+
+scripts/validate-skills.sh
+
+skill_count="$(scripts/list-skills.sh | wc -l | tr -d ' ')"
+if [[ "$skill_count" != "19" ]]; then
+  echo "Expected 19 public skills, found $skill_count" >&2
+  exit 1
+fi
+
+python3 - <<'PY'
+import json
+from pathlib import Path
+
+plugin = json.loads(Path(".claude-plugin/plugin.json").read_text())
+assert len(plugin["skills"]) == 19
+assert Path("docs/examples/lifecycle-thread.md").is_file()
+assert Path("skills/engineering/adlc-setup/TRACKER-ADAPTERS.md").is_file()
+assert Path("skills/engineering/adlc-build/TDD-LOOP.md").is_file()
+assert Path("skills/engineering/adlc-interface/VISUAL-DIRECTION.md").is_file()
+PY
+
+echo "Skill smoke check passed."

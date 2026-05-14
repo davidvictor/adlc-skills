@@ -17,7 +17,7 @@ Construct or find a pass/fail loop that reproduces the reported behavior:
 - fixture replay
 - minimal harness
 - stress loop for flakes
-- human-in-the-loop script when unavoidable
+- human-in-the-loop script when unavoidable, guided by [HITL-LOOP.md](./HITL-LOOP.md)
 
 If you cannot build a loop, stop and report what artifact or access is missing.
 
@@ -46,6 +46,8 @@ Before claiming done:
 - temporary instrumentation is removed
 - throwaway harnesses are deleted or clearly marked
 - the confirmed cause is recorded in the closeout
+
+Use [CLEANUP.md](./CLEANUP.md) before closeout.
 
 ## Closeout
 

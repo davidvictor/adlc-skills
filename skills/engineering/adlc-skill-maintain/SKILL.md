@@ -17,6 +17,8 @@ Keep skill repos coherent and installable.
 6. Run validation before closeout.
 
 Use [MAINTENANCE-CHECKLIST.md](./MAINTENANCE-CHECKLIST.md).
+Use [METADATA.md](./METADATA.md) for OpenAI/Codex metadata.
+Use [PUBLIC-RELEASE.md](./PUBLIC-RELEASE.md) before calling a skill repo release-ready.
 
 ## Rules
 

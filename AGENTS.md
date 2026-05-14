@@ -13,6 +13,7 @@ Every public skill must:
 - live under `skills/engineering/adlc-<name>/`
 - use the `adlc-` prefix in its folder and frontmatter `name`
 - include a concise `SKILL.md`
+- include `agents/openai.yaml`
 - appear in the top-level `README.md`
 - appear in `skills/engineering/README.md`
 - appear in `.claude-plugin/plugin.json`
@@ -37,6 +38,7 @@ scripts/validate-skills.sh
 ```
 
 Use `scripts/list-skills.sh` to inspect the public skill set.
+Use `scripts/smoke-skills.sh` for a local public-readiness smoke check.
 
 Validation must pass before claiming the repo is internally consistent. If validation fails, fix the repo rather than weakening the script.
 

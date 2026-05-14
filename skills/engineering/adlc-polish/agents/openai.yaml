@@ -1,0 +1,7 @@
+interface:
+  display_name: "ADLC Polish"
+  short_description: "Refine UI with concrete polish"
+  default_prompt: "Use $adlc-polish to review and refine this interface through concrete visual and interaction details."
+
+policy:
+  allow_implicit_invocation: true

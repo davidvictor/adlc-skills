@@ -1,0 +1,7 @@
+interface:
+  display_name: "ADLC Handoff"
+  short_description: "Write durable agent handoffs"
+  default_prompt: "Use $adlc-handoff to preserve the current task state for the next agent or session."
+
+policy:
+  allow_implicit_invocation: true

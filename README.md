@@ -19,6 +19,17 @@ The suite is intentionally portable:
 npx skills@latest add davidvictor/adlc-skills
 ```
 
+## Quickstart
+
+1. Run `adlc-setup` in the target repo to record the local operating contract.
+2. Use `adlc-probe` or `adlc-anchor` when decisions or repo language are unresolved.
+3. Use `adlc-shape` and `adlc-slice` to turn resolved context into ready work.
+4. Use `adlc-build` or `adlc-diagnose` for implementation.
+5. Use `adlc-audit`, `adlc-close`, and `adlc-prove` before claiming done.
+6. Use `adlc-release` when the change has production, data, integration, migration, scheduled-job, or user-facing risk.
+
+New users can skim [the example lifecycle](./docs/examples/lifecycle-thread.md) and [golden outputs](./docs/examples/README.md) before using the suite.
+
 ## Lifecycle
 
 1. [adlc-setup](./skills/engineering/adlc-setup/SKILL.md) - establish the repo operating contract.
@@ -80,4 +91,15 @@ npx skills@latest add davidvictor/adlc-skills
 ```bash
 scripts/list-skills.sh
 scripts/validate-skills.sh
+scripts/smoke-skills.sh
 ```
+
+For release readiness, see [docs/public-release-checklist.md](./docs/public-release-checklist.md).
+
+## Packaging
+
+This repo includes:
+
+- `.claude-plugin/plugin.json` for Claude-compatible skill collection installs
+- `agents/openai.yaml` inside every public skill for OpenAI/Codex-style metadata
+- structural validation for indexes, manifests, links, metadata, scripts, and examples

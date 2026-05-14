@@ -27,6 +27,8 @@ for required in [
     ".claude-plugin/plugin.json",
     "AGENTS.md",
     "CLAUDE.md",
+    "docs/examples/README.md",
+    "docs/public-release-checklist.md",
 ]:
     require_file(required)
 
@@ -59,6 +61,37 @@ plugin_entry_set = set(plugin_entries)
 
 frontmatter_re = re.compile(r"^---\n(.*?)\n---\n", re.DOTALL)
 link_re = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+
+def parse_simple_yaml(path: Path) -> dict:
+    data = {}
+    stack = [data]
+    indents = [0]
+    for raw_line in path.read_text().splitlines():
+        if not raw_line.strip() or raw_line.lstrip().startswith("#"):
+            continue
+        indent = len(raw_line) - len(raw_line.lstrip(" "))
+        line = raw_line.strip()
+        if ":" not in line:
+            fail(f"unsupported yaml line in {path}: {raw_line}")
+            continue
+        key, value = line.split(":", 1)
+        key = key.strip()
+        value = value.strip()
+        while indent < indents[-1] and len(stack) > 1:
+            stack.pop()
+            indents.pop()
+        if value == "":
+            child = {}
+            stack[-1][key] = child
+            stack.append(child)
+            indents.append(indent + 2)
+        else:
+            if value.startswith('"') and value.endswith('"'):
+                value = value[1:-1]
+            elif value in {"true", "false"}:
+                value = value == "true"
+            stack[-1][key] = value
+    return data
 
 for skill_file in skill_files:
     skill_dir = skill_file.parent
@@ -101,6 +134,25 @@ for skill_file in skill_files:
     if plugin_entry not in plugin_entry_set:
         fail(f"plugin manifest does not list {plugin_entry}")
 
+    metadata_file = skill_dir / "agents" / "openai.yaml"
+    if not metadata_file.is_file():
+        fail(f"missing OpenAI metadata: {metadata_file}")
+    else:
+        metadata = parse_simple_yaml(metadata_file)
+        interface = metadata.get("interface", {})
+        policy = metadata.get("policy", {})
+        display_name = interface.get("display_name", "")
+        short_description = interface.get("short_description", "")
+        default_prompt = interface.get("default_prompt", "")
+        if not display_name:
+            fail(f"metadata missing display_name: {metadata_file}")
+        if len(short_description) < 25 or len(short_description) > 64:
+            fail(f"metadata short_description must be 25-64 chars: {metadata_file}")
+        if f"${skill_name}" not in default_prompt:
+            fail(f"metadata default_prompt must mention ${skill_name}: {metadata_file}")
+        if policy.get("allow_implicit_invocation") is not True:
+            fail(f"metadata policy.allow_implicit_invocation must be true: {metadata_file}")
+
     for target in link_re.findall(text):
         if target.startswith(("http://", "https://", "#", "/")):
             continue
@@ -123,6 +175,18 @@ for entry in plugin_entries:
         fail(f"plugin skill missing from README.md: {skill_name}")
     if skill_name not in engineering_readme:
         fail(f"plugin skill missing from engineering README: {skill_name}")
+
+for docs_file in [Path("docs/examples/README.md"), Path("README.md"), Path("docs/public-release-checklist.md")]:
+    if not docs_file.is_file():
+        continue
+    for target in link_re.findall(docs_file.read_text()):
+        if target.startswith(("http://", "https://", "#", "/")):
+            continue
+        target_no_anchor = target.split("#", 1)[0]
+        if not target_no_anchor:
+            continue
+        if not (docs_file.parent / target_no_anchor).exists():
+            fail(f"broken link in {docs_file}: {target}")
 
 if failures:
     for message in failures:

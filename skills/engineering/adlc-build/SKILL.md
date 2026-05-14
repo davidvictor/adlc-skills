@@ -29,6 +29,8 @@ TDD is preferred for:
 - stable public interfaces
 - parsers, state machines, data transforms, and policy rules
 
+Use [TDD-LOOP.md](./TDD-LOOP.md) when test-first development fits.
+
 Alternate evidence is acceptable for:
 
 - UI layout and motion
@@ -36,6 +38,8 @@ Alternate evidence is acceptable for:
 - config
 - one-off migrations
 - integration work where a safe local test seam does not exist
+
+Use [UI-EVIDENCE.md](./UI-EVIDENCE.md) when visual or browser proof is the stronger evidence.
 
 ## Build Rules
 

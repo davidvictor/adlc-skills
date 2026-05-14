@@ -1,0 +1,7 @@
+interface:
+  display_name: "ADLC Deepen"
+  short_description: "Find deeper interfaces and seams"
+  default_prompt: "Use $adlc-deepen to find architecture changes that improve depth, locality, and testability."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,7 @@
+interface:
+  display_name: "ADLC Map"
+  short_description: "Map code areas and system flow"
+  default_prompt: "Use $adlc-map to explain how this area fits into the larger system."
+
+policy:
+  allow_implicit_invocation: true

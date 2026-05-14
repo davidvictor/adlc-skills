@@ -1,0 +1,7 @@
+interface:
+  display_name: "ADLC Close"
+  short_description: "Close review findings with evidence"
+  default_prompt: "Use $adlc-close to resolve these findings with fixes, deferrals, blockers, and fresh verification."
+
+policy:
+  allow_implicit_invocation: true

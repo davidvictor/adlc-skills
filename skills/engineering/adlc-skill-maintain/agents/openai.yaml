@@ -1,0 +1,7 @@
+interface:
+  display_name: "ADLC Skill Maintain"
+  short_description: "Maintain ADLC skill collections"
+  default_prompt: "Use $adlc-skill-maintain to update this skill collection, manifests, metadata, and validation."
+
+policy:
+  allow_implicit_invocation: true

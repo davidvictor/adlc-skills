@@ -12,10 +12,10 @@ Use this after `adlc-plan`, `adlc-shape`, and `adlc-slice` when the user has mul
 ## Process
 
 1. Read `docs/adlc/operating-contract.md`, if present.
-2. Read the source PRDs, specs, issue drafts, agent briefs, and handoff notes.
+2. Read the source PRDs, specs, issue drafts, agent briefs, and handoff notes. If the source is a folder, use [SPRINT-MATERIALS.md](./SPRINT-MATERIALS.md).
 3. Reject or return to planning any item that lacks target behavior, acceptance criteria, verification, repo ownership, or release posture.
 4. Normalize each item using [SPRINT-PACKAGE.md](./SPRINT-PACKAGE.md).
-5. Decide item order, dependencies, write scope, isolation mode, verification, and publication mode.
+5. Decide item order, dependencies, write scope, isolation mode, verification, and publication mode. Use [EXECUTION-ARCHITECTURES.md](./EXECUTION-ARCHITECTURES.md) when the runner topology is not obvious.
 6. Mark each item as:
    - **AFK**: execution can proceed without human decisions.
    - **HITL**: a human decision, credential, design approval, or production judgment is still needed.
@@ -39,7 +39,7 @@ The default package is:
 ```text
 docs/adlc/sprints/<slug>/
   README.md
-  sprint-runner.yaml
+  adlc-sprint.yaml
   work-items/
     01-<slug>.md
   handoff.md

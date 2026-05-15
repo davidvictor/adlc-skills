@@ -11,16 +11,16 @@ Use this when the user wants Hermes to run, manage, seed, or monitor a sprint pr
 
 ## Process
 
-1. Read the sprint package, especially `sprint-runner.yaml`, `work-items/`, and `handoff.md`.
+1. Read the sprint package, especially `adlc-sprint.yaml`, `work-items/`, and `handoff.md`. During migration, accept legacy `sprint-runner.yaml`.
 2. If no sprint package exists, use `adlc-sprint` first.
 3. Verify the local Hermes setup using [HERMES-HANDOFF.md](./HERMES-HANDOFF.md).
 4. Verify the ADLC phase skills are available to Hermes using [HERMES-ADLC-PHASES.md](./HERMES-ADLC-PHASES.md).
 5. Discover real Hermes profiles before assigning work.
-6. Check whether the Hermes `sprint-runner`, `kanban-orchestrator`, and `kanban-worker` skills are available.
+6. Check whether the Hermes `kanban-orchestrator` and `kanban-worker` skills are available.
 7. Choose a board, orchestrator profile, worker profiles, workspace mode, and notification mode.
 8. Map sprint phases to ADLC skills: build, audit, close, prove, release, and handoff.
 9. Write or update `hermes-handoff.md` inside the sprint package.
-10. Seed Hermes Kanban only when the user explicitly asks to create tasks or run the sprint.
+10. Seed Hermes Kanban only when the user explicitly asks to create tasks or run the sprint. Prefer a deterministic graph from the ADLC manifest when the package is complete; otherwise create one `adlc-hermes` orchestrator task.
 11. After seeding, report task ids, board name, watch commands, and any blocked items.
 
 ## Rules
@@ -33,6 +33,7 @@ Use this when the user wants Hermes to run, manage, seed, or monitor a sprint pr
 - Load the relevant `adlc-*` skill on each Hermes worker task when it is installed.
 - Prefer `worktree` workspaces for isolated code work and `dir:<absolute path>` only when shared state is intentional.
 - Keep human decisions durable through Kanban comments and blocked state.
+- Do not require or seed the legacy `sprint-runner` skill for new ADLC Hermes runs.
 
 ## Output Contract
 

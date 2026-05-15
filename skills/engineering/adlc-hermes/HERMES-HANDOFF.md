@@ -9,7 +9,7 @@ Run these before seeding:
 ```bash
 command -v hermes
 hermes profile list
-hermes skills list | grep -E 'sprint-runner|kanban-orchestrator|kanban-worker'
+hermes skills list | grep -E 'kanban-orchestrator|kanban-worker'
 hermes skills list | grep -E 'adlc-build|adlc-audit|adlc-close|adlc-prove|adlc-release|adlc-handoff'
 hermes gateway status
 ```
@@ -36,6 +36,13 @@ If the `adlc-*` skills are missing from Hermes, install them from the ADLC repo.
 ```bash
 cd /Users/davidvictor/.codex/workspaces/default/repos/adlc-skills
 scripts/install-hermes-adlc-skills.sh
+```
+
+To create and configure the common sprint profiles, run:
+
+```bash
+cd /Users/davidvictor/.codex/workspaces/default/repos/adlc-skills
+scripts/setup-hermes-adlc-profiles.sh
 ```
 
 ## Handoff File
@@ -84,13 +91,14 @@ hermes kanban --board <board> watch
 
 ## Preferred Seed Path
 
-If the MetaModern Sprint Runner scripts are available, prefer the maintained seed script:
+Use the ADLC seeder from the ADLC skills checkout:
 
 ```bash
-./scripts/seed-hermes-sprint.sh \
+cd /Users/davidvictor/.codex/workspaces/default/repos/adlc-skills
+scripts/seed-adlc-hermes-sprint.sh \
   --target-folder /absolute/path/to/docs/adlc/sprints/<slug> \
   --assignee sprintrunner \
-  --instructions "Run this ADLC sprint end-to-end. Use ADLC phase skills in child tasks: adlc-build for build, adlc-audit for hostile review, adlc-close for review fixes, adlc-prove for final verification proof, adlc-release when release risk exists, and adlc-handoff for continuity. Preserve build, self-verification, hostile review, review-fix, final verification, and commit/publication gates."
+  --instructions "Run this ADLC sprint end-to-end in automated mode. Use ADLC phase skills in child tasks: adlc-build for build, adlc-audit for hostile review, adlc-close for review fixes, adlc-prove for final verification proof, adlc-release when release risk exists, and adlc-handoff for continuity. Preserve build, self-verification, hostile review, review-fix, final verification, and commit/publication gates."
 ```
 
 Use `--no-telegram` when notification is intentionally disabled. Use `--telegram-chat-id` when the home chat is not configured.
@@ -108,9 +116,8 @@ hermes kanban boards create <board> \
 hermes kanban --board <board> create "<Sprint name>" \
   --assignee <orchestrator-profile> \
   --workspace "dir:/absolute/path/to/docs/adlc/sprints/<slug>" \
-  --skill sprint-runner \
-  --skill kanban-orchestrator \
   --skill adlc-hermes \
+  --skill kanban-orchestrator \
   --body "<body>" \
   --json
 ```
@@ -128,7 +135,7 @@ The body should instruct the orchestrator to:
 ## Task Body Template
 
 ```text
-Use Sprint Runner to execute this ADLC sprint through Hermes Kanban.
+Use ADLC Hermes to execute this ADLC sprint through Hermes Kanban.
 
 Sprint package:
 - <absolute path>
@@ -141,13 +148,13 @@ Lifecycle gates:
 - Run final verification proof with `adlc-prove` after fixes.
 - Use `adlc-release` for production, migration, integration, or user-facing release risk.
 - Use `adlc-handoff` for continuity and exact next steps.
-- Commit or publish according to sprint-runner.yaml.
+- Commit or publish according to `adlc-sprint.yaml`.
 
 Rules:
 - Discover available Hermes profiles before creating child tasks.
 - Do not invent assignees.
 - Do not assume ADLC skills are installed; verify them before assigning them.
-- Preserve dependency links from sprint-runner.yaml.
+- Preserve dependency links from `adlc-sprint.yaml`.
 - Use worktree workspaces for isolated code work when useful.
 - Use Kanban comments and blocked state for human decisions.
 - Continue until every item is done, deferred, or blocked with evidence.

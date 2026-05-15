@@ -124,13 +124,25 @@ scripts/smoke-skills.sh
 
 ## Hermes
 
-Install ADLC phase skills into local Hermes when Hermes should run ADLC-packaged sprints:
+Install ADLC skills into local Hermes when Hermes should run ADLC-packaged sprints:
 
 ```bash
 scripts/install-hermes-adlc-skills.sh
 ```
 
-Then use `adlc-sprint` to package PRDs and `adlc-hermes` to hand the package to Hermes Kanban.
+Create the common sprint profiles and default ADLC board when needed:
+
+```bash
+scripts/setup-hermes-adlc-profiles.sh
+```
+
+Then use `adlc-sprint` to package PRDs and `adlc-hermes` to hand the package to Hermes Kanban. New packages use `adlc-sprint.yaml`; older `sprint-runner.yaml` manifests remain readable during migration.
+
+To seed a package directly:
+
+```bash
+scripts/seed-adlc-hermes-sprint.sh --target-folder /absolute/path/to/docs/adlc/sprints/<slug>
+```
 
 For release readiness, see [docs/public-release-checklist.md](./docs/public-release-checklist.md).
 

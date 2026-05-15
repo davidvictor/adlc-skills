@@ -11,7 +11,7 @@ Default durable location:
 ```text
 docs/adlc/sprints/<slug>/
   README.md
-  sprint-runner.yaml
+  adlc-sprint.yaml
   work-items/
     01-<item-slug>.md
     02-<item-slug>.md
@@ -37,7 +37,7 @@ The sprint README should include:
 
 ## Manifest Contract
 
-Use `sprint-runner.yaml` as the machine-readable manifest. Keep it simple enough for scripts and agents to parse.
+Use `adlc-sprint.yaml` as the machine-readable manifest. Keep it simple enough for scripts and agents to parse. During migration, runners may also read legacy `sprint-runner.yaml` manifests.
 
 ```yaml
 name: "Sprint name"
@@ -47,14 +47,14 @@ default_isolation: "in-place-sequential"
 publication: "local-commits" # local-commits | github-prs | stacked-prs | linked-cross-repo-prs | tracker-only
 runner:
   preferred: "hermes-kanban" # optional
-  board: "sprint-runner"
+  board: "adlc-sprints"
   profiles:
     orchestrator: "sprintrunner"
     builder: "sprintbuilder"
     reviewer: "sprintreviewer"
     fixer: "sprintfixer"
   skills:
-    orchestrator: ["sprint-runner", "kanban-orchestrator", "adlc-hermes"]
+    orchestrator: ["kanban-orchestrator", "adlc-hermes"]
     build: ["kanban-worker", "adlc-build"]
     review: ["kanban-worker", "adlc-audit"]
     fix: ["kanban-worker", "adlc-close"]

@@ -40,7 +40,7 @@ Use real profile names discovered from `hermes profile list`. For the common loc
 
 | Kanban phase | Profile | Required skills |
 | --- | --- | --- |
-| Sprint orchestration | `sprintrunner` | `sprint-runner`, `kanban-orchestrator`, `adlc-hermes` |
+| Sprint orchestration | `sprintrunner` | `kanban-orchestrator`, `adlc-hermes` |
 | Package normalization | `sprintrunner` | `adlc-sprint`, `adlc-triage`, `kanban-orchestrator` |
 | Build | `sprintbuilder` | `kanban-worker`, `adlc-build` |
 | UI build | `sprintbuilder` | `kanban-worker`, `adlc-build`, `adlc-interface`, `adlc-polish` |
@@ -85,6 +85,8 @@ item N release or handoff
 ```
 
 Dependent item N+1 starts after item N release/handoff when the dependency is real. Independent items can start in parallel.
+
+Use `adlc-sprint.yaml` as the canonical manifest when deriving graph dependencies. Legacy `sprint-runner.yaml` files may be read for older sprint packages, but new tasks should not load the retired `sprint-runner` skill.
 
 ## Worker Metadata
 

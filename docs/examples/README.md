@@ -5,6 +5,7 @@ These examples show the intended ADLC flavor: compact, concrete, evidence-orient
 ## End-To-End Thread
 
 - [Lifecycle thread](./lifecycle-thread.md) - one lightweight SaaS operations app feature moving through the ADLC lifecycle.
+- [Hermes sprint smoke](./hermes-sprint-smoke/README.md) - a non-mutating package for validating ADLC-to-Hermes seeding, profile routing, and notifications.
 
 ## Golden Outputs
 

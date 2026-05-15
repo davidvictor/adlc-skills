@@ -31,9 +31,10 @@ sprintfixer     review fixes, final verification, and commits
 
 Use those names only if they exist on the current machine.
 
-If the `adlc-*` skills are missing from Hermes, install them from the ADLC repo:
+If the `adlc-*` skills are missing from Hermes, install them from the ADLC repo. Run this from the ADLC skills checkout, not from an installed skill copy:
 
 ```bash
+cd /Users/davidvictor/.codex/workspaces/default/repos/adlc-skills
 scripts/install-hermes-adlc-skills.sh
 ```
 

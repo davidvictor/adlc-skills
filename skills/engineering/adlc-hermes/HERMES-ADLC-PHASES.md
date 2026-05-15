@@ -27,9 +27,10 @@ adlc-interface
 adlc-polish
 ```
 
-Install the public ADLC skills into Hermes with:
+Install the public ADLC skills into Hermes from the ADLC skills checkout:
 
 ```bash
+cd /Users/davidvictor/.codex/workspaces/default/repos/adlc-skills
 scripts/install-hermes-adlc-skills.sh
 ```
 

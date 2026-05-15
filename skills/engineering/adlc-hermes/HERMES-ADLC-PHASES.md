@@ -118,6 +118,17 @@ Recommended blocked reason prefixes:
 
 Do not use `review-required:` as a blocked reason. Review is the next phase, not a stop condition.
 
+## Notification Contract
+
+Hermes lifecycle notifications should make the ADLC graph visible without turning Telegram into a tracker.
+
+- `claimed` means a phase started.
+- `completed` means a phase reached its handoff and dependent work can promote.
+- `blocked` and `gave_up` mean human attention is required; include the exact decision, credential, environment, scope, or verification blocker.
+- `crashed` and `timed_out` mean the dispatcher will retry unless the pattern repeats.
+
+Use plain profile labels such as `Worker: reviewer`. Do not format Hermes profiles as Telegram mentions like `@Sprint Runner`; those are not real Telegram users and create noisy, invalid notifications.
+
 ## Worker Metadata
 
 Every ADLC worker completion should include structured metadata. Keep it small and useful:

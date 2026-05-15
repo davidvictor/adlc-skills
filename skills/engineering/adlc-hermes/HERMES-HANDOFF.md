@@ -89,6 +89,12 @@ Notification: <telegram/slack/none>
 - item 01 final verification completes with evidence verdict and residual risk
 - item 02 build depends on item 01 commit/publish
 
+## Notification Flow
+
+- Telegram subscriptions send a message when each phase starts and when it completes, blocks, gives up, crashes, or times out.
+- `🚨 Hermes needs your attention` means the operator should open Codex mobile, inspect the task, then comment, edit, reassign, or unblock it.
+- Assignees are Hermes profile labels, not Telegram usernames. Do not write `@<profile>` mentions such as `@Sprint Runner`.
+
 ## ADLC Skill Map
 
 - build: `adlc-build`
@@ -132,7 +138,7 @@ scripts/seed-adlc-hermes-sprint.sh \
   --instructions "Run this ADLC sprint end-to-end in automated mode. Use ADLC phase skills in child tasks: adlc-build for build, adlc-audit for hostile review, adlc-close for review fixes, adlc-prove for final verification proof, adlc-release when release risk exists, and adlc-handoff for continuity. Build tasks complete into hostile review; they do not block merely because review is required. Preserve build, self-verification, hostile review, review-fix, final verification, and commit/publication gates."
 ```
 
-Use `--no-telegram` when notification is intentionally disabled. Use `--telegram-chat-id` when the home chat is not configured.
+Use `--no-telegram` when notification is intentionally disabled. Use `--telegram-chat-id` when the home chat is not configured. With Telegram enabled, expect lifecycle pings for phase start, phase completion, and human-attention states; blocked and gave-up messages are the operator interrupt path.
 
 ## Generic CLI Seed Path
 
@@ -190,6 +196,7 @@ Rules:
 - Use worktree workspaces for isolated code work when useful.
 - Use Kanban comments and blocked state for human decisions, missing credentials, missing environments, destructive approvals, unsafe verification, or scope expansion.
 - Do not use blocked state for ordinary review handoff. Build completes into audit; audit completes into close/prove; close completes into proof/handoff.
+- Keep notifications actionable: blocked or gave-up tasks should include the exact reason and what a human can change from Codex mobile.
 - Continue until every item is done, deferred, or blocked with evidence.
 ```
 

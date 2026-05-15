@@ -160,6 +160,8 @@ To seed a package directly:
 scripts/seed-adlc-hermes-sprint.sh --target-folder /absolute/path/to/docs/adlc/sprints/<slug>
 ```
 
+When Telegram is enabled, seeded tasks subscribe the configured chat to phase lifecycle messages: start, complete, blocked, gave-up, crash, and timeout. Attention messages should point the operator back to Codex mobile for comments, edits, reassignments, or unblocks; assignees are shown as profile labels rather than Telegram `@` mentions.
+
 Build tasks should complete into hostile review with `review_required=true`; they should not block merely because review is required. Use blocked state only for human decisions, missing credentials or environments, destructive approval, unsafe verification, or scope expansion.
 
 For release readiness, see [docs/public-release-checklist.md](./docs/public-release-checklist.md).

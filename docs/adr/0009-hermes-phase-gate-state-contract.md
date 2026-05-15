@@ -27,6 +27,15 @@ Blocked state is reserved for true stop conditions:
 
 `review-required:` is not a valid blocked reason for new ADLC Hermes runs.
 
+Lifecycle notifications mirror this contract:
+
+- phase start notifications come from Hermes `claimed` events
+- phase completion notifications come from `completed` events
+- human-attention notifications come from `blocked` and `gave_up` events
+- crash and timeout notifications are retry signals unless they repeat
+
+Notifications should render assignees as profile labels, not Telegram `@` mentions.
+
 ## Consequences
 
 Hermes can autonomously move work from QA to review to fix to proof while preserving human planning authority.

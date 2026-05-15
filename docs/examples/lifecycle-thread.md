@@ -54,7 +54,20 @@ Slices:
 3. Update approval dialog and validation states (`HITL` for design review)
 4. Release behind `approval_notes_required` (`AFK` after flag exists)
 
-## 6. Build
+## 6. Sprint Package
+
+`adlc-sprint` packages the slices when the team wants a runner to execute the whole queue.
+
+Sprint package:
+
+- work item 1: approval policy module
+- work item 2: audit trail persistence
+- work item 3: approval dialog, blocked on design review
+- work item 4: release flag and rollout
+- dependency: release waits for policy, audit, and UI
+- runner handoff: ready for `adlc-hermes` after design review resolves
+
+## 7. Build
 
 Feedback loop:
 
@@ -62,7 +75,7 @@ Feedback loop:
 - passing policy tests for low/medium requests
 - Playwright approval dialog check for disabled submit state
 
-## 7. Audit And Close
+## 8. Audit And Close
 
 Finding:
 
@@ -74,7 +87,7 @@ Closeout:
 - regression test added
 - Playwright screenshot captured for error state
 
-## 8. Prove
+## 9. Prove
 
 Claim: "approval notes are verified."
 
@@ -82,7 +95,7 @@ Verdict: strong for policy and UI submit state; partial for audit trail because 
 
 Next check: add or run an audit-trail retrieval assertion.
 
-## 9. Release
+## 10. Release
 
 Release plan:
 
@@ -93,7 +106,7 @@ Release plan:
 - watch approval error logs and audit write failures
 - rollback by disabling flag
 
-## 10. Handoff
+## 11. Handoff
 
 Handoff records:
 

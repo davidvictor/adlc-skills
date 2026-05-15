@@ -22,6 +22,7 @@ Default to the repo's ADLC operating contract. If none exists, write local Markd
 6. Present the proposed breakdown for approval before writing or publishing issues.
 7. After approval, write drafts using [ISSUE-TEMPLATE.md](./ISSUE-TEMPLATE.md).
 8. Publish to a tracker only when the contract or user request says to do so.
+9. If the user wants a multi-PRD sprint or runner handoff, recommend `adlc-sprint` after issue drafts are ready.
 
 ## Vertical Slice Rules
 
@@ -44,4 +45,4 @@ Do not publish to external trackers without explicit instruction.
 
 ## Closeout
 
-Report issue draft paths, tracker links if published, AFK/HITL split, dependencies, and any slices that still need shaping.
+Report issue draft paths, tracker links if published, AFK/HITL split, dependencies, any slices that still need shaping, and whether the result is ready for `adlc-sprint`.

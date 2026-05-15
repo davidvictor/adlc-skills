@@ -50,6 +50,8 @@ Use this route map:
 | The decisions are resolved and need a durable artifact | `adlc-shape` |
 | The PRD/spec needs implementation steps | `adlc-slice` |
 | Work items need readiness classification or agent briefs | `adlc-triage` |
+| Multiple PRDs or slices need one execution package | `adlc-sprint` |
+| A sprint should be handed to Hermes Kanban | `adlc-hermes` |
 | A ready slice should be implemented | `adlc-build` |
 
 ## Artifact Ladder
@@ -60,7 +62,9 @@ Move down this ladder only when the previous level is strong enough:
 2. **PRD or implementation contract**: user-visible behavior, contracts, scope, acceptance criteria, verification, release posture.
 3. **Vertical slices**: independently useful issue drafts with AFK/HITL status and dependencies.
 4. **Agent briefs**: ready-for-agent execution context for AFK work.
-5. **Implementation**: handled by `adlc-build`, not by `adlc-plan`.
+5. **Sprint package**: multi-PRD execution package with manifest, work items, dependency graph, verification, and publication policy.
+6. **Runner handoff**: Hermes, tracker, or human-runner handoff with commands and blocked decisions.
+7. **Implementation**: handled by `adlc-build` or a runner such as Hermes, not by `adlc-plan`.
 
 ## Default Locations
 
@@ -70,6 +74,7 @@ Use repo-local Markdown by default:
 docs/adlc/prds/<slug>.md
 .scratch/adlc-issues/<slug>/
 .scratch/adlc-agent-briefs/<slug>/
+docs/adlc/sprints/<slug>/
 ```
 
 Use other locations only when the user asks or the operating contract specifies them.
@@ -102,6 +107,13 @@ For execution handoff:
 ```text
 $adlc-plan
 Convert this PRD into ready-for-agent work. Create vertical issue drafts and agent briefs for AFK slices.
+```
+
+For a Hermes-bound sprint:
+
+```text
+$adlc-plan
+Turn these PRDs into a sprint package that can be handed to Hermes Kanban. Include dependencies, AFK/HITL status, verification, and publication policy. Do not implement.
 ```
 
 ## Readiness Test

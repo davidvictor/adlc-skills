@@ -18,6 +18,7 @@ ADLC exposes a workflow-complete but lean skill surface:
 - map and deepen
 - shape and slice
 - triage
+- sprint packaging and Hermes handoff
 - spike, interface, and polish
 - build and diagnose
 - audit, close, and prove

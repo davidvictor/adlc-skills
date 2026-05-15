@@ -18,8 +18,10 @@ Use this as the explicit planning entrypoint when the user asks for a plan, road
 5. Route repo-language or architecture alignment to `adlc-anchor`.
 6. Route discovery needs to `adlc-map`, `adlc-deepen`, or `adlc-spike` when needed before shaping.
 7. Route resolved scope to `adlc-shape` for the PRD or implementation contract.
-8. Route requested steps, tickets, or sprint work to `adlc-slice`.
+8. Route requested steps or tickets to `adlc-slice`.
 9. Route execution-readiness classification to `adlc-triage`.
+10. Route multi-PRD or runner-bound work to `adlc-sprint`.
+11. Route Hermes execution handoff to `adlc-hermes` after sprint packaging.
 
 ## Rules
 
@@ -49,4 +51,4 @@ Report:
 - which route was used
 - what artifacts were created or intentionally withheld
 - open questions, deferred decisions, and accepted risks
-- next recommended skill: `adlc-shape`, `adlc-slice`, `adlc-triage`, `adlc-build`, `adlc-spike`, or `adlc-interface`
+- next recommended skill: `adlc-shape`, `adlc-slice`, `adlc-triage`, `adlc-sprint`, `adlc-hermes`, `adlc-build`, `adlc-spike`, or `adlc-interface`

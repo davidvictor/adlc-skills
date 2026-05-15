@@ -10,6 +10,8 @@
     "./skills/engineering/adlc-shape",
     "./skills/engineering/adlc-slice",
     "./skills/engineering/adlc-triage",
+    "./skills/engineering/adlc-sprint",
+    "./skills/engineering/adlc-hermes",
     "./skills/engineering/adlc-spike",
     "./skills/engineering/adlc-interface",
     "./skills/engineering/adlc-polish",

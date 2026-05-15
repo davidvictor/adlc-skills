@@ -25,9 +25,11 @@ npx skills@latest add davidvictor/adlc-skills
 2. Use `adlc-plan` when the user needs an explicit planning path from intent to PRD, slices, or agent-ready work.
 3. Use `adlc-probe` or `adlc-anchor` when decisions or repo language are unresolved.
 4. Use `adlc-shape` and `adlc-slice` to turn resolved context into ready work.
-5. Use `adlc-build` or `adlc-diagnose` for implementation.
-6. Use `adlc-audit`, `adlc-close`, and `adlc-prove` before claiming done.
-7. Use `adlc-release` when the change has production, data, integration, migration, scheduled-job, or user-facing risk.
+5. Use `adlc-sprint` to package multiple PRDs or slices into a runner-ready sprint.
+6. Use `adlc-hermes` when Hermes Kanban should execute or monitor that sprint.
+7. Use `adlc-build` or `adlc-diagnose` for implementation.
+8. Use `adlc-audit`, `adlc-close`, and `adlc-prove` before claiming done.
+9. Use `adlc-release` when the change has production, data, integration, migration, scheduled-job, or user-facing risk.
 
 New users can skim [the example lifecycle](./docs/examples/lifecycle-thread.md) and [golden outputs](./docs/examples/README.md) before using the suite.
 
@@ -40,12 +42,14 @@ Use `adlc-plan` as the default entrypoint when a user asks to create a plan. It 
 3. `adlc-shape` for the PRD or implementation contract.
 4. `adlc-slice` for vertical implementation steps.
 5. `adlc-triage` for AFK/HITL readiness and agent briefs.
+6. `adlc-sprint` for a multi-PRD sprint package.
+7. `adlc-hermes` for a Hermes Kanban handoff.
 
 Example:
 
 ```text
 $adlc-plan
-Create a repo-grounded implementation plan for: <idea>. Write the PRD under docs/adlc/prds/<slug>.md, create local vertical issue drafts if ready, and do not implement.
+Create a repo-grounded implementation plan for: <idea>. Write the PRD under docs/adlc/prds/<slug>.md, create local vertical issue drafts if ready, and prepare the result for a Hermes handoff. Do not implement.
 ```
 
 ## Lifecycle
@@ -56,11 +60,13 @@ Create a repo-grounded implementation plan for: <idea>. Write the PRD under docs
 4. [adlc-map](./skills/engineering/adlc-map/SKILL.md) or [adlc-deepen](./skills/engineering/adlc-deepen/SKILL.md) - understand or improve the codebase shape.
 5. [adlc-shape](./skills/engineering/adlc-shape/SKILL.md) - write the execution-ready PRD.
 6. [adlc-slice](./skills/engineering/adlc-slice/SKILL.md) and [adlc-triage](./skills/engineering/adlc-triage/SKILL.md) - create or classify ready work.
-7. [adlc-spike](./skills/engineering/adlc-spike/SKILL.md), [adlc-interface](./skills/engineering/adlc-interface/SKILL.md), or [adlc-polish](./skills/engineering/adlc-polish/SKILL.md) - explore and build product surfaces.
-8. [adlc-build](./skills/engineering/adlc-build/SKILL.md) or [adlc-diagnose](./skills/engineering/adlc-diagnose/SKILL.md) - implement or fix with a strong feedback loop.
-9. [adlc-audit](./skills/engineering/adlc-audit/SKILL.md), [adlc-close](./skills/engineering/adlc-close/SKILL.md), and [adlc-prove](./skills/engineering/adlc-prove/SKILL.md) - review, resolve, and prove.
-10. [adlc-release](./skills/engineering/adlc-release/SKILL.md) - handle rollout, rollback, and operational evidence when risk warrants it.
-11. [adlc-handoff](./skills/engineering/adlc-handoff/SKILL.md) - preserve continuity for future agents or sessions.
+7. [adlc-sprint](./skills/engineering/adlc-sprint/SKILL.md) - package multiple PRDs or slices into a runner-ready sprint.
+8. [adlc-hermes](./skills/engineering/adlc-hermes/SKILL.md) - hand a sprint package to Hermes Kanban.
+9. [adlc-spike](./skills/engineering/adlc-spike/SKILL.md), [adlc-interface](./skills/engineering/adlc-interface/SKILL.md), or [adlc-polish](./skills/engineering/adlc-polish/SKILL.md) - explore and build product surfaces.
+10. [adlc-build](./skills/engineering/adlc-build/SKILL.md) or [adlc-diagnose](./skills/engineering/adlc-diagnose/SKILL.md) - implement or fix with a strong feedback loop.
+11. [adlc-audit](./skills/engineering/adlc-audit/SKILL.md), [adlc-close](./skills/engineering/adlc-close/SKILL.md), and [adlc-prove](./skills/engineering/adlc-prove/SKILL.md) - review, resolve, and prove.
+12. [adlc-release](./skills/engineering/adlc-release/SKILL.md) - handle rollout, rollback, and operational evidence when risk warrants it.
+13. [adlc-handoff](./skills/engineering/adlc-handoff/SKILL.md) - preserve continuity for future agents or sessions.
 
 ## Skills
 
@@ -69,6 +75,8 @@ Create a repo-grounded implementation plan for: <idea>. Write the PRD under docs
 - [adlc-setup](./skills/engineering/adlc-setup/SKILL.md) - Establish a repo-local ADLC operating contract.
 - [adlc-plan](./skills/engineering/adlc-plan/SKILL.md) - Create a plan from intent by routing through interview, shaping, slicing, and readiness.
 - [adlc-triage](./skills/engineering/adlc-triage/SKILL.md) - Classify incoming work and prepare agent-ready briefs.
+- [adlc-sprint](./skills/engineering/adlc-sprint/SKILL.md) - Assemble multiple PRDs, slices, or briefs into a runner-ready sprint package.
+- [adlc-hermes](./skills/engineering/adlc-hermes/SKILL.md) - Prepare or seed a Hermes Kanban handoff from an ADLC sprint package.
 
 ### Alignment And Design
 

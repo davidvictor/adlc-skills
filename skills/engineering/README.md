@@ -9,6 +9,8 @@
 - [adlc-shape](./adlc-shape/SKILL.md) - Turn resolved context into an execution-ready PRD.
 - [adlc-slice](./adlc-slice/SKILL.md) - Break a PRD or plan into vertical-slice work items.
 - [adlc-triage](./adlc-triage/SKILL.md) - Classify incoming work and prepare agent-ready briefs.
+- [adlc-sprint](./adlc-sprint/SKILL.md) - Assemble multiple PRDs, slices, or briefs into a runner-ready sprint package.
+- [adlc-hermes](./adlc-hermes/SKILL.md) - Prepare or seed a Hermes Kanban handoff from an ADLC sprint package.
 - [adlc-spike](./adlc-spike/SKILL.md) - Build a throwaway prototype that answers one design, state, logic, or UI question.
 - [adlc-interface](./adlc-interface/SKILL.md) - Design and implement domain-shaped frontend interfaces.
 - [adlc-polish](./adlc-polish/SKILL.md) - Refine frontend details through concrete tactile review.

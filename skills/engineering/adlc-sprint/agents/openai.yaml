@@ -1,0 +1,7 @@
+interface:
+  display_name: "ADLC Sprint"
+  short_description: "Package ADLC plans into sprints"
+  default_prompt: "Use $adlc-sprint to package these PRDs or slices into an execution-ready sprint."
+
+policy:
+  allow_implicit_invocation: true

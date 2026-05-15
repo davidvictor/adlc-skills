@@ -122,6 +122,16 @@ scripts/validate-skills.sh
 scripts/smoke-skills.sh
 ```
 
+## Codex
+
+Sync this checkout into the local Codex skill home when developing the suite on a machine:
+
+```bash
+scripts/install-codex-adlc-skills.sh
+```
+
+This copies every `skills/engineering/adlc-*` directory into `${CODEX_HOME:-~/.codex}/skills`. Restart long-lived Codex sessions when they need to reload changed skill bodies.
+
 ## Hermes
 
 Install ADLC skills into local Hermes when Hermes should run ADLC-packaged sprints:
@@ -136,6 +146,12 @@ Create the common sprint profiles and default ADLC board when needed:
 scripts/setup-hermes-adlc-profiles.sh
 ```
 
+Check the local Hermes/Codex runner setup before seeding:
+
+```bash
+scripts/check-hermes-adlc-ready.sh
+```
+
 Then use `adlc-sprint` to package PRDs and `adlc-hermes` to hand the package to Hermes Kanban. New packages use `adlc-sprint.yaml`; older `sprint-runner.yaml` manifests remain readable during migration.
 
 To seed a package directly:
@@ -143,6 +159,8 @@ To seed a package directly:
 ```bash
 scripts/seed-adlc-hermes-sprint.sh --target-folder /absolute/path/to/docs/adlc/sprints/<slug>
 ```
+
+Build tasks should complete into hostile review with `review_required=true`; they should not block merely because review is required. Use blocked state only for human decisions, missing credentials or environments, destructive approval, unsafe verification, or scope expansion.
 
 For release readiness, see [docs/public-release-checklist.md](./docs/public-release-checklist.md).
 

@@ -8,6 +8,7 @@ Run these before seeding:
 
 ```bash
 command -v hermes
+hermes version
 hermes profile list
 hermes skills list | grep -E 'kanban-orchestrator|kanban-worker'
 hermes skills list | grep -E 'adlc-build|adlc-audit|adlc-close|adlc-prove|adlc-release|adlc-handoff'
@@ -45,6 +46,21 @@ cd /Users/davidvictor/.codex/workspaces/default/repos/adlc-skills
 scripts/setup-hermes-adlc-profiles.sh
 ```
 
+For a repeatable preflight, run:
+
+```bash
+cd /Users/davidvictor/.codex/workspaces/default/repos/adlc-skills
+scripts/check-hermes-adlc-ready.sh
+```
+
+The healthcheck should confirm:
+
+- Hermes is available and authenticated enough for the selected provider.
+- The gateway is running.
+- worker profiles exist and use `model.openai_runtime=auto` when OpenAI Codex is the provider.
+- `kanban-worker`, `kanban-orchestrator`, and ADLC phase skills are visible.
+- the target board has no obvious stuck tasks before adding more work.
+
 ## Handoff File
 
 Write `hermes-handoff.md` into the sprint package:
@@ -67,7 +83,10 @@ Notification: <telegram/slack/none>
 
 ## Expected Graph
 
-- item 01 build -> review -> fixes -> final verification -> commit/publish
+- item 01 build completes with review_required=true
+- item 01 hostile review completes with approved=true or approved=false plus finding ledger
+- item 01 review fixes complete with fix plan, findings_resolved, verification, and commit_hashes when commits are in scope
+- item 01 final verification completes with evidence verdict and residual risk
 - item 02 build depends on item 01 commit/publish
 
 ## ADLC Skill Map
@@ -82,6 +101,18 @@ Notification: <telegram/slack/none>
 ## Human Decisions
 
 - <blocked decision or none>
+
+## Blocked State Rules
+
+Use blocked state only for:
+
+- `human-decision:` planning, product, or scope decisions
+- `credential-blocker:` missing auth, secrets, browser session, or account state
+- `environment-blocker:` missing local tooling or unavailable services
+- `scope-expansion:` work outside the approved sprint item
+- `unsafe-verification:` destructive or production-risk checks
+
+Do not block with `review-required:`. Review is the next phase and should be reached by completing the build task.
 
 ## Watch
 
@@ -98,7 +129,7 @@ cd /Users/davidvictor/.codex/workspaces/default/repos/adlc-skills
 scripts/seed-adlc-hermes-sprint.sh \
   --target-folder /absolute/path/to/docs/adlc/sprints/<slug> \
   --assignee sprintrunner \
-  --instructions "Run this ADLC sprint end-to-end in automated mode. Use ADLC phase skills in child tasks: adlc-build for build, adlc-audit for hostile review, adlc-close for review fixes, adlc-prove for final verification proof, adlc-release when release risk exists, and adlc-handoff for continuity. Preserve build, self-verification, hostile review, review-fix, final verification, and commit/publication gates."
+  --instructions "Run this ADLC sprint end-to-end in automated mode. Use ADLC phase skills in child tasks: adlc-build for build, adlc-audit for hostile review, adlc-close for review fixes, adlc-prove for final verification proof, adlc-release when release risk exists, and adlc-handoff for continuity. Build tasks complete into hostile review; they do not block merely because review is required. Preserve build, self-verification, hostile review, review-fix, final verification, and commit/publication gates."
 ```
 
 Use `--no-telegram` when notification is intentionally disabled. Use `--telegram-chat-id` when the home chat is not configured.
@@ -130,6 +161,7 @@ The body should instruct the orchestrator to:
 - assign each task the relevant ADLC phase skill
 - link true dependencies with parent relationships
 - keep HITL decisions as comments plus blocked tasks
+- complete normal phase gates so dependent tasks promote automatically
 - require worker handoffs with changed files, verification, findings, residual risk, and commit/publication metadata
 
 ## Task Body Template
@@ -156,7 +188,8 @@ Rules:
 - Do not assume ADLC skills are installed; verify them before assigning them.
 - Preserve dependency links from `adlc-sprint.yaml`.
 - Use worktree workspaces for isolated code work when useful.
-- Use Kanban comments and blocked state for human decisions.
+- Use Kanban comments and blocked state for human decisions, missing credentials, missing environments, destructive approvals, unsafe verification, or scope expansion.
+- Do not use blocked state for ordinary review handoff. Build completes into audit; audit completes into close/prove; close completes into proof/handoff.
 - Continue until every item is done, deferred, or blocked with evidence.
 ```
 
@@ -167,8 +200,9 @@ hermes kanban --board <board> list
 hermes kanban --board <board> watch
 hermes kanban --board <board> diagnostics
 hermes kanban --board <board> runs <task_id>
+hermes kanban --board <board> log <task_id>
 hermes kanban --board <board> reassign <task_id> <profile> --reclaim
 hermes kanban --board <board> unblock <task_id>
 ```
 
-Prefer a new review-fix task for findings. Do not erase failed attempts; the board history is part of the handoff.
+If a task is blocked with a stale `review-required:` reason and has a complete build handoff, convert it to a completion or unblock it so the review child can promote. Prefer a new review-fix task for findings. Do not erase failed attempts; the board history is part of the handoff.

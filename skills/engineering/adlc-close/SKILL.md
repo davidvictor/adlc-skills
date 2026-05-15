@@ -22,6 +22,18 @@ Close findings by doing the work, not by summarizing the review again.
 7. Record what is verified, partial, blocked, or not verified.
 8. Use `adlc-release` when fixed findings affect production risk.
 
+## Fix Plan Gate
+
+Before editing, write a short fix plan:
+
+- finding id
+- action: fix, defer, block, or accept residual risk
+- files or surfaces expected to change
+- verification to rerun
+- scope verdict: in-scope or needs human planning decision
+
+Proceed autonomously when every fix is inside the approved artifact scope. Block only when the plan requires new product scope, destructive action, missing credentials, or a human decision.
+
 ## Ledger Shape
 
 ```markdown
@@ -38,6 +50,15 @@ Close findings by doing the work, not by summarizing the review again.
 - Do not revert unrelated user work.
 - If a finding is deferred, state who owns the decision and why it is safe to defer.
 - If a finding becomes new scope, create or update an issue instead of burying it.
+
+## Runner Handoff
+
+When running inside Hermes Kanban or another durable task runner:
+
+- Read the audit ledger first, then the surrounding prose.
+- Post the fix plan as a durable comment or closeout section before code changes.
+- Complete with `findings_resolved`, `verification`, `commit_hashes` when a commit is requested, `residual_risk`, and `next_adlc_phase`.
+- Block with a precise reason only for true human/environment/scope blockers.
 
 ## Closeout
 

@@ -15,6 +15,7 @@ Keep skill repos coherent and installable.
 4. Update all indexes and manifests.
 5. Add ADRs for durable lifecycle or packaging decisions.
 6. Run validation before closeout.
+7. If the user asks to sync local usage, run the relevant install script such as `scripts/install-codex-adlc-skills.sh` or `scripts/install-hermes-adlc-skills.sh`.
 
 Use [MAINTENANCE-CHECKLIST.md](./MAINTENANCE-CHECKLIST.md).
 Use [METADATA.md](./METADATA.md) for OpenAI/Codex metadata.
@@ -35,4 +36,5 @@ Report:
 - skills added or changed
 - manifests and indexes updated
 - validation command and result
+- local sync or install command and result when run
 - examples or metadata intentionally deferred

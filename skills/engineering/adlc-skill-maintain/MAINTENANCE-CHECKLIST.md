@@ -14,6 +14,7 @@ For each public skill:
 - [ ] engineering README lists the skill
 - [ ] plugin manifest lists the skill
 - [ ] validation passes
+- [ ] local Codex or Hermes sync is run when the user asked for installed skills to update
 
 For major repo decisions:
 

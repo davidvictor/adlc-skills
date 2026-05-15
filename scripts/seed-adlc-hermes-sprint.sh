@@ -256,7 +256,9 @@ def build_body(item, manifest, manifest_path, target_folder)
     - Do not start later sprint items.
     - Do not commit in the build phase; the fix/prove phase owns commits.
     - Do not apply production migrations, provider spend, secrets changes, or destructive commands.
-    - Complete with changed_files, verification, acceptance status, residual_risk, and next_adlc_phase=adlc-audit.
+    - Do not block merely because hostile review is required next.
+    - Complete with changed_files, verification, acceptance status, review_required=true, residual_risk, and next_adlc_phase=adlc-audit.
+    - Block only for human-decision, credential-blocker, environment-blocker, scope-expansion, or unsafe-verification stop conditions.
   BODY
 end
 
@@ -274,7 +276,10 @@ def review_body(item, manifest_path, target_folder)
     - Do not edit files.
     - Run non-mutating checks when useful.
     - Report findings with severity, path, evidence, impact, and fix direction.
+    - Emit a finding ledger with id, axis, severity, blocking, scope, evidence, fix_direction, and verification_required.
     - Complete with approved=true only when no blocking findings remain.
+    - Complete with approved=false and the finding ledger when fixes are required.
+    - Block only when the review cannot run or a human planning decision is needed before any fix agent can proceed.
   BODY
 end
 
@@ -290,9 +295,11 @@ def fix_body(item, manifest, manifest_path, target_folder)
 
     Role:
     - Read the build handoff and hostile review result.
+    - Post a short fix plan before editing: finding id, action, files expected to change, verification to rerun, and scope verdict.
     - Fix all in-scope P0/P1/P2 findings or block with exact evidence.
     - Re-run final verification from the work item.
     - Commit only files belonging to this item.
+    - Block only for human-decision, credential-blocker, environment-blocker, scope-expansion, or unsafe-verification stop conditions.
 
     Suggested commit message:
     #{commit_message}
@@ -325,7 +332,9 @@ def orchestrator_body(target_folder, instructions)
     - Discover available Hermes profiles before creating child tasks.
     - Do not invent assignees.
     - Preserve dependency links from the manifest.
-    - Use Kanban comments and blocked state for human decisions.
+    - Complete normal phase gates so dependent tasks promote automatically.
+    - Do not block a build task merely because review is required.
+    - Use Kanban comments and blocked state for human decisions, missing credentials, missing environment, destructive approval, unsafe verification, or scope expansion.
     - Do not load the retired sprint-runner skill for new tasks.
   BODY
 end

@@ -44,6 +44,26 @@ For each finding include:
 - why it matters
 - suggested fix or decision needed
 
+Also emit a compact finding ledger that fix agents can consume without reinterpreting prose:
+
+```json
+{
+  "approved": false,
+  "findings": [
+    {
+      "id": "A1",
+      "axis": "Standards|Spec",
+      "severity": "critical|high|medium|low",
+      "blocking": true,
+      "scope": "in-scope|scope-expansion|human-decision",
+      "evidence": "<file, command, behavior, or missing contract>",
+      "fix_direction": "<smallest safe fix or decision needed>",
+      "verification_required": ["<command or observable check>"]
+    }
+  ]
+}
+```
+
 Then include:
 
 - open questions
@@ -59,3 +79,11 @@ If there are no issues, say so clearly and name residual risk.
 - Build diffs: check that a strong feedback loop was used.
 - Bug-fix diffs: check that diagnosis or regression proof is credible.
 - Release-risk diffs: check whether `adlc-release` is needed.
+
+## Runner Handoff
+
+When running inside Hermes Kanban or another durable task runner:
+
+- Complete the audit task after writing the ledger, even when `approved=false`.
+- Use `approved=false` plus `blocking=true` findings to promote the fix phase.
+- Block only when the review itself cannot run, or when the finding requires a human planning decision before any fix agent can proceed.

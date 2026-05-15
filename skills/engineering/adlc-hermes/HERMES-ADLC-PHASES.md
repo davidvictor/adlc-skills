@@ -61,17 +61,20 @@ For each AFK sprint item:
 item N build
   skills: kanban-worker, adlc-build
   assignee: sprintbuilder
+  completion: implemented and self-verified; review_required=true
 
 item N hostile review
   parent: item N build
   skills: kanban-worker, adlc-audit
   assignee: sprintreviewer
+  completion: approved true or false with finding ledger
 
 item N review fixes
   parent: item N hostile review
   skills: kanban-worker, adlc-close
   assignee: sprintfixer
   only needed when review findings exist, or create as conditional follow-up
+  completion: findings fixed/deferred/blocked with fresh verification
 
 item N proof
   parent: item N review fixes or hostile review
@@ -88,6 +91,33 @@ Dependent item N+1 starts after item N release/handoff when the dependency is re
 
 Use `adlc-sprint.yaml` as the canonical manifest when deriving graph dependencies. Legacy `sprint-runner.yaml` files may be read for older sprint packages, but new tasks should not load the retired `sprint-runner` skill.
 
+## Transition Rules
+
+Normal quality gates must move the graph forward:
+
+- Build tasks complete after implementation and self-verification. They must not block just because hostile review is required.
+- Audit tasks complete after review, even when `approved=false`, as long as the finding ledger is clear enough for a fix agent.
+- Close tasks complete after every finding is fixed, deferred with an owner, accepted as residual risk, or blocked with exact evidence.
+- Proof tasks complete when each verification claim has a verdict. A partial or weak verdict is still useful evidence when the next check is named.
+
+Use blocked state only for true stop conditions:
+
+- source artifact is not ready
+- profile cannot access the workspace
+- human planning or scope decision is required
+- verification cannot run for a missing credential, environment, or destructive approval
+- a P0/P1/P2 review finding cannot be fixed safely inside approved scope
+
+Recommended blocked reason prefixes:
+
+- `human-decision:` for planning, product, or scope calls
+- `credential-blocker:` for missing auth, secret, account, or browser/session state
+- `environment-blocker:` for missing local tooling or unavailable services
+- `scope-expansion:` for findings that need new approved work
+- `unsafe-verification:` for destructive or production-risk checks
+
+Do not use `review-required:` as a blocked reason. Review is the next phase, not a stop condition.
+
 ## Worker Metadata
 
 Every ADLC worker completion should include structured metadata. Keep it small and useful:
@@ -101,21 +131,31 @@ Every ADLC worker completion should include structured metadata. Keep it small a
   "changed_files": [],
   "verification": [],
   "findings": [],
+  "approved": null,
+  "review_required": false,
+  "findings_resolved": [],
   "commit_hashes": [],
   "residual_risk": [],
   "next_adlc_phase": "adlc-audit"
 }
 ```
 
-Block instead of complete when:
+For audit findings, use stable ids so fix agents can act without re-reviewing:
 
-- the source artifact is not ready
-- the profile cannot access the workspace
-- a human decision is required
-- verification cannot run for a missing credential, environment, or destructive approval
-- a P0/P1/P2 review finding cannot be fixed safely inside scope
+```json
+{
+  "id": "A1",
+  "axis": "Standards|Spec",
+  "severity": "critical|high|medium|low",
+  "blocking": true,
+  "scope": "in-scope|scope-expansion|human-decision",
+  "evidence": "<file, command, behavior, or missing contract>",
+  "fix_direction": "<smallest safe fix or decision needed>",
+  "verification_required": ["<command or observable check>"]
+}
+```
 
-Use Kanban comments for context and `kanban_block` for the one-sentence decision needed.
+Use Kanban comments for context. Use `kanban_block` only for the one-sentence decision or missing condition needed to continue.
 
 ## Phase Expectations
 
@@ -124,16 +164,18 @@ Use Kanban comments for context and `kanban_block` for the one-sentence decision
 - inspect the source artifact and repo guidance
 - make the smallest complete vertical-slice change
 - run the strongest practical feedback loop
-- complete with changed files, verification, residual risk, and next phase
+- complete with changed files, verification, residual risk, `review_required=true`, and `next_adlc_phase=adlc-audit`
 
 `adlc-audit` workers should:
 
 - review the actual diff against standards and spec
 - report findings with severity, evidence, and fix direction
 - complete with `approved: true` only when no blocking findings remain
+- complete with `approved: false` and a finding ledger when fixes are required
 
 `adlc-close` workers should:
 
+- post a short fix plan before editing
 - fix or explicitly classify every review finding
 - rerun relevant verification
 - complete with a finding ledger and unresolved risk

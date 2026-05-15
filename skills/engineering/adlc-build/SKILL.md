@@ -50,6 +50,16 @@ Use [UI-EVIDENCE.md](./UI-EVIDENCE.md) when visual or browser proof is the stron
 - Do not hide skipped checks behind "looks good".
 - If you discover a bug before implementing, switch to `adlc-diagnose`.
 
+## Runner Handoff
+
+When running inside Hermes Kanban or another durable task runner:
+
+- Complete the build task when the slice is implemented and self-verified.
+- Do not block merely because hostile review is required next.
+- Include `review_required=true` and `next_adlc_phase=adlc-audit` in the handoff metadata.
+- Block only for a real stop condition: missing source artifact, workspace access failure, missing credential or environment, destructive approval, human scope decision, or an unsafe out-of-scope fix.
+- If verification is partial, complete with explicit residual risk when review can continue; block only when the missing check prevents a meaningful review.
+
 ## Closeout
 
 Report:

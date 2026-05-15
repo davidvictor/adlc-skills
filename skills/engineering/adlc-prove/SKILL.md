@@ -48,12 +48,28 @@ Check whether the evidence proves the claim.
 | --- | --- | --- | --- | --- |
 ```
 
+When another agent will continue from the proof, also include:
+
+```json
+{
+  "adlc_phase": "prove",
+  "evidence_verdict": "strong|partial|weak|blocked|absent",
+  "blocking_gaps": [],
+  "smallest_next_checks": [],
+  "release_or_handoff_needed": false
+}
+```
+
 ## Rules
 
 - Passing exit code is not enough if the command did not run the relevant work.
 - "Not verified" is better than implied confidence.
 - Blocked checks must name the missing condition.
 - Recommendations should be executable by an agent or human.
+
+## Runner Handoff
+
+When running inside Hermes Kanban or another durable task runner, complete when the proof verdict is explicit. Block only when a missing credential, environment, destructive approval, or human decision prevents the proof from reaching a useful verdict.
 
 ## Escalation
 

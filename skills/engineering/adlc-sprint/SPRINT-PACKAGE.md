@@ -53,6 +53,14 @@ runner:
     builder: "sprintbuilder"
     reviewer: "sprintreviewer"
     fixer: "sprintfixer"
+  skills:
+    orchestrator: ["sprint-runner", "kanban-orchestrator", "adlc-hermes"]
+    build: ["kanban-worker", "adlc-build"]
+    review: ["kanban-worker", "adlc-audit"]
+    fix: ["kanban-worker", "adlc-close"]
+    prove: ["kanban-worker", "adlc-prove"]
+    release: ["kanban-worker", "adlc-release"]
+    handoff: ["kanban-worker", "adlc-handoff"]
 repos:
   web:
     path: "/absolute/path/to/repo"
@@ -119,6 +127,7 @@ The runner handoff should answer:
 - Which items can start immediately?
 - Which items are blocked?
 - What profile or role should own build, review, fix, and publish work?
+- Which ADLC skills should each runner phase load?
 - What commands should the operator run to start and watch progress?
 
 For Hermes, use `adlc-hermes` after the sprint package is ready.

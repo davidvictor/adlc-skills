@@ -21,6 +21,8 @@ assert len(plugin["skills"]) == 22
 assert Path("skills/engineering/adlc-plan/PLAN-WORKFLOW.md").is_file()
 assert Path("skills/engineering/adlc-sprint/SPRINT-PACKAGE.md").is_file()
 assert Path("skills/engineering/adlc-hermes/HERMES-HANDOFF.md").is_file()
+assert Path("skills/engineering/adlc-hermes/HERMES-ADLC-PHASES.md").is_file()
+assert Path("scripts/install-hermes-adlc-skills.sh").is_file()
 assert Path("docs/examples/lifecycle-thread.md").is_file()
 assert Path("skills/engineering/adlc-setup/TRACKER-ADAPTERS.md").is_file()
 assert Path("skills/engineering/adlc-build/TDD-LOOP.md").is_file()

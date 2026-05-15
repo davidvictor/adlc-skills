@@ -122,6 +122,16 @@ scripts/validate-skills.sh
 scripts/smoke-skills.sh
 ```
 
+## Hermes
+
+Install ADLC phase skills into local Hermes when Hermes should run ADLC-packaged sprints:
+
+```bash
+scripts/install-hermes-adlc-skills.sh
+```
+
+Then use `adlc-sprint` to package PRDs and `adlc-hermes` to hand the package to Hermes Kanban.
+
 For release readiness, see [docs/public-release-checklist.md](./docs/public-release-checklist.md).
 
 ## Packaging

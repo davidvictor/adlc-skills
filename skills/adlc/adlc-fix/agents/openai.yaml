@@ -1,0 +1,6 @@
+interface:
+  display_name: ADLC Fix
+  short_description: Diagnose and repair bugs
+  default_prompt: "$adlc-fix"
+policy:
+  allow_implicit_invocation: true

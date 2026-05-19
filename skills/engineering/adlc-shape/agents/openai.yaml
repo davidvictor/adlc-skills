@@ -1,7 +1,0 @@
-interface:
-  display_name: "ADLC Shape"
-  short_description: "Shape resolved context into PRDs"
-  default_prompt: "Use $adlc-shape to turn the resolved context into an execution-ready PRD."
-
-policy:
-  allow_implicit_invocation: true

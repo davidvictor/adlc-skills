@@ -1,0 +1,6 @@
+interface:
+  display_name: ADLC Implement
+  short_description: Execute plans with agents
+  default_prompt: "$adlc-implement"
+policy:
+  allow_implicit_invocation: true

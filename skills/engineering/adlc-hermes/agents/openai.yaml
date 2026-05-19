@@ -1,7 +1,0 @@
-interface:
-  display_name: "ADLC Hermes"
-  short_description: "Handoff ADLC sprints to Hermes"
-  default_prompt: "Use $adlc-hermes to prepare or seed a Hermes Kanban handoff from this ADLC sprint package."
-
-policy:
-  allow_implicit_invocation: true

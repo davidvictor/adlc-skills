@@ -1,7 +1,0 @@
-interface:
-  display_name: "ADLC Build"
-  short_description: "Build slices with strong feedback loops"
-  default_prompt: "Use $adlc-build to implement this ready slice with the strongest practical feedback loop."
-
-policy:
-  allow_implicit_invocation: true

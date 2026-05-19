@@ -1,7 +1,0 @@
-interface:
-  display_name: "ADLC Anchor"
-  short_description: "Anchor plans in repo language and ADRs"
-  default_prompt: "Use $adlc-anchor to align this plan with repo language, ADRs, and code."
-
-policy:
-  allow_implicit_invocation: true

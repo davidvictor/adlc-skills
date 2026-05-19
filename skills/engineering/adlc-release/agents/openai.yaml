@@ -1,7 +1,0 @@
-interface:
-  display_name: "ADLC Release"
-  short_description: "Plan rollout and rollback proof"
-  default_prompt: "Use $adlc-release to plan rollout, rollback, smoke checks, and monitoring for this change."
-
-policy:
-  allow_implicit_invocation: true

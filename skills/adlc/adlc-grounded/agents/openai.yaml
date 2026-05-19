@@ -1,0 +1,6 @@
+interface:
+  display_name: ADLC Grounded
+  short_description: Evidence-only answers
+  default_prompt: "$adlc-grounded"
+policy:
+  allow_implicit_invocation: true

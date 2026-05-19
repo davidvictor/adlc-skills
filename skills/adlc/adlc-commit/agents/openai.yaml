@@ -1,0 +1,6 @@
+interface:
+  display_name: ADLC Commit
+  short_description: Prepare conventional commits
+  default_prompt: "$adlc-commit"
+policy:
+  allow_implicit_invocation: true

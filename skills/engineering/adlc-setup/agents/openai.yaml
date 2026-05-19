@@ -1,7 +1,0 @@
-interface:
-  display_name: "ADLC Setup"
-  short_description: "Set up repo ADLC conventions"
-  default_prompt: "Use $adlc-setup to establish the repo operating contract for ADLC skills."
-
-policy:
-  allow_implicit_invocation: true

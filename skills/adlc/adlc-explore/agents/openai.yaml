@@ -1,0 +1,6 @@
+interface:
+  display_name: ADLC Explore
+  short_description: Explore before planning
+  default_prompt: "$adlc-explore"
+policy:
+  allow_implicit_invocation: true

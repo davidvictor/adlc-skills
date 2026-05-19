@@ -1,0 +1,6 @@
+interface:
+  display_name: ADLC Review
+  short_description: Review changes with gates
+  default_prompt: "$adlc-review"
+policy:
+  allow_implicit_invocation: true

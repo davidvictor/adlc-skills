@@ -1,175 +1,127 @@
-# ADLC Skills
+# ADLC
 
-Agent Development Lifecycle skills for real software work.
+ADLC is David Victor's agent-driven development lifecycle, rebuilt on the useful parts of the AI Factory architecture.
 
-ADLC is a composable lifecycle for getting from fuzzy intent to shipped, verified work without surrendering engineering judgment.
+This repo is a lean command pipeline with ADLC-owned artifacts and Codex-native agents. The goal is not to mirror every upstream AI Factory feature. The goal is the smallest system that matches how David actually works:
 
-The suite is intentionally portable:
+- repo-local context and plans under `.adlc/`
+- a short command surface that routes work instead of a broad menu of lifecycle skills
+- native Codex coordinators, workers, and read-only sidecars
+- explicit artifact ownership so agents do not fight over the same files
+- implementation that ends in verification, review, commit readiness, and a clear handoff
 
-- local repo artifacts are the durable default contract
-- external trackers are optional adapters
-- `CONTEXT.md` carries project language
-- `docs/adr/` carries durable decisions
-- `.scratch/adlc-*` carries local working artifacts
-- verification is behavior-first and honest about gaps
+The upstream comparison source is [lee-to/ai-factory](https://github.com/lee-to/ai-factory), especially its [getting started](https://github.com/lee-to/ai-factory/blob/2.x/docs/getting-started.md), [workflow](https://github.com/lee-to/ai-factory/blob/2.x/docs/workflow.md), and [subagents](https://github.com/lee-to/ai-factory/blob/2.x/docs/subagents.md) docs.
 
-## Install
+## Command Surface
 
-```bash
-npx skills@latest add davidvictor/adlc-skills
-```
+Use these skills as the public interface:
 
-## Quickstart
+1. `adlc` - initialize or refresh `.adlc/` context.
+2. `adlc-explore` - investigate options without committing to a plan.
+3. `adlc-grounded` - answer from evidence only when guessing is unacceptable.
+4. `adlc-plan` - create fast or full implementation plans.
+5. `adlc-improve` - tighten an existing plan before implementation.
+6. `adlc-implement` - execute a plan with Codex coordinators, workers, and sidecars.
+7. `adlc-verify` - prove completion against plan, rules, and repo behavior.
+8. `adlc-review` - review diffs for correctness, maintainability, and risk.
+9. `adlc-commit` - prepare conventional commits from staged work.
+10. `adlc-fix` - diagnose, fix, and record a learning patch.
+11. `adlc-evolve` - turn patches and repeated findings into durable rules or skill updates.
 
-1. Run `adlc-setup` in the target repo to record the local operating contract.
-2. Use `adlc-plan` when the user needs an explicit planning path from intent to PRD, slices, or agent-ready work.
-3. Use `adlc-probe` or `adlc-anchor` when decisions or repo language are unresolved.
-4. Use `adlc-shape` and `adlc-slice` to turn resolved context into ready work.
-5. Use `adlc-sprint` to package multiple PRDs or slices into a runner-ready sprint.
-6. Use `adlc-hermes` when Hermes Kanban should execute or monitor that sprint.
-7. Use `adlc-build` or `adlc-diagnose` for implementation.
-8. Use `adlc-audit`, `adlc-close`, and `adlc-prove` before claiming done.
-9. Use `adlc-release` when the change has production, data, integration, migration, scheduled-job, or user-facing risk.
+Everything else has been removed or folded into these commands.
 
-New users can skim [the example lifecycle](./docs/examples/lifecycle-thread.md) and [golden outputs](./docs/examples/README.md) before using the suite.
-
-## Planning Path
-
-Use `adlc-plan` as the default entrypoint when a user asks to create a plan. It routes fuzzy intent through the existing primitives instead of replacing them:
-
-1. `adlc-probe` for unresolved decisions.
-2. `adlc-anchor` for repo language, ADR, or architecture alignment.
-3. `adlc-shape` for the PRD or implementation contract.
-4. `adlc-slice` for vertical implementation steps.
-5. `adlc-triage` for AFK/HITL readiness and agent briefs.
-6. `adlc-sprint` for a multi-PRD sprint package.
-7. `adlc-hermes` for a Hermes Kanban handoff.
-
-Example:
+## Workflow
 
 ```text
-$adlc-plan
-Create a repo-grounded implementation plan for: <idea>. Write the PRD under docs/adlc/prds/<slug>.md, create local vertical issue drafts if ready, and prepare the result for a Hermes handoff. Do not implement.
+adlc
+  -> adlc-explore or adlc-grounded
+  -> adlc-plan
+  -> adlc-improve
+  -> adlc-implement
+  -> adlc-verify
+  -> adlc-review
+  -> adlc-commit
+  -> adlc-evolve when there is reusable learning
 ```
 
-## Lifecycle
+Bug work can enter through `adlc-fix`, then continue to `adlc-verify`, `adlc-review`, and `adlc-commit`.
 
-1. [adlc-setup](./skills/engineering/adlc-setup/SKILL.md) - establish the repo operating contract.
-2. [adlc-plan](./skills/engineering/adlc-plan/SKILL.md) - route intent through interview, shaping, slicing, and readiness.
-3. [adlc-probe](./skills/engineering/adlc-probe/SKILL.md) or [adlc-anchor](./skills/engineering/adlc-anchor/SKILL.md) - resolve decisions and language.
-4. [adlc-map](./skills/engineering/adlc-map/SKILL.md) or [adlc-deepen](./skills/engineering/adlc-deepen/SKILL.md) - understand or improve the codebase shape.
-5. [adlc-shape](./skills/engineering/adlc-shape/SKILL.md) - write the execution-ready PRD.
-6. [adlc-slice](./skills/engineering/adlc-slice/SKILL.md) and [adlc-triage](./skills/engineering/adlc-triage/SKILL.md) - create or classify ready work.
-7. [adlc-sprint](./skills/engineering/adlc-sprint/SKILL.md) - package multiple PRDs or slices into a runner-ready sprint.
-8. [adlc-hermes](./skills/engineering/adlc-hermes/SKILL.md) - hand a sprint package to Hermes Kanban.
-9. [adlc-spike](./skills/engineering/adlc-spike/SKILL.md), [adlc-interface](./skills/engineering/adlc-interface/SKILL.md), or [adlc-polish](./skills/engineering/adlc-polish/SKILL.md) - explore and build product surfaces.
-10. [adlc-build](./skills/engineering/adlc-build/SKILL.md) or [adlc-diagnose](./skills/engineering/adlc-diagnose/SKILL.md) - implement or fix with a strong feedback loop.
-11. [adlc-audit](./skills/engineering/adlc-audit/SKILL.md), [adlc-close](./skills/engineering/adlc-close/SKILL.md), and [adlc-prove](./skills/engineering/adlc-prove/SKILL.md) - review, resolve, and prove.
-12. [adlc-release](./skills/engineering/adlc-release/SKILL.md) - handle rollout, rollback, and operational evidence when risk warrants it.
-13. [adlc-handoff](./skills/engineering/adlc-handoff/SKILL.md) - preserve continuity for future agents or sessions.
+## Artifact Ownership
 
-## Skills
+Default target-project paths:
 
-### Setup And Intake
+```text
+.adlc/
+  config.yaml
+  DESCRIPTION.md
+  ARCHITECTURE.md
+  RULES.md
+  RESEARCH.md
+  PLAN.md
+  plans/
+  fixes/
+  patches/
+  skill-context/
+  qa/
+```
 
-- [adlc-setup](./skills/engineering/adlc-setup/SKILL.md) - Establish a repo-local ADLC operating contract.
-- [adlc-plan](./skills/engineering/adlc-plan/SKILL.md) - Create a plan from intent by routing through interview, shaping, slicing, and readiness.
-- [adlc-triage](./skills/engineering/adlc-triage/SKILL.md) - Classify incoming work and prepare agent-ready briefs.
-- [adlc-sprint](./skills/engineering/adlc-sprint/SKILL.md) - Assemble multiple PRDs, slices, or briefs into a runner-ready sprint package.
-- [adlc-hermes](./skills/engineering/adlc-hermes/SKILL.md) - Prepare or seed a Hermes Kanban handoff from an ADLC sprint package.
+Ownership is strict:
 
-### Alignment And Design
+- `adlc` owns setup context.
+- `adlc-explore` owns research only when explicitly asked to persist it.
+- `adlc-plan` owns plan files.
+- `adlc-improve` may edit plan files.
+- `adlc-implement` owns code changes for the selected plan tasks.
+- `adlc-verify`, `adlc-review`, and sidecars are read-only by default.
+- `adlc-fix` owns fix plans and patches.
+- `adlc-evolve` owns skill-context and proposed ADLC updates.
 
-- [adlc-probe](./skills/engineering/adlc-probe/SKILL.md) - Interrogate a plan one decision at a time until the design tree is resolved.
-- [adlc-anchor](./skills/engineering/adlc-anchor/SKILL.md) - Probe a plan against `CONTEXT.md`, ADRs, and code; update docs as decisions crystallize.
-- [adlc-map](./skills/engineering/adlc-map/SKILL.md) - Zoom out and explain modules, callers, data flow, ownership, and verification surfaces.
-- [adlc-deepen](./skills/engineering/adlc-deepen/SKILL.md) - Find architecture improvements that increase module depth, locality, and testability.
-- [adlc-shape](./skills/engineering/adlc-shape/SKILL.md) - Turn resolved context into an execution-ready PRD.
-- [adlc-slice](./skills/engineering/adlc-slice/SKILL.md) - Break a PRD or plan into vertical-slice work items.
+## Codex Native Agents
 
-### Product Surfaces And Implementation
+Codex agents live in `subagents/codex/agents/`:
 
-- [adlc-spike](./skills/engineering/adlc-spike/SKILL.md) - Build a throwaway prototype that answers one design, state, logic, or UI question.
-- [adlc-interface](./skills/engineering/adlc-interface/SKILL.md) - Design and implement domain-shaped frontend interfaces.
-- [adlc-polish](./skills/engineering/adlc-polish/SKILL.md) - Refine frontend details through concrete tactile review.
-- [adlc-build](./skills/engineering/adlc-build/SKILL.md) - Implement a vertical slice with a strong feedback loop.
-- [adlc-diagnose](./skills/engineering/adlc-diagnose/SKILL.md) - Diagnose bugs and regressions before fixing them.
+- `plan-coordinator`
+- `plan-polisher`
+- `implement-coordinator`
+- `implement-worker`
+- `review-sidecar`
+- `security-sidecar`
+- `rules-sidecar`
+- `docs-auditor`
+- `best-practices-sidecar`
+- `commit-preparer`
 
-### Review, Release, And Continuity
+The coordinator agents own orchestration. Worker agents own bounded edits. Sidecars are read-only unless their file says otherwise.
 
-- [adlc-audit](./skills/engineering/adlc-audit/SKILL.md) - Review a diff against both repo standards and the originating spec.
-- [adlc-close](./skills/engineering/adlc-close/SKILL.md) - Convert review findings into fixes, deferrals, blockers, or accepted risks.
-- [adlc-prove](./skills/engineering/adlc-prove/SKILL.md) - Audit verification claims and identify weak, skipped, or no-op checks.
-- [adlc-release](./skills/engineering/adlc-release/SKILL.md) - Plan and verify rollout, rollback, and monitoring evidence.
-- [adlc-handoff](./skills/engineering/adlc-handoff/SKILL.md) - Create durable handoffs for another agent or future session.
-- [adlc-skill-maintain](./skills/engineering/adlc-skill-maintain/SKILL.md) - Maintain ADLC-style skill collections.
+## Install For Local Codex
 
-## Design Principles
+```bash
+scripts/install-codex-adlc.sh
+```
 
-- Ask in planning skills when decisions are unresolved; execute in implementation skills unless genuinely blocked.
-- Preserve project language in `CONTEXT.md`.
-- Record hard-to-reverse, surprising, trade-off decisions in ADRs.
-- Keep local artifacts usable even when external trackers are configured.
-- Build with strong feedback loops, not implied confidence.
-- Verify through behavior and observable evidence.
-- Say "not verified" when evidence is partial or absent.
+This syncs skills into `${CODEX_HOME:-~/.codex}/skills` and Codex agent TOML files into `${CODEX_HOME:-~/.codex}/agents`.
+
+## Initialize A Project
+
+```bash
+scripts/init-adlc-project.sh /path/to/project
+```
+
+This creates the `.adlc/` scaffold and preserves existing project context files.
+
+## Package Status
+
+The repo has private package metadata as `@davidvictor/adlc` so NPM scripts can wrap validation and install tasks. It is intentionally not publishable yet; ADLC needs managed update state, fixture-backed tests, and a real CLI before NPM publication makes the system simpler.
 
 ## Validation
 
 ```bash
-scripts/list-skills.sh
-scripts/validate-skills.sh
-scripts/smoke-skills.sh
+scripts/list-adlc.sh
+scripts/validate-adlc.sh
 ```
 
-## Codex
+Validation fails if old upstream-prefixed skill paths remain, if the plugin manifest points at removed skills, if required Codex agents are missing, if package metadata is unsafe to publish accidentally, or if the public docs drift from the ADLC command surface.
 
-Sync this checkout into the local Codex skill home when developing the suite on a machine:
+## Refactor Record
 
-```bash
-scripts/install-codex-adlc-skills.sh
-```
-
-This copies every `skills/engineering/adlc-*` directory into `${CODEX_HOME:-~/.codex}/skills`. Restart long-lived Codex sessions when they need to reload changed skill bodies.
-
-## Hermes
-
-Install ADLC skills into local Hermes when Hermes should run ADLC-packaged sprints:
-
-```bash
-scripts/install-hermes-adlc-skills.sh
-```
-
-Create the common sprint profiles and default ADLC board when needed:
-
-```bash
-scripts/setup-hermes-adlc-profiles.sh
-```
-
-Check the local Hermes/Codex runner setup before seeding:
-
-```bash
-scripts/check-hermes-adlc-ready.sh
-```
-
-Then use `adlc-sprint` to package PRDs and `adlc-hermes` to hand the package to Hermes Kanban. New packages use `adlc-sprint.yaml`; older `sprint-runner.yaml` manifests remain readable during migration.
-
-To seed a package directly:
-
-```bash
-scripts/seed-adlc-hermes-sprint.sh --target-folder /absolute/path/to/docs/adlc/sprints/<slug>
-```
-
-When Telegram is enabled, seeded tasks subscribe the configured chat to phase lifecycle messages: start, complete, blocked, gave-up, crash, and timeout. Attention messages should point the operator back to Codex mobile for comments, edits, reassignments, or unblocks; assignees are shown as profile labels rather than Telegram `@` mentions.
-
-Build tasks should complete into hostile review with `review_required=true`; they should not block merely because review is required. Use blocked state only for human decisions, missing credentials or environments, destructive approval, unsafe verification, or scope expansion.
-
-For release readiness, see [docs/public-release-checklist.md](./docs/public-release-checklist.md).
-
-## Packaging
-
-This repo includes:
-
-- `.claude-plugin/plugin.json` for Claude-compatible skill collection installs
-- `agents/openai.yaml` inside every public skill for OpenAI/Codex-style metadata
-- structural validation for indexes, manifests, links, metadata, scripts, and examples
+See [docs/ai-factory-port-audit.md](./docs/ai-factory-port-audit.md) for the AI Factory comparison, removal/adaptation decisions, and the concrete replacement path.

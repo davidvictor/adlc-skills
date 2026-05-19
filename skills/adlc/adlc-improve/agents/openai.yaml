@@ -1,0 +1,6 @@
+interface:
+  display_name: ADLC Improve
+  short_description: Refine plans before execution
+  default_prompt: "$adlc-improve"
+policy:
+  allow_implicit_invocation: true

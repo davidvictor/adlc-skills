@@ -1,7 +1,0 @@
-interface:
-  display_name: "ADLC Audit"
-  short_description: "Audit diffs against specs and standards"
-  default_prompt: "Use $adlc-audit to review this diff against the originating spec and repo standards."
-
-policy:
-  allow_implicit_invocation: true

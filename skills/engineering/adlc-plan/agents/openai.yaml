@@ -1,7 +1,0 @@
-interface:
-  display_name: "ADLC Plan"
-  short_description: "Create ADLC plans from fuzzy intent"
-  default_prompt: "Use $adlc-plan to create a plan from this intent, routing through interview, shaping, and slicing as needed."
-
-policy:
-  allow_implicit_invocation: true

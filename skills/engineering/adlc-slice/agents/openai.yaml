@@ -1,7 +1,0 @@
-interface:
-  display_name: "ADLC Slice"
-  short_description: "Slice plans into ready work"
-  default_prompt: "Use $adlc-slice to break this PRD or plan into vertical slices ready for agents."
-
-policy:
-  allow_implicit_invocation: true

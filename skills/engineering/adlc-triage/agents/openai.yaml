@@ -1,7 +1,0 @@
-interface:
-  display_name: "ADLC Triage"
-  short_description: "Classify work and readiness"
-  default_prompt: "Use $adlc-triage to classify this request and prepare an agent-ready brief if possible."
-
-policy:
-  allow_implicit_invocation: true

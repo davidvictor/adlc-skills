@@ -1,0 +1,6 @@
+interface:
+  display_name: ADLC Setup
+  short_description: Initialize ADLC project context
+  default_prompt: "$adlc"
+policy:
+  allow_implicit_invocation: true

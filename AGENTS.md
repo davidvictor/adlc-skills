@@ -1,56 +1,50 @@
-# ADLC Skills Agent Guide
+# ADLC Agent Guide
 
-This repository is a public skill collection for the Agent Development Lifecycle.
+This repository is the local ADLC skill and agent package. It uses an AI Factory-style architecture, but ADLC is the public name and command namespace.
 
 ## Canonical Guidance
 
-`AGENTS.md` is the canonical agent guidance file for this repo. `CLAUDE.md` should only point here.
+`AGENTS.md` is the canonical guide. `CLAUDE.md` only points here.
 
-## Skill Rules
+## Architecture Rules
 
-Every public skill must:
+- Public skills live under `skills/adlc/`.
+- Public skill names are `adlc` or `adlc-*`.
+- Codex native agents live under `subagents/codex/agents/`.
+- Target-project runtime artifacts live under `.adlc/` unless a repo explicitly overrides paths.
+- Do not add old phase-skill conventions, Hermes-specific runners, or broad tracker abstractions.
+- Keep the command surface small. Add a new skill only when it cannot be expressed as a mode of an existing `adlc-*` command.
 
-- live under `skills/engineering/adlc-<name>/`
-- use the `adlc-` prefix in its folder and frontmatter `name`
-- include a concise `SKILL.md`
-- include `agents/openai.yaml`
-- appear in the top-level `README.md`
-- appear in `skills/engineering/README.md`
-- appear in `.claude-plugin/plugin.json`
+## ADLC Command Rules
 
-Do not add repo-specific private workflow assumptions to public skills. Use universal conventions: `CONTEXT.md`, `CONTEXT-MAP.md`, `docs/adr/`, `docs/adlc/`, `.scratch/adlc-*`, and Markdown issue drafts by default. External trackers are optional adapters configured by `adlc-setup` or explicitly requested by the user.
+- `adlc-plan` owns plans.
+- `adlc-improve` refines plans.
+- `adlc-implement` executes plans and coordinates Codex agents.
+- `adlc-verify`, `adlc-review`, and sidecars are read-only gates unless explicitly promoted to a fix task.
+- `adlc-fix` diagnoses and repairs bugs, then writes a patch note.
+- `adlc-evolve` converts repeated learning into rules, skill-context, or this repo's source changes.
 
 ## Skill Writing Standards
 
-- Keep `SKILL.md` focused on activation, workflow, and closeout.
-- Move task-critical detail into one-level reference files beside `SKILL.md`.
-- Prefer concrete output contracts over broad advice.
-- Ask only in planning/interview skills when decisions are unresolved; implementation and closeout skills should proceed unless genuinely blocked.
-- Preserve ADLC's voice: concise, evidence-oriented, tracker-neutral by default, and honest about unverified claims.
-- Borrow general skill-writing best practices, but do not closely paraphrase comparison repos.
+- Keep `SKILL.md` concise and operational.
+- Prefer exact artifact ownership over explanatory essays.
+- Ask only when the answer changes plan scope, risk, release posture, or destructive actions.
+- Use native Codex agents for independent bounded work and read-only sidecars.
+- Preserve unrelated user work.
+- Keep output contracts machine-readable where orchestration depends on them.
 
-## Packaging And Validation
+## Validation
 
 Before closeout, run:
 
 ```bash
-scripts/validate-skills.sh
+scripts/validate-adlc.sh
 ```
 
-Use `scripts/list-skills.sh` to inspect the public skill set.
-Use `scripts/smoke-skills.sh` for a local public-readiness smoke check.
+Use `scripts/list-adlc.sh` to inspect the public skill set.
 
-Validation must pass before claiming the repo is internally consistent. If validation fails, fix the repo rather than weakening the script.
+Validation must pass before claiming the package is internally consistent.
 
 ## Durable Decisions
 
-Record hard-to-reverse skill-suite decisions in `docs/adr/`. Use ADRs for lifecycle shape, packaging policy, default storage contracts, or guidance that future agents are likely to re-litigate.
-
-## Examples Policy
-
-Use a hybrid examples model:
-
-- small task-critical references live inside the relevant skill folder
-- larger examples, golden outputs, and fixture libraries belong in central docs or examples folders
-
-Do not add large example libraries unless they materially improve operational usability.
+Record hard-to-reverse ADLC decisions in `docs/adr/`. Use ADRs for command surface changes, agent contract changes, artifact path changes, packaging decisions, or validation policy changes.

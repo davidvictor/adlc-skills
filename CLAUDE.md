@@ -1,1 +1,3 @@
-Read `AGENTS.md`. It is the canonical agent guidance document for this repository.
+# Claude Guidance
+
+Read [AGENTS.md](./AGENTS.md). It is the canonical guide for this repository.

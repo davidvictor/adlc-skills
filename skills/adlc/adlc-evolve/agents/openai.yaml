@@ -1,0 +1,6 @@
+interface:
+  display_name: ADLC Evolve
+  short_description: Distill reusable learning
+  default_prompt: "$adlc-evolve"
+policy:
+  allow_implicit_invocation: true

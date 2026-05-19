@@ -1,0 +1,23 @@
+{
+  "name": "@davidvictor/adlc",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ADLC skills, templates, and Codex agents for David Victor's agent-driven development lifecycle.",
+  "license": "MIT",
+  "files": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "README.md",
+    "docs",
+    "scripts",
+    "skills",
+    "subagents",
+    "templates"
+  ],
+  "scripts": {
+    "list": "bash scripts/list-adlc.sh",
+    "validate": "bash scripts/validate-adlc.sh",
+    "install:codex": "bash scripts/install-codex-adlc.sh",
+    "init:project": "bash scripts/init-adlc-project.sh"
+  }
+}

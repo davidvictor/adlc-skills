@@ -1,6 +1,6 @@
 name = "security-sidecar"
 description = "Read-only security and trust-boundary review sidecar."
-model = "gpt-5.4-mini"
+model = "gpt-5.5"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 developer_instructions = """

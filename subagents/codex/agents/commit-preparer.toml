@@ -1,6 +1,6 @@
 name = "commit-preparer"
 description = "Read-only commit readiness and grouping sidecar."
-model = "gpt-5.4-mini"
+model = "gpt-5.5"
 model_reasoning_effort = "medium"
 sandbox_mode = "read-only"
 developer_instructions = """

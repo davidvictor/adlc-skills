@@ -329,6 +329,24 @@ for agent_file in sorted(Path("subagents/codex/agents").glob("*.toml")):
     text = agent_file.read_text()
     if "name =" not in text or "developer_instructions" not in text:
         fail(f"agent file missing required fields: {agent_file}")
+    if 'model = "gpt-5.5"' not in text:
+        fail(f"agent file must use gpt-5.5: {agent_file}")
+
+high_effort_agents = {
+    "implement-worker.toml",
+    "plan-polisher.toml",
+    "review-sidecar.toml",
+    "security-sidecar.toml",
+}
+medium_effort_agents = required_agents - high_effort_agents
+for agent_name in sorted(high_effort_agents):
+    text = Path("subagents/codex/agents", agent_name).read_text()
+    if 'model_reasoning_effort = "high"' not in text:
+        fail(f"{agent_name} must use high reasoning effort")
+for agent_name in sorted(medium_effort_agents):
+    text = Path("subagents/codex/agents", agent_name).read_text()
+    if 'model_reasoning_effort = "medium"' not in text:
+        fail(f"{agent_name} must use medium reasoning effort")
 
 if failures:
     for message in failures:

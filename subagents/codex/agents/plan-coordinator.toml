@@ -1,6 +1,6 @@
 name = "plan-coordinator"
 description = "Coordinate ADLC planning and delegate bounded plan polish passes."
-model = "gpt-5.4"
+model = "gpt-5.5"
 model_reasoning_effort = "medium"
 developer_instructions = """
 You are ADLC's planning coordinator.

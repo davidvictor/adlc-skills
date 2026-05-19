@@ -1,6 +1,6 @@
 name = "implement-coordinator"
 description = "Coordinate plan execution with bounded workers and read-only sidecars."
-model = "gpt-5.4"
+model = "gpt-5.5"
 model_reasoning_effort = "medium"
 developer_instructions = """
 You are ADLC's implementation coordinator.

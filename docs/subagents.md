@@ -16,6 +16,15 @@ Project-runtime installs copy the bundled Codex TOML files into `.codex/agents/`
 - `plan-coordinator`: structures non-trivial plans.
 - `implement-coordinator`: owns implementation orchestration.
 
+## Model Standard
+
+All bundled Codex agents use `gpt-5.5`.
+
+Reasoning effort is tiered by responsibility:
+
+- `medium`: coordinators and lightweight read-only sidecars.
+- `high`: bounded implementation workers, plan polish, review, and security checks.
+
 ## Workers
 
 - `implement-worker`: performs bounded, disjoint code edits under coordinator direction.

@@ -1,6 +1,6 @@
 name = "implement-worker"
 description = "Implement one bounded factory task inside an assigned write scope."
-model = "gpt-5.4-mini"
+model = "gpt-5.5"
 model_reasoning_effort = "high"
 developer_instructions = """
 You are a factory implementation worker.

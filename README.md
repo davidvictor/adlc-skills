@@ -1,8 +1,8 @@
 # ADLC
 
-ADLC is David Victor's agent-driven development lifecycle, rebuilt on the useful parts of the AI Factory architecture.
+ADLC is an agent-driven development lifecycle for moving work from project context to plan, implementation, verification, review, and commit readiness.
 
-This repo is a lean command pipeline with ADLC-owned artifacts and Codex-native agents. The goal is not to mirror every upstream AI Factory feature. The goal is the smallest system that matches how David actually works:
+This repo packages the ADLC command pipeline, ADLC-owned artifacts, Codex-native agents, and project-local workflow state:
 
 - repo-local context and plans under `.adlc/`
 - a short command surface that routes work instead of a broad menu of lifecycle skills
@@ -10,7 +10,7 @@ This repo is a lean command pipeline with ADLC-owned artifacts and Codex-native 
 - explicit artifact ownership so agents do not fight over the same files
 - implementation that ends in verification, review, commit readiness, and a clear handoff
 
-The upstream comparison source is [lee-to/ai-factory](https://github.com/lee-to/ai-factory). ADLC keeps its own documentation under [docs/](./docs/README.md) so the operating model is ours, not a borrowed upstream manual.
+ADLC keeps operator documentation under [docs/](./docs/README.md) so the workflow is visible, repeatable, and easy to maintain.
 
 ## Documentation
 
@@ -46,8 +46,8 @@ Use these skills as the public interface:
 9. `adlc-improve` - tighten an existing plan before implementation.
 10. `adlc-implement` - execute a plan with Codex coordinators, workers, and sidecars.
 11. `adlc-verify` - prove completion against plan, rules, and repo behavior.
-12. `adlc-rules-check` - run a standalone read-only rules gate.
-13. `adlc-security-checklist` - run a standalone read-only security gate.
+12. `adlc-rules-check` - run a separate read-only rules gate.
+13. `adlc-security-checklist` - run a separate read-only security gate.
 14. `adlc-review` - review diffs for correctness, maintainability, and risk.
 15. `adlc-docs` - audit and update lifecycle documentation.
 16. `adlc-qa` - create change summaries, test plans, and manual test cases.
@@ -57,7 +57,7 @@ Use these skills as the public interface:
 20. `adlc-workstream` - plan grounded epic workstreams for Codex or Hermes handoff.
 21. `adlc-evolve` - turn patches and repeated findings into durable rules or skill updates.
 
-Broad Docker, CI, build automation, and skill-generator surfaces remain intentionally deferred until repeated use proves they need standalone ADLC commands.
+Broad Docker, CI, build automation, and skill-generator surfaces remain deferred until repeated use proves they need dedicated ADLC commands.
 
 The CLI is the public tooling surface:
 
@@ -239,11 +239,7 @@ node bin/adlc.js extension remove hello-adlc /path/to/project --runtime codex-pr
 
 ## Package Status
 
-The repo has private package metadata as `@davidvictor/adlc` and a local CLI at `bin/adlc.js`. It is intentionally not public on NPM yet; publish only when public distribution is simpler than private Git/GitHub installation.
-
-## Factory Parity Plan
-
-See [docs/factory-parity-gap-plan.md](./docs/factory-parity-gap-plan.md) for the active gap list, completed foundation work, and remaining deliberate limits.
+The package is private and exposes a local CLI at `bin/adlc.js`. Publish only when public distribution is simpler than private Git/GitHub installation.
 
 ## Artifact Audit
 
@@ -266,8 +262,4 @@ scripts/validate-adlc.sh
 node bin/adlc.js validate
 ```
 
-Validation fails if old upstream-prefixed skill paths remain, if the plugin manifest points at removed skills, if required Codex agents are missing, if package metadata is unsafe to publish accidentally, or if the public docs drift from the ADLC command surface.
-
-## Refactor Record
-
-See [docs/ai-factory-port-audit.md](./docs/ai-factory-port-audit.md) for the AI Factory comparison, removal/adaptation decisions, and the concrete replacement path.
+Validation fails if removed skill paths remain, if the plugin manifest points at removed skills, if required Codex agents are missing, if package metadata is unsafe to publish accidentally, or if the public docs drift from the ADLC command surface.

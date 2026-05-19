@@ -142,10 +142,11 @@ if not isinstance(entries, list) or not entries:
     fail("plugin skills must be a non-empty list")
 
 readme = Path("README.md").read_text() if Path("README.md").exists() else ""
-if "David Factory" in readme or "`aif" in readme:
-    fail("README still references the old David Factory/aif public surface")
-if "factory-parity-gap-plan.md" not in readme:
-    fail("README must link the active factory parity gap plan")
+for forbidden_readme_text in ["David", "Victor", "Factory", "factory", "lee-to", "upstream", "`aif"]:
+    if forbidden_readme_text in readme:
+        fail(f"README contains removed framing: {forbidden_readme_text}")
+if "docs/README.md" not in readme:
+    fail("README must link the ADLC docs index")
 if "audit-artifacts" not in readme:
     fail("README must document the artifact audit command")
 if "gate-result-schema.md" not in readme:

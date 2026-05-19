@@ -1,0 +1,7 @@
+interface:
+  display_name: ADLC Architecture
+  short_description: Maintain architecture artifacts
+  default_prompt: "$adlc-architecture"
+policy:
+  allow_implicit_invocation: true
+

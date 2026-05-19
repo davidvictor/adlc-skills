@@ -1,0 +1,10 @@
+name: full plan uses next sequential task id
+skill: adlc-plan
+mode: fixture
+given:
+  existing_task_ids:
+    - "0001"
+    - "0002"
+expect:
+  next_task_id: "0003"
+  duplicate_task_ids: false

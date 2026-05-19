@@ -1,0 +1,7 @@
+interface:
+  display_name: ADLC Loop
+  short_description: Run bounded improvement loops
+  default_prompt: "$adlc-loop"
+policy:
+  allow_implicit_invocation: true
+

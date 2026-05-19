@@ -1,0 +1,7 @@
+interface:
+  display_name: ADLC Roadmap
+  short_description: Maintain roadmap artifacts
+  default_prompt: "$adlc-roadmap"
+policy:
+  allow_implicit_invocation: true
+

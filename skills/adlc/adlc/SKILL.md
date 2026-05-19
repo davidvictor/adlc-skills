@@ -9,14 +9,15 @@ Use this when a repo needs ADLC context before planning or implementation.
 
 ## Process
 
-1. Read repo guidance, current docs, package/tooling files, and git state.
-2. Create or refresh `.adlc/config.yaml` from this repo's template.
-3. Create or refresh:
+1. Resolve effective ADLC paths from `.adlc/config.yaml` when present; use `adlc resolve-config` when the CLI is available.
+2. Read repo guidance, current docs, package/tooling files, and git state.
+3. Create or refresh `.adlc/config.yaml` from this repo's template.
+4. Create or refresh:
    - `.adlc/DESCRIPTION.md`
    - `.adlc/ARCHITECTURE.md`
    - `.adlc/RULES.md`
-4. Keep project-specific rules in `.adlc/RULES.md`; keep broad runtime behavior in `AGENTS.md`.
-5. Do not create plans or implement features from setup.
+5. Keep project-specific rules in `.adlc/RULES.md`; keep broad runtime behavior in `AGENTS.md`.
+6. Do not create plans or implement features from setup.
 
 ## Output
 

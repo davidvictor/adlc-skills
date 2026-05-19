@@ -1,0 +1,10 @@
+name: fast plan creates PLAN.md
+skill: adlc-plan
+mode: fixture
+expect:
+  artifact: .adlc/PLAN.md
+  sections:
+    - Goal
+    - Steps
+    - Acceptance Criteria
+    - Verification

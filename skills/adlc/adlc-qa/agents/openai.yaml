@@ -1,0 +1,7 @@
+interface:
+  display_name: ADLC QA
+  short_description: Create QA artifacts
+  default_prompt: "$adlc-qa"
+policy:
+  allow_implicit_invocation: true
+

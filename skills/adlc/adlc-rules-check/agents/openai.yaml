@@ -1,0 +1,7 @@
+interface:
+  display_name: ADLC Rules Check
+  short_description: Gate work against rules
+  default_prompt: "$adlc-rules-check"
+policy:
+  allow_implicit_invocation: true
+

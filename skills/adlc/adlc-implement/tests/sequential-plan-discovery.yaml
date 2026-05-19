@@ -1,0 +1,11 @@
+name: implement discovers sequential full plan
+skill: adlc-implement
+mode: fixture
+given:
+  plans:
+    - .adlc/plans/0001-runtime.md
+    - .adlc/plans/0002-docs.md
+expect:
+  can_select_by_task_id: true
+  honors_dependencies: true
+  bounded_write_scope_required: true

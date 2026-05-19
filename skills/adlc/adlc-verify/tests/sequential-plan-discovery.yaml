@@ -1,0 +1,11 @@
+name: verify discovers active sequential plan
+skill: adlc-verify
+mode: fixture
+given:
+  plans:
+    - .adlc/plans/0001-runtime.md
+    - .adlc/plans/0002-docs.md
+expect:
+  maps_tasks_to_evidence: true
+  emits_gate_result: true
+  remains_read_only: true

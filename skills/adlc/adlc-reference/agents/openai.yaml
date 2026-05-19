@@ -1,0 +1,7 @@
+interface:
+  display_name: ADLC Reference
+  short_description: Capture durable references
+  default_prompt: "$adlc-reference"
+policy:
+  allow_implicit_invocation: true
+

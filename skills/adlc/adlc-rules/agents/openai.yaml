@@ -1,0 +1,7 @@
+interface:
+  display_name: ADLC Rules
+  short_description: Maintain project rules
+  default_prompt: "$adlc-rules"
+policy:
+  allow_implicit_invocation: true
+

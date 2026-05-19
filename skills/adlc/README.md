@@ -3,11 +3,21 @@
 - [adlc](./adlc/SKILL.md) - Initialize or refresh ADLC project context.
 - [adlc-explore](./adlc-explore/SKILL.md) - Explore options before planning.
 - [adlc-grounded](./adlc-grounded/SKILL.md) - Answer from evidence only.
+- [adlc-architecture](./adlc-architecture/SKILL.md) - Maintain architecture artifacts.
+- [adlc-roadmap](./adlc-roadmap/SKILL.md) - Maintain roadmap artifacts.
+- [adlc-rules](./adlc-rules/SKILL.md) - Capture project rules.
+- [adlc-reference](./adlc-reference/SKILL.md) - Create durable references.
 - [adlc-plan](./adlc-plan/SKILL.md) - Create executable plans.
+- [adlc-workstream](./adlc-workstream/SKILL.md) - Create long-running Codex or Hermes workstreams.
 - [adlc-improve](./adlc-improve/SKILL.md) - Refine plans before execution.
 - [adlc-implement](./adlc-implement/SKILL.md) - Execute plans with Codex agents.
 - [adlc-verify](./adlc-verify/SKILL.md) - Verify plan completion.
+- [adlc-rules-check](./adlc-rules-check/SKILL.md) - Gate work against rules.
+- [adlc-security-checklist](./adlc-security-checklist/SKILL.md) - Run a security gate.
 - [adlc-review](./adlc-review/SKILL.md) - Review changes with gates.
+- [adlc-docs](./adlc-docs/SKILL.md) - Maintain lifecycle docs.
+- [adlc-qa](./adlc-qa/SKILL.md) - Create QA artifacts.
 - [adlc-commit](./adlc-commit/SKILL.md) - Prepare conventional commits.
 - [adlc-fix](./adlc-fix/SKILL.md) - Diagnose and repair bugs.
+- [adlc-loop](./adlc-loop/SKILL.md) - Run bounded improvement loops.
 - [adlc-evolve](./adlc-evolve/SKILL.md) - Distill reusable learning.

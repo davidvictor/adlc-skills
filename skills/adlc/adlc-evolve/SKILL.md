@@ -9,11 +9,12 @@ Use this when fixes, reviews, or failed runs reveal reusable operating knowledge
 
 ## Process
 
-1. Read new `.adlc/patches/` entries and recent gate failures.
-2. Identify repeated patterns, missing rules, weak skill instructions, or stale project context.
-3. Update `.adlc/skill-context/` or `.adlc/RULES.md` for project-local learning.
-4. Update this ADLC repo only when the lesson is cross-project and stable.
-5. Keep changes narrow and validate after ADLC source edits.
+1. Resolve effective ADLC paths from `.adlc/config.yaml`; use `adlc resolve-config` when the CLI is available.
+2. Read new configured patch entries and recent gate failures.
+3. Identify repeated patterns, missing rules, weak skill instructions, or stale project context.
+4. Update configured skill-context or rules files for project-local learning.
+5. Update this ADLC repo only when the lesson is cross-project and stable.
+6. Keep changes narrow and validate after ADLC source edits.
 
 ## Output
 

@@ -1,0 +1,7 @@
+interface:
+  display_name: ADLC Docs
+  short_description: Maintain lifecycle docs
+  default_prompt: "$adlc-docs"
+policy:
+  allow_implicit_invocation: true
+

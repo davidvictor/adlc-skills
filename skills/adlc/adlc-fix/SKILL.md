@@ -14,11 +14,12 @@ Use this for failures, bugs, regressions, flaky checks, and hotfixes.
 
 ## Process
 
-1. Reproduce or observe the failure before editing.
-2. Minimize the failing surface.
-3. Patch the smallest behavior boundary.
-4. Add or update regression evidence when practical.
-5. Write a patch note under `.adlc/patches/` when the lesson should improve future work.
+1. Resolve effective ADLC paths from `.adlc/config.yaml`; use `adlc resolve-config` when the CLI is available.
+2. Reproduce or observe the failure before editing.
+3. Minimize the failing surface.
+4. Patch the smallest behavior boundary.
+5. Add or update regression evidence when practical.
+6. Write a patch note under the configured patches path when the lesson should improve future work.
 
 ## Output
 

@@ -1,0 +1,11 @@
+name: implement without plan errors clearly
+skill: adlc-implement
+mode: fixture
+given:
+  plan_files: []
+expect:
+  status: blocked
+  message_contains:
+    - plan
+    - adlc-plan
+  edits_files: false

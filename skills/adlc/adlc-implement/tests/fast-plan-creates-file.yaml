@@ -1,0 +1,9 @@
+name: implement fast plan creates expected file
+skill: adlc-implement
+mode: fixture
+given:
+  plan: .adlc/PLAN.md
+expect:
+  reads_plan: true
+  updates_status: true
+  reports_verification: true

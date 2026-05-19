@@ -1,0 +1,7 @@
+name: full plan starts task numbering at 0001
+skill: adlc-plan
+mode: fixture
+expect:
+  artifact: .adlc/plans/<slug>.md
+  first_task_id: "0001"
+  task_id_width: 4

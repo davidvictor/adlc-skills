@@ -1,0 +1,7 @@
+interface:
+  display_name: ADLC Security Checklist
+  short_description: Run a security gate
+  default_prompt: "$adlc-security-checklist"
+policy:
+  allow_implicit_invocation: true
+

@@ -4,13 +4,23 @@
     "./skills/adlc/adlc",
     "./skills/adlc/adlc-explore",
     "./skills/adlc/adlc-grounded",
+    "./skills/adlc/adlc-architecture",
+    "./skills/adlc/adlc-roadmap",
+    "./skills/adlc/adlc-rules",
+    "./skills/adlc/adlc-reference",
     "./skills/adlc/adlc-plan",
+    "./skills/adlc/adlc-workstream",
     "./skills/adlc/adlc-improve",
     "./skills/adlc/adlc-implement",
     "./skills/adlc/adlc-verify",
+    "./skills/adlc/adlc-rules-check",
+    "./skills/adlc/adlc-security-checklist",
     "./skills/adlc/adlc-review",
+    "./skills/adlc/adlc-docs",
+    "./skills/adlc/adlc-qa",
     "./skills/adlc/adlc-commit",
     "./skills/adlc/adlc-fix",
+    "./skills/adlc/adlc-loop",
     "./skills/adlc/adlc-evolve"
   ]
 }

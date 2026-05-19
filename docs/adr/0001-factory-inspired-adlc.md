@@ -2,6 +2,8 @@
 
 Status: accepted
 
+Superseded in part by [ADR 0002](./0002-adlc-framework-foundation.md), which closes several items listed here as "not ported yet."
+
 ## Context
 
 The previous ADLC package grew into many public phase skills. That made the lifecycle expressive, but it also made routing noisy: agents had to choose among setup, probe, anchor, shape, slice, sprint, build, audit, close, prove, release, handoff, and Hermes-specific runner skills before doing useful work.

@@ -1,0 +1,6 @@
+interface:
+  display_name: ADLC Workstream
+  short_description: Plan staged Codex or Hermes workstreams
+  default_prompt: "$adlc-workstream"
+policy:
+  allow_implicit_invocation: true

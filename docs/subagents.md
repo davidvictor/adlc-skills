@@ -1,0 +1,38 @@
+---
+id: adlc-doc-subagents
+type: guide
+status: active
+owner: ADLC
+---
+
+# Subagents
+
+ADLC uses native Codex agents for bounded parallel work and independent read-only checks.
+
+Project-runtime installs copy the bundled Codex TOML files into `.codex/agents/` and copy the managed Codex agent defaults into `.codex/config.toml`. ADLC tracks that config file as a managed artifact for `codex-project` installs, while ignoring ADLC MCP blocks during hash checks so MCP setup remains independently configurable.
+
+## Coordinators
+
+- `plan-coordinator`: structures non-trivial plans.
+- `implement-coordinator`: owns implementation orchestration.
+
+## Workers
+
+- `implement-worker`: performs bounded, disjoint code edits under coordinator direction.
+
+## Sidecars
+
+- `review-sidecar`: independent correctness and regression review.
+- `security-sidecar`: security and trust-boundary review.
+- `rules-sidecar`: rules compliance review.
+- `docs-auditor`: documentation impact review.
+- `best-practices-sidecar`: local pattern and maintainability review.
+- `commit-preparer`: commit grouping and message review.
+- `plan-polisher`: second-pass plan refinement.
+
+## Rules
+
+- Sidecars are read-only by default.
+- Workers must receive explicit ownership of files or modules.
+- Do not delegate urgent blocking work when the coordinator needs the result before moving.
+- Integrate worker results before claiming completion.

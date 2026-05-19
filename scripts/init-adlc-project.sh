@@ -15,7 +15,10 @@ mkdir -p \
   "$adlc_dir/fixes" \
   "$adlc_dir/patches" \
   "$adlc_dir/skill-context" \
+  "$adlc_dir/references" \
   "$adlc_dir/qa" \
+  "$adlc_dir/loops" \
+  "$adlc_dir/workstreams" \
   "$adlc_dir/rules"
 
 copy_if_missing() {

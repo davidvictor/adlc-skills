@@ -4,19 +4,38 @@
   "private": true,
   "description": "ADLC skills, templates, and Codex agents for David Victor's agent-driven development lifecycle.",
   "license": "MIT",
+  "bin": {
+    "adlc": "./bin/adlc.js"
+  },
   "files": [
     "AGENTS.md",
     "CLAUDE.md",
     "README.md",
+    "bin",
     "docs",
+    "extensions",
+    "mcp",
+    "schemas",
     "scripts",
     "skills",
     "subagents",
     "templates"
   ],
   "scripts": {
+    "adlc": "node bin/adlc.js",
     "list": "bash scripts/list-adlc.sh",
     "validate": "bash scripts/validate-adlc.sh",
+    "test:cli": "bash scripts/test-adlc-cli.sh",
+    "test:skill-fixtures": "bash scripts/test-adlc-skill-fixtures.sh",
+    "audit:artifacts": "node bin/adlc.js audit-artifacts",
+    "runtimes": "node bin/adlc.js runtimes",
+    "status": "node bin/adlc.js status",
+    "install:runtime": "node bin/adlc.js install",
+    "update:codex": "node bin/adlc.js update",
+    "resolve:config": "node bin/adlc.js resolve-config",
+    "workstream": "node bin/adlc.js workstream",
+    "mcp:list": "node bin/adlc.js mcp list",
+    "extension:list": "node bin/adlc.js extension list",
     "install:codex": "bash scripts/install-codex-adlc.sh",
     "init:project": "bash scripts/init-adlc-project.sh"
   }

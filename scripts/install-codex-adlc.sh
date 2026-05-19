@@ -23,7 +23,7 @@ while IFS= read -r skill_dir; do
     rm "$dest"
   fi
   mkdir -p "$dest"
-  rsync -a --delete "$skill_dir"/ "$dest"/
+  rsync -a --delete --exclude 'tests/' "$skill_dir"/ "$dest"/
   echo "Synced ADLC skill: $dest"
   skill_count=$((skill_count + 1))
 done < <(find "$repo_root/skills/adlc" -mindepth 1 -maxdepth 1 -type d \( -name 'adlc' -o -name 'adlc-*' \) | sort)

@@ -1,0 +1,26 @@
+{
+  "$schema": "../../../schemas/extension.schema.json",
+  "name": "hello-adlc",
+  "version": "0.1.0",
+  "description": "Minimal ADLC extension fixture used to validate local extension mechanics.",
+  "skills": ["skills/hello-adlc"],
+  "replaces": {
+    "skills/hello-commit": "adlc-commit"
+  },
+  "injections": [
+    {
+      "target": "adlc-implement",
+      "position": "append",
+      "file": "injections/implement-extra.md"
+    }
+  ],
+  "mcpServers": [
+    {
+      "key": "hello-adlc",
+      "template": {
+        "command": "node",
+        "args": ["-e", "console.log('hello-adlc mcp fixture')"]
+      }
+    }
+  ]
+}

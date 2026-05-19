@@ -4,14 +4,19 @@ paths:
   root: .adlc
   description: .adlc/DESCRIPTION.md
   architecture: .adlc/ARCHITECTURE.md
+  roadmap: .adlc/ROADMAP.md
   rules_file: .adlc/RULES.md
+  rules: .adlc/rules
   research: .adlc/RESEARCH.md
   plan: .adlc/PLAN.md
   plans: .adlc/plans
   fixes: .adlc/fixes
   patches: .adlc/patches
   skill_context: .adlc/skill-context
+  references: .adlc/references
   qa: .adlc/qa
+  loops: .adlc/loops
+  workstreams: .adlc/workstreams
 
 workflow:
   default_plan_mode: full

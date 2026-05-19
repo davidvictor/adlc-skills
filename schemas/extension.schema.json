@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adlc.local/schemas/extension.schema.json",
+  "title": "ADLC Extension Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "version"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "name": { "type": "string" },
+    "version": { "type": "string" },
+    "description": { "type": "string" },
+    "skills": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "replaces": {
+      "type": "object",
+      "description": "Map of extension skill directory paths to ADLC base skill names they replace.",
+      "additionalProperties": { "type": "string" }
+    },
+    "injections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["target", "position", "file"],
+        "properties": {
+          "target": { "type": "string" },
+          "position": { "type": "string", "enum": ["append", "prepend"] },
+          "file": { "type": "string" }
+        }
+      }
+    },
+    "agentFiles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["runtime", "source", "target"],
+        "properties": {
+          "runtime": { "type": "string" },
+          "source": { "type": "string" },
+          "target": { "type": "string" }
+        }
+      }
+    },
+    "mcpServers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "template"],
+        "properties": {
+          "key": { "type": "string" },
+          "template": {
+            "oneOf": [
+              { "type": "string" },
+              {
+                "type": "object",
+                "required": ["command"],
+                "properties": {
+                  "command": { "type": "string" },
+                  "args": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  },
+                  "env": {
+                    "type": "object",
+                    "additionalProperties": { "type": "string" }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

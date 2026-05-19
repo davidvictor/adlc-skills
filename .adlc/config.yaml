@@ -1,0 +1,44 @@
+# ADLC target-project config template.
+
+paths:
+  root: .adlc
+  description: .adlc/DESCRIPTION.md
+  architecture: .adlc/ARCHITECTURE.md
+  roadmap: .adlc/ROADMAP.md
+  rules_file: .adlc/RULES.md
+  rules: .adlc/rules
+  research: .adlc/RESEARCH.md
+  plan: .adlc/PLAN.md
+  plans: .adlc/plans
+  fixes: .adlc/fixes
+  patches: .adlc/patches
+  skill_context: .adlc/skill-context
+  references: .adlc/references
+  qa: .adlc/qa
+  loops: .adlc/loops
+  workstreams: .adlc/workstreams
+
+workflow:
+  default_plan_mode: full
+  plan_id_format: slug
+  commit_checkpoints: true
+  verify_before_review: true
+  review_before_commit: true
+  evolve_from_patches: true
+
+git:
+  enabled: true
+  create_branches: false
+  base_branch: main
+
+agents:
+  planning: plan-coordinator
+  implementation: implement-coordinator
+  worker: implement-worker
+  sidecars:
+    - review-sidecar
+    - security-sidecar
+    - rules-sidecar
+    - docs-auditor
+    - best-practices-sidecar
+    - commit-preparer

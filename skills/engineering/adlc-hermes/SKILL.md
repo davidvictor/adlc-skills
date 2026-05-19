@@ -22,7 +22,9 @@ Use this when the user wants Hermes to run, manage, seed, or monitor a sprint pr
 9. Map sprint phases to ADLC skills: build, audit, close, prove, release, and handoff.
 10. Write or update `hermes-handoff.md` inside the sprint package.
 11. Seed Hermes Kanban only when the user explicitly asks to create tasks or run the sprint. Prefer a deterministic graph from the ADLC manifest when the package is complete; otherwise create one `adlc-hermes` orchestrator task.
-12. After seeding, report task ids, board name, watch commands, and any blocked items.
+12. If the sprint must be watched by Telegram, set `runner.notifications: "telegram"` in `adlc-sprint.yaml` and never seed with `--no-telegram`.
+13. After seeding, verify `hermes kanban --board <board> notify-list` when notifications are enabled.
+14. Report task ids, board name, notification verdict, watch commands, and any blocked items.
 
 ## Rules
 
@@ -37,6 +39,8 @@ Use this when the user wants Hermes to run, manage, seed, or monitor a sprint pr
 - Treat ordinary phase gates as completions, not blockers: build completes into audit, audit completes into close/prove, and close completes into proof or handoff.
 - Use blocked state only for human decisions, missing credentials or environment, destructive approval, unsafe scope expansion, or verification that cannot reach a useful verdict.
 - Do not require or seed the legacy `sprint-runner` skill for new ADLC Hermes runs.
+- Do not claim Telegram monitoring is enabled unless `notify-list` shows active
+  subscriptions or gateway logs show delivery for the board.
 
 ## Output Contract
 
@@ -47,6 +51,7 @@ Produce:
 - sprint package path
 - handoff file path
 - seed command or created task ids
+- notification mode and `notify-list`/delivery verdict when notifications are enabled
 - watch and recovery commands
 - blocked decisions and residual risks
 
@@ -60,4 +65,5 @@ Report:
 - which Hermes board and profiles were used
 - which ADLC items map to which Hermes tasks
 - how to watch progress
+- whether notifications were enabled, verified, or intentionally disabled
 - what would block Hermes from completing the sprint

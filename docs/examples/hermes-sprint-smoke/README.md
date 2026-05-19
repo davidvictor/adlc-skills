@@ -22,7 +22,12 @@ scripts/seed-adlc-hermes-sprint.sh \
   --instructions "Run this non-mutating ADLC Hermes smoke sprint. Verify package discovery, profile routing, task skills, and notification setup. Do not edit product code."
 ```
 
-Use `--no-telegram` when notification is intentionally disabled. Use `--telegram-chat-id <id>` when the Hermes home chat is not configured.
+Use `--no-telegram` when notification is intentionally disabled and the manifest
+does not require Telegram. Use `--telegram-chat-id <id>` when the Hermes home
+chat is not configured. For a Telegram-required smoke, set
+`runner.notifications: "telegram"` in `adlc-sprint.yaml`; the seeder will reject
+`--no-telegram`, fail if no chat id is configured, and verify `notify-list`
+before dispatch.
 
 ## Expected Result
 

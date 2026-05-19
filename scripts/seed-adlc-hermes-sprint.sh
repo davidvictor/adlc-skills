@@ -23,6 +23,7 @@ options = {
   telegram: true,
   telegram_chat_id: ENV["ADLC_HERMES_TELEGRAM_CHAT_ID"] || ENV["TELEGRAM_HOME_CHANNEL"],
   telegram_user_id: ENV["ADLC_HERMES_TELEGRAM_USER_ID"],
+  telegram_required: false,
   dispatch: true,
   dry_run: false,
   include_hitl: false,
@@ -87,6 +88,19 @@ def read_hermes_env(key)
     return value
   end
   nil
+end
+
+def notification_mode(runner)
+  value = runner["notifications"] || runner["notification"] || runner["notification_mode"]
+  value.to_s.downcase.strip
+end
+
+def telegram_required_mode?(mode)
+  %w[telegram telegram-required required home-telegram].include?(mode)
+end
+
+def telegram_disabled_mode?(mode)
+  %w[none off disabled false no].include?(mode)
 end
 
 def slug(value)
@@ -178,14 +192,46 @@ end
 def subscribe_task(board, task_id, options)
   return unless options[:telegram]
   chat_id = options[:telegram_chat_id] || read_hermes_env("TELEGRAM_HOME_CHANNEL")
-  return if chat_id.to_s.empty?
+  if chat_id.to_s.empty?
+    message = "Telegram notifications are enabled but no chat id is configured. Set --telegram-chat-id, ADLC_HERMES_TELEGRAM_CHAT_ID, or TELEGRAM_HOME_CHANNEL."
+    options[:telegram_required] ? die(message) : warn(message)
+    return
+  end
 
   args = ["hermes", "kanban", "--board", board, "notify-subscribe", task_id, "--platform", "telegram", "--chat-id", chat_id]
   user_id = options[:telegram_user_id] || default_telegram_user
   args += ["--user-id", user_id] unless user_id.to_s.empty?
   run_cmd(*args)
 rescue SystemExit
-  warn("Telegram subscription failed for #{task_id}; continuing.")
+  message = "Telegram subscription failed for #{task_id}."
+  options[:telegram_required] ? die(message) : warn("#{message} Continuing because Telegram is not required.")
+end
+
+def verify_telegram_subscriptions(board, task_ids, options)
+  return unless options[:telegram]
+  return if options[:dry_run]
+
+  chat_id = options[:telegram_chat_id] || read_hermes_env("TELEGRAM_HOME_CHANNEL")
+  if chat_id.to_s.empty?
+    message = "Cannot verify Telegram subscriptions because no chat id is configured."
+    options[:telegram_required] ? die(message) : warn(message)
+    return
+  end
+
+  output = run_cmd("hermes", "kanban", "--board", board, "notify-list")
+  task_state = run_cmd("hermes", "kanban", "--board", board, "list")
+  expected = "telegram:#{chat_id}"
+  active_or_pending = task_ids.select do |task_id|
+    line = task_state.lines.find { |candidate| candidate.include?(task_id) }
+    line && !line.split.include?("done")
+  end
+  missing = active_or_pending.reject do |task_id|
+    output.lines.any? { |line| line.include?(task_id) && line.include?(expected) }
+  end
+  return if missing.empty?
+
+  message = "Telegram subscription verification failed for #{missing.join(", ")} on board #{board}. Expected #{expected} in `notify-list`."
+  options[:telegram_required] ? die(message) : warn(message)
 end
 
 def create_task(board:, title:, assignee:, workspace:, skills:, body:, parents:, key:, max_runtime:, options:)
@@ -385,6 +431,19 @@ die("No ADLC sprint manifest found in #{target_folder}. Use --mode orchestrator 
 manifest_dir = File.dirname(manifest)
 data = load_manifest(manifest)
 runner = data["runner"] || {}
+mode = notification_mode(runner)
+if telegram_required_mode?(mode)
+  options[:telegram_required] = true
+  die("Manifest runner.notifications=#{mode.inspect} requires Telegram; remove --no-telegram or change the manifest notification mode.") unless options[:telegram]
+  if options[:telegram_chat_id].to_s.empty?
+    options[:telegram_chat_id] = read_hermes_env("TELEGRAM_HOME_CHANNEL")
+  end
+  if options[:telegram_chat_id].to_s.empty? && !options[:dry_run]
+    die("Manifest runner.notifications=#{mode.inspect} requires Telegram but no chat id is configured. Set --telegram-chat-id, ADLC_HERMES_TELEGRAM_CHAT_ID, or TELEGRAM_HOME_CHANNEL.")
+  end
+elsif telegram_disabled_mode?(mode)
+  options[:telegram] = false if options[:telegram_chat_id].to_s.empty?
+end
 profiles = runner["profiles"] || {}
 board = options[:board] || runner["board"] || ENV["ADLC_HERMES_BOARD"] || "adlc-sprints"
 builder = options[:builder] || profiles["builder"] || ENV["ADLC_HERMES_BUILDER_PROFILE"] || "sprintbuilder"
@@ -463,6 +522,8 @@ items.each do |item|
   last_final = fix
   created << [item_id, build, review, fix]
 end
+
+verify_telegram_subscriptions(board, created.flat_map { |_item_id, build, review, fix| [build, review, fix] }, options)
 
 puts
 puts "Task graph:"

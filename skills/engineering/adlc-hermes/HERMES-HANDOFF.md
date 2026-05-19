@@ -13,6 +13,7 @@ hermes profile list
 hermes skills list | grep -E 'kanban-orchestrator|kanban-worker'
 hermes skills list | grep -E 'adlc-build|adlc-audit|adlc-close|adlc-prove|adlc-release|adlc-handoff'
 hermes gateway status
+hermes status
 ```
 
 If the gateway is not running:
@@ -60,6 +61,9 @@ The healthcheck should confirm:
 - worker profiles exist and use `model.openai_runtime=auto` when OpenAI Codex is the provider.
 - `kanban-worker`, `kanban-orchestrator`, and ADLC phase skills are visible.
 - the target board has no obvious stuck tasks before adding more work.
+- required messaging platforms are configured. For Telegram-watched boards,
+  `hermes status` must show Telegram configured and the seed command must create
+  subscriptions.
 
 ## Handoff File
 
@@ -94,6 +98,10 @@ Notification: <telegram/slack/none>
 - Telegram subscriptions send a message when each phase starts and when it completes, blocks, gives up, crashes, or times out.
 - `🚨 Hermes needs your attention` means the operator should open Codex mobile, inspect the task, then comment, edit, reassign, or unblock it.
 - Assignees are Hermes profile labels, not Telegram usernames. Do not write `@<profile>` mentions such as `@Sprint Runner`.
+- If `adlc-sprint.yaml` sets `runner.notifications: "telegram"`, Telegram is
+  required. Do not seed with `--no-telegram`. After seeding, run
+  `hermes kanban --board <board> notify-list` and verify every active or pending
+  task has the expected `telegram:<chat_id>` subscription.
 
 ## ADLC Skill Map
 
@@ -138,7 +146,14 @@ scripts/seed-adlc-hermes-sprint.sh \
   --instructions "Run this ADLC sprint end-to-end in automated mode. Use ADLC phase skills in child tasks: adlc-build for build, adlc-audit for hostile review, adlc-close for review fixes, adlc-prove for final verification proof, adlc-release when release risk exists, and adlc-handoff for continuity. Build tasks complete into hostile review; they do not block merely because review is required. Preserve build, self-verification, hostile review, review-fix, final verification, and commit/publication gates."
 ```
 
-Use `--no-telegram` when notification is intentionally disabled. Use `--telegram-chat-id` when the home chat is not configured. With Telegram enabled, expect lifecycle pings for phase start, phase completion, and human-attention states; blocked and gave-up messages are the operator interrupt path.
+Use `--no-telegram` only when notification is intentionally disabled and the
+manifest does not require Telegram. Use `--telegram-chat-id` when the home chat
+is not configured. If the manifest sets `runner.notifications: "telegram"`, the
+seeder refuses `--no-telegram`, refuses a real seed with no Telegram chat id,
+fails on subscription errors, and verifies `notify-list` before dispatch. With
+Telegram enabled, expect lifecycle pings for phase start, phase completion, and
+human-attention states; blocked and gave-up messages are the operator interrupt
+path.
 
 ## Generic CLI Seed Path
 
@@ -204,6 +219,7 @@ Rules:
 
 ```bash
 hermes kanban --board <board> list
+hermes kanban --board <board> notify-list
 hermes kanban --board <board> watch
 hermes kanban --board <board> diagnostics
 hermes kanban --board <board> runs <task_id>

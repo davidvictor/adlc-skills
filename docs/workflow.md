@@ -11,8 +11,8 @@ ADLC has two phases: project setup and the repeatable development loop.
 
 ## Project Setup
 
-1. Install ADLC into the local agent runtime.
-2. Initialize `.adlc/` in the target repo.
+1. Install ADLC with `npm install -g adlc-cli`.
+2. Initialize `.adlc/` and selected agent targets in the target repo.
 3. Fill in `DESCRIPTION.md`, `ARCHITECTURE.md`, and `RULES.md`.
 4. Add roadmap, references, or area rules only when they clarify real work.
 

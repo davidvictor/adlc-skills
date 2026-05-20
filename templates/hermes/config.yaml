@@ -1,0 +1,6 @@
+schema_version: 1
+agent: hermes
+kanban: .hermes/kanban.json
+workstreams: .hermes/workstreams
+inbox: .hermes/inbox
+lanes: planned,build,review,test,commit,blocked,done

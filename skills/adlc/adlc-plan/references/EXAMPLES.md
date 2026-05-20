@@ -30,7 +30,7 @@ Prevent startup failure when the optional config file is absent.
 Use `paths.plans/<slug>.md` when the work has dependencies or parallelizable tasks:
 
 ```markdown
-# Runtime Installer Hardening
+# Agent Installer Hardening
 
 ## Task 0001 - Managed Config State
 
@@ -45,16 +45,16 @@ Track project Codex config as a managed artifact.
 
 ### Acceptance Criteria
 
-- `codex-project` install writes `.codex/config.toml`.
+- `adlc init --agents codex` writes `.codex/config.toml`.
 - Status detects config drift.
 - ADLC MCP blocks do not count as drift.
 
-## Task 0002 - Runtime Docs
+## Task 0002 - Agent Docs
 
 Status: pending
 Owner: worker:docs
 Depends on: 0001
-Write scope: README.md, docs/runtimes.md, docs/subagents.md
+Write scope: README.md, docs/agents.md, docs/subagents.md
 
 ### Goal
 

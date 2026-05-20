@@ -53,7 +53,7 @@ grep -q "Hermes" skills/adlc/adlc-workstream/templates/HERMES-HANDOFF.md
 tmp_dir="$(mktemp -d "${TMPDIR:-/tmp}/adlc-skill-install.XXXXXX")"
 trap 'rm -rf "$tmp_dir"' EXIT
 
-node bin/adlc.js install "$tmp_dir" --runtime codex-project >/dev/null
+node bin/adlc.js init "$tmp_dir" --agents codex >/dev/null
 test -f "$tmp_dir/.codex/skills/adlc-plan/references/TASK-FORMAT.md"
 test -f "$tmp_dir/.codex/skills/adlc-workstream/templates/WORKSTREAM.md"
 test ! -e "$tmp_dir/.codex/skills/adlc-plan/tests"

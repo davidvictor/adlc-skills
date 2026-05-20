@@ -37,9 +37,9 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["runtime", "source", "target"],
+        "required": ["agent", "source", "target"],
         "properties": {
-          "runtime": { "type": "string" },
+          "agent": { "type": "string", "enum": ["codex", "claude", "hermes"] },
           "source": { "type": "string" },
           "target": { "type": "string" }
         }

@@ -43,6 +43,11 @@ Default config lives in [templates/adlc/config.yaml](../templates/adlc/config.ya
 - `create_branches`: whether plans may create branches by default.
 - `base_branch`: expected integration base, usually `main`.
 
+## `install`
+
+- `agents`: comma-separated agent targets selected during setup, such as `codex,claude,hermes`.
+- `mcp`: comma-separated MCP server templates selected during setup.
+
 ## `agents`
 
 Names the preferred coordinator, worker, sidecar, and commit-preparer agents. These names align with files in `subagents/codex/agents/`.

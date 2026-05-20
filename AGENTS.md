@@ -1,6 +1,6 @@
 # ADLC Agent Guide
 
-This repository is the local ADLC skill and agent package. It uses an AI Factory-style architecture, but ADLC is the public name and command namespace.
+This repository is the ADLC skill, agent, and installer package.
 
 ## Canonical Guidance
 
@@ -11,7 +11,7 @@ This repository is the local ADLC skill and agent package. It uses an AI Factory
 - Public skills live under `skills/adlc/`.
 - Public skill names are `adlc` or `adlc-*`.
 - Codex native agents live under `subagents/codex/agents/`.
-- Target-project runtime artifacts live under `.adlc/` unless a repo explicitly overrides paths.
+- Target-project lifecycle artifacts live under `.adlc/` unless a repo explicitly overrides paths.
 - Do not add old phase-skill conventions, Hermes-specific runners, or broad tracker abstractions.
 - Keep the command surface small. Add a new skill only when it cannot be expressed as a mode of an existing `adlc-*` command.
 

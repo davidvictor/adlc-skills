@@ -31,6 +31,10 @@ git:
   create_branches: false
   base_branch: main
 
+install:
+  agents: codex
+  mcp:
+
 agents:
   planning: plan-coordinator
   implementation: implement-coordinator

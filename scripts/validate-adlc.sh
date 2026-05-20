@@ -28,6 +28,7 @@ required_files = [
     "docs/workflow.md",
     "docs/configuration.md",
     "docs/config-reference.md",
+    "docs/agents.md",
     "docs/skills.md",
     "docs/subagents.md",
     "docs/quality-gates.md",
@@ -37,16 +38,12 @@ required_files = [
     "docs/evolve.md",
     "docs/extensions.md",
     "docs/security.md",
-    "docs/runtimes.md",
     "docs/mcp.md",
     "docs/artifact-audit.md",
-    "docs/ai-factory-port-audit.md",
-    "docs/factory-parity-gap-plan.md",
     "docs/gate-result-schema.md",
-    "docs/adr/0001-factory-inspired-adlc.md",
-    "docs/adr/0002-adlc-framework-foundation.md",
     "docs/adr/0003-workstreams-for-managed-epics.md",
-    ".adlc/plans/factory-parity-foundation.md",
+    "docs/adr/0004-agent-target-installer.md",
+    ".adlc/plans/public-installability.md",
     "schemas/extension.schema.json",
     "extensions/README.md",
     "extensions/marketplace/hello-adlc/extension.json",
@@ -59,9 +56,11 @@ required_files = [
     "mcp/templates/chrome-devtools.json",
     "subagents/codex/config.toml",
     "templates/adlc/config.yaml",
-    "scripts/init-adlc-project.sh",
+    "templates/hermes/config.yaml",
+    "templates/hermes/kanban.json",
     "scripts/test-adlc-cli.sh",
     "scripts/test-adlc-skill-fixtures.sh",
+    "scripts/test-package-smoke.sh",
     "skills/adlc/adlc-architecture/references/ARCHITECTURE-CHECKLIST.md",
     "skills/adlc/adlc-security-checklist/references/AUTH-PATTERNS.md",
     "skills/adlc/adlc-security-checklist/references/PROMPT-INJECTION.md",
@@ -95,23 +94,23 @@ for path in required_files:
     if not Path(path).is_file():
         fail(f"missing file: {path}")
 
+removed_files = [
+    "scripts/install-codex-adlc.sh",
+    "scripts/init-adlc-project.sh",
+    "docs/runtimes.md",
+    "docs/ai-factory-port-audit.md",
+    "docs/factory-parity-gap-plan.md",
+    "docs/adr/0001-factory-inspired-adlc.md",
+    "docs/adr/0002-adlc-framework-foundation.md",
+    ".adlc/plans/factory-parity-foundation.md",
+]
+for path in removed_files:
+    if Path(path).exists():
+        fail(f"removed surface still exists: {path}")
+
 for script in Path("scripts").glob("*.sh"):
     if not (script.stat().st_mode & stat.S_IXUSR):
         fail(f"script is not executable: {script}")
-
-install_script = Path("scripts/install-codex-adlc.sh").read_text()
-if "find \"$skills_dest\"" not in install_script or "-name 'aif*'" not in install_script:
-    fail("install script must remove replaced aif* skills from the Codex skills directory")
-if "-name 'adlc*'" not in install_script:
-    fail("install script must refresh previously installed adlc* skills before syncing")
-if "--exclude 'tests/'" not in install_script:
-    fail("install script must not sync skill fixture tests into Codex skill dirs")
-
-if Path("skills/factory").exists():
-    fail("old factory skill directory remains: skills/factory")
-old_aif_skills = sorted(Path("skills").glob("**/aif*"))
-if old_aif_skills:
-    fail("aif skill paths remain: " + ", ".join(str(p) for p in old_aif_skills[:10]))
 
 try:
     plugin = json.loads(Path(".claude-plugin/plugin.json").read_text())
@@ -125,13 +124,16 @@ except Exception as exc:
     fail(f"package.json is invalid JSON: {exc}")
     package = {}
 
-if package.get("name") != "@davidvictor/adlc":
-    fail("package name must be @davidvictor/adlc")
-if package.get("private") is not True:
-    fail("package must remain private until ADLC has a real CLI/update contract")
+if package.get("name") != "adlc-cli":
+    fail("package name must be adlc-cli")
+if package.get("private") is True:
+    fail("package must not be private for public installability")
 if package.get("bin", {}).get("adlc") != "./bin/adlc.js":
-    fail("package must expose the repo-local adlc CLI at ./bin/adlc.js")
-for script_name in ["adlc", "runtimes", "status", "install:runtime", "update:codex", "resolve:config", "workstream", "mcp:list", "extension:list", "audit:artifacts", "test:cli", "test:skill-fixtures"]:
+    fail("package must expose the adlc CLI at ./bin/adlc.js")
+for key in ["repository", "homepage", "bugs", "keywords", "engines", "packageManager"]:
+    if key not in package:
+        fail(f"package metadata missing {key}")
+for script_name in ["adlc", "agents", "init", "status", "update", "doctor", "uninstall", "resolve:config", "workstream", "mcp:list", "extension:list", "audit:artifacts", "pack:dry-run", "test:cli", "test:skill-fixtures", "test:package-smoke"]:
     if script_name not in package.get("scripts", {}):
         fail(f"package scripts missing {script_name}")
 
@@ -142,22 +144,10 @@ if not isinstance(entries, list) or not entries:
     fail("plugin skills must be a non-empty list")
 
 readme = Path("README.md").read_text() if Path("README.md").exists() else ""
-for forbidden_readme_text in ["David", "Victor", "Factory", "factory", "lee-to", "upstream", "`aif"]:
+for forbidden_readme_text in ["David", "Victor", "Factory", "factory", "lee-to", "upstream", "`aif", "install-codex", "--runtime", "codex-project", "claude-project", "codex-home", "universal-project"]:
     if forbidden_readme_text in readme:
-        fail(f"README contains removed framing: {forbidden_readme_text}")
-if "docs/README.md" not in readme:
-    fail("README must link the ADLC docs index")
-if "audit-artifacts" not in readme:
-    fail("README must document the artifact audit command")
-if "gate-result-schema.md" not in readme:
-    fail("README must document the ADLC gate result schema")
-if "adlc-managed-state.json" not in readme:
-    fail("README must document managed install state")
-if "resolve-config" not in readme:
-    fail("README must document config resolution")
-if ".codex/config.toml" not in readme:
-    fail("README must document managed Codex project config")
-for required_text in ["mcp configure", "extension add", "codex-project", "claude-project", "upgrade"]:
+        fail(f"README contains removed framing or command: {forbidden_readme_text}")
+for required_text in ["npm install -g adlc-cli", "adlc init", "--agents codex,claude,hermes", ".adlc/managed-state.json", ".codex/config.toml", ".hermes/kanban.json", "mcp configure", "extension add", "audit-artifacts", "gate-result-schema.md"]:
     if required_text not in readme:
         fail(f"README must document {required_text}")
 for required_doc in [
@@ -165,6 +155,7 @@ for required_doc in [
     "docs/workflow.md",
     "docs/configuration.md",
     "docs/config-reference.md",
+    "docs/agents.md",
     "docs/skills.md",
     "docs/subagents.md",
     "docs/quality-gates.md",
@@ -174,33 +165,33 @@ for required_doc in [
     "docs/evolve.md",
     "docs/extensions.md",
     "docs/security.md",
-    "docs/runtimes.md",
     "docs/mcp.md",
     "docs/artifact-audit.md",
 ]:
-    if required_doc not in readme and required_doc != "docs/README.md":
+    if required_doc not in readme:
         fail(f"README must link {required_doc}")
 
+public_text_files = [
+    "README.md",
+    "AGENTS.md",
+    "docs/README.md",
+    "docs/getting-started.md",
+    "docs/agents.md",
+    "docs/mcp.md",
+    "docs/extensions.md",
+    "docs/security.md",
+    "package.json",
+]
+for path in public_text_files:
+    text = Path(path).read_text()
+    for forbidden in ["Factory", "factory", "lee-to", "upstream", "@davidvictor", "install-codex", "--runtime"]:
+        if forbidden in text:
+            fail(f"{path} contains removed public surface: {forbidden}")
+
 docs_index = Path("docs/README.md").read_text() if Path("docs/README.md").exists() else ""
-for upstream_doc in [
-    "getting-started.md",
-    "workflow.md",
-    "configuration.md",
-    "config-reference.md",
-    "skills.md",
-    "subagents.md",
-    "quality-gates.md",
-    "plan-files.md",
-    "loop.md",
-    "evolve.md",
-    "extensions.md",
-    "security.md",
-]:
-    if f"`{upstream_doc}`" not in docs_index:
-        fail(f"docs index must map upstream guide {upstream_doc} to an ADLC guide")
-for adlc_doc in ["runtimes.md", "mcp.md", "artifact-audit.md", "workstreams.md"]:
-    if adlc_doc not in docs_index:
-        fail(f"docs index must mention ADLC-specific guide {adlc_doc}")
+for doc in ["getting-started.md", "workflow.md", "configuration.md", "config-reference.md", "agents.md", "skills.md", "subagents.md", "quality-gates.md", "plan-files.md", "loop.md", "evolve.md", "extensions.md", "security.md", "mcp.md", "artifact-audit.md", "workstreams.md"]:
+    if doc not in docs_index:
+        fail(f"docs index must mention {doc}")
 
 skill_files = sorted(Path("skills/adlc").glob("*/SKILL.md"))
 skill_names = [p.parent.name for p in skill_files]
@@ -285,28 +276,28 @@ for skill_name in ["adlc-architecture", "adlc-plan", "adlc-workstream", "adlc-im
     if not refs_dir.is_dir() or not list(refs_dir.glob("*.md")):
         fail(f"{skill_name} must keep ADLC-native reference docs")
 
-if not Path("skills/adlc/adlc-qa/templates/TEST-PLAN.md").is_file():
-    fail("adlc-qa must keep QA templates")
-
 cli_text = Path("bin/adlc.js").read_text()
-for command_name in ["runtimes", "status", "install", "update", "upgrade", "mcp", "extension", "resolve-config", "workstream", "install-codex", "audit-artifacts"]:
+for command_name in ["agents", "status", "update", "doctor", "uninstall", "upgrade", "mcp", "extension", "resolve-config", "workstream", "audit-artifacts"]:
     if f"case '{command_name}'" not in cli_text:
         fail(f"adlc CLI missing command case: {command_name}")
-for required_cli_text in ["managedConfig", "stripAdlcMcpBlocks", "kind: 'config'", "config.toml"]:
+for removed_command in ["case 'runtimes'", "case 'install'", "case 'install-codex'"]:
+    if removed_command in cli_text:
+        fail(f"adlc CLI still exposes removed command: {removed_command}")
+for required_cli_text in ["agentRegistry", "managedConfigSource", "stripAdlcMcpBlocks", "kind: 'config'", "config.toml", "syncHermesWorkstream", "hermes"]:
     if required_cli_text not in cli_text:
-        fail(f"adlc CLI must manage Codex config files: missing {required_cli_text}")
+        fail(f"adlc CLI missing installer capability: {required_cli_text}")
 for required_cli_text in ["applyExtensionInjection", "installedReplacements", "installedInjections", "removeExtensionMcp"]:
     if required_cli_text not in cli_text:
         fail(f"adlc CLI must support local extension replacement/injection cleanup: missing {required_cli_text}")
 
 extension_schema = Path("schemas/extension.schema.json").read_text()
-for required_schema_field in ["replaces", "injections", "mcpServers", "agentFiles"]:
+for required_schema_field in ["replaces", "injections", "mcpServers", "agentFiles", "\"agent\""]:
     if required_schema_field not in extension_schema:
         fail(f"extension schema missing {required_schema_field}")
 
 for entry in entries:
-    if "aif" in entry or "factory" in entry:
-        fail(f"plugin entry references replaced factory surface: {entry}")
+    if "aif" in entry:
+        fail(f"plugin entry references replaced AIF surface: {entry}")
     if not Path(entry, "SKILL.md").is_file():
         fail(f"plugin entry missing SKILL.md: {entry}")
 

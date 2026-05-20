@@ -7,7 +7,7 @@ owner: ADLC
 
 # Security
 
-ADLC is a local workflow framework. Its security posture is built around narrow writes, managed state, local extension validation, and explicit runtime targets.
+ADLC is a local workflow framework. Its security posture is built around narrow writes, managed state, local extension validation, and explicit agent targets.
 
 ## Core Rules
 
@@ -16,7 +16,7 @@ ADLC is a local workflow framework. Its security posture is built around narrow 
 - Validate extension manifests before install.
 - Keep secrets out of git and out of ADLC docs.
 - Treat MCP configuration as code execution because MCP servers launch commands.
-- Use `status --strict` before update when local runtime artifacts may have been edited.
+- Use `status --strict` before update when local agent artifacts may have been edited.
 - Use `--force` only when intentionally overwriting managed artifacts.
 
 ## Extension Safety

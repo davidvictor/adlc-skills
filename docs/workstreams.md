@@ -36,6 +36,16 @@ Workstreams live under configured `paths.workstreams`, default `.adlc/workstream
     hermes.md
 ```
 
+Hermes sync also writes:
+
+```text
+.hermes/
+  config.yaml
+  kanban.json
+  inbox/
+  workstreams/
+```
+
 ## Grounding
 
 Every step must cite evidence. Acceptable evidence includes repo files, ADLC docs, architecture/rules, runtime output, existing plans, issues, or explicit user decisions.
@@ -55,20 +65,26 @@ ADLC does not run Hermes. ADLC owns the source workstream and the handoff contra
 Create a scaffold:
 
 ```bash
-node bin/adlc.js workstream create project-automation /path/to/project --title "Project Automation" --executor either
+adlc workstream create project-automation /path/to/project --title "Project Automation" --executor either
 ```
 
 Inspect stage state:
 
 ```bash
-node bin/adlc.js workstream status project-automation /path/to/project
-node bin/adlc.js workstream status project-automation /path/to/project --json
+adlc workstream status project-automation /path/to/project
+adlc workstream status project-automation /path/to/project --json
 ```
 
 Advance a step:
 
 ```bash
-node bin/adlc.js workstream advance project-automation 0001 /path/to/project --stage build
+adlc workstream advance project-automation 0001 /path/to/project --stage build
+```
+
+Sync to Hermes:
+
+```bash
+adlc workstream sync project-automation /path/to/project --agent hermes
 ```
 
 ## Step Requirements

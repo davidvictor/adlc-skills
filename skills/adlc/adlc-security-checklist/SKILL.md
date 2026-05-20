@@ -10,7 +10,7 @@ Use this when a plan, diff, extension, MCP configuration, release candidate, or 
 ## Process
 
 1. Resolve effective ADLC paths from `.adlc/config.yaml`; use `adlc resolve-config` when the CLI is available.
-2. Pin the target: plan, diff, extension directory, MCP template, runtime install, or release candidate.
+2. Pin the target: plan, diff, extension directory, MCP template, agent install, or release candidate.
 3. Read architecture, rules, configured security references, and relevant source files.
 4. Inspect secrets, auth, authorization, prompt/data injection, path traversal, command execution, dependency/install behavior, and external integrations.
 5. Stay read-only. Route fixes to `adlc-fix`, `adlc-rules`, `adlc-plan`, or `adlc-implement`.

@@ -7,32 +7,29 @@ owner: ADLC
 
 # Getting Started
 
-ADLC is David's agent-driven development lifecycle. It provides skills, Codex agents, project artifacts, and a small CLI so agents can move from context to plan to implementation to gates without inventing process each time.
+ADLC provides skills, agent-target installers, project artifacts, and a small CLI so agent work can move from context to plan to implementation to gates without inventing process each time.
 
-## Install Locally
-
-From the ADLC repo:
+## Install
 
 ```bash
-node bin/adlc.js install-codex
-node bin/adlc.js status --strict
+npm install -g adlc-cli
 ```
 
-This installs ADLC skills into `${CODEX_HOME:-~/.codex}/skills`, installs Codex agent TOMLs into `${CODEX_HOME:-~/.codex}/agents`, and records managed hashes in `${CODEX_HOME:-~/.codex}/adlc-managed-state.json`.
+The package installs the `adlc` command.
 
 ## Initialize A Project
 
 ```bash
-node bin/adlc.js init /path/to/project
-node bin/adlc.js resolve-config /path/to/project
+adlc init /path/to/project --agents codex,claude,hermes --mcp github,playwright
+adlc status /path/to/project --strict
 ```
 
-This creates the `.adlc/` context root with config, description, architecture, rules, plans, patches, references, QA, and loop directories.
+This creates `.adlc/`, installs the selected agent targets, configures selected MCP servers, and records managed hashes in `.adlc/managed-state.json`.
 
-For a long-running epic, create a workstream scaffold:
+Run without a global install:
 
 ```bash
-node bin/adlc.js workstream create <slug> /path/to/project --executor either
+npx adlc-cli init /path/to/project --agents codex,claude,hermes --mcp filesystem
 ```
 
 ## Use The Lifecycle
@@ -56,12 +53,20 @@ adlc-evolve when reusable learning exists
 
 Bug work can start at `adlc-fix`, then move through verify, review, and commit.
 
+## Workstream Handoff
+
+```bash
+adlc workstream create project-automation /path/to/project --executor either
+adlc workstream sync project-automation /path/to/project --agent hermes
+```
+
+Hermes receives cards under `.hermes/workstreams/`, a board at `.hermes/kanban.json`, and an inbox handoff under `.hermes/inbox/`.
+
 ## Verify The Package
 
 ```bash
-bash scripts/test-adlc-cli.sh
-node bin/adlc.js validate
-node bin/adlc.js audit-artifacts --strict
+npm run test:cli
+npm run test:skill-fixtures
+npm run validate
+npm run pack:dry-run
 ```
-
-These checks cover the CLI, runtime install, MCP configuration, extension mechanics, artifact audit, managed status, and package consistency.

@@ -7,19 +7,19 @@ owner: ADLC
 
 # Configuration
 
-Target projects use `.adlc/config.yaml` to define artifact paths, workflow defaults, git policy, and preferred agents.
+Target projects use `.adlc/config.yaml` to define artifact paths, workflow defaults, git policy, and selected agent targets.
 
 Create it with:
 
 ```bash
-node bin/adlc.js init /path/to/project
+adlc init /path/to/project --agents codex,claude,hermes --mcp github,playwright
 ```
 
 Inspect the effective paths with:
 
 ```bash
-node bin/adlc.js resolve-config /path/to/project
-node bin/adlc.js resolve-config /path/to/project --json
+adlc resolve-config /path/to/project
+adlc resolve-config /path/to/project --json
 ```
 
 ## Write Contract
@@ -39,12 +39,17 @@ Supported sections:
 - `workflow`
 - `git`
 - `agents`
+- `install`
 
 ## Path Resolution
 
 Relative paths are resolved from the target project root. If a target project omits `.adlc/config.yaml`, the CLI falls back to the packaged template.
 
 `paths.workstreams` controls where `adlc-workstream` and `adlc workstream` create long-running epic artifacts. The default is `.adlc/workstreams`.
+
+`install.agents` records selected setup targets such as `codex,claude,hermes`.
+
+`install.mcp` records MCP server templates selected during setup.
 
 ## Known Limits
 

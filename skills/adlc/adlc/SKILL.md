@@ -16,7 +16,7 @@ Use this when a repo needs ADLC context before planning or implementation.
    - `.adlc/DESCRIPTION.md`
    - `.adlc/ARCHITECTURE.md`
    - `.adlc/RULES.md`
-5. Keep project-specific rules in `.adlc/RULES.md`; keep broad runtime behavior in `AGENTS.md`.
+5. Keep project-specific rules in `.adlc/RULES.md`; keep broad agent behavior in `AGENTS.md`.
 6. Do not create plans or implement features from setup.
 
 ## Output

@@ -2,71 +2,79 @@
 
 ADLC is an agent-driven development lifecycle for moving work from project context to plan, implementation, verification, review, and commit readiness.
 
-This repo packages the ADLC command pipeline, ADLC-owned artifacts, Codex-native agents, and project-local workflow state:
+It packages:
 
-- repo-local context and plans under `.adlc/`
-- a short command surface that routes work instead of a broad menu of lifecycle skills
-- native Codex coordinators, workers, and read-only sidecars
-- explicit artifact ownership so agents do not fight over the same files
-- implementation that ends in verification, review, commit readiness, and a clear handoff
+- ADLC skills and workflow guidance
+- Codex-native coordinator, worker, and sidecar agents
+- Claude project skill and MCP setup
+- Hermes workstream handoff and Kanban state
+- project-local lifecycle artifacts under `.adlc/`
+- a small CLI for install, update, status, extensions, workstreams, and artifact audits
 
 ADLC keeps operator documentation under [docs/](./docs/README.md) so the workflow is visible, repeatable, and easy to maintain.
 
-## Documentation
+## Install
 
-- [Getting Started](./docs/getting-started.md)
-- [Workflow](./docs/workflow.md)
-- [Configuration](./docs/configuration.md)
-- [Config Reference](./docs/config-reference.md)
-- [Skills](./docs/skills.md)
-- [Subagents](./docs/subagents.md)
-- [Plan Files](./docs/plan-files.md)
-- [Workstreams](./docs/workstreams.md)
-- [Quality Gates](./docs/quality-gates.md)
-- [Loop](./docs/loop.md)
-- [Evolve](./docs/evolve.md)
-- [Runtimes](./docs/runtimes.md)
-- [MCP](./docs/mcp.md)
-- [Extensions](./docs/extensions.md)
-- [Artifact Audit](./docs/artifact-audit.md)
-- [Security](./docs/security.md)
-
-## Command Surface
-
-Use these skills as the public interface:
-
-1. `adlc` - initialize or refresh `.adlc/` context.
-2. `adlc-explore` - investigate options without committing to a plan.
-3. `adlc-grounded` - answer from evidence only when guessing is unacceptable.
-4. `adlc-architecture` - create or refresh architecture artifacts from repo evidence.
-5. `adlc-roadmap` - maintain milestones and long-range sequencing.
-6. `adlc-rules` - capture project rules and area conventions.
-7. `adlc-reference` - create durable reference artifacts from sources.
-8. `adlc-plan` - create fast or full implementation plans.
-9. `adlc-improve` - tighten an existing plan before implementation.
-10. `adlc-implement` - execute a plan with Codex coordinators, workers, and sidecars.
-11. `adlc-verify` - prove completion against plan, rules, and repo behavior.
-12. `adlc-rules-check` - run a separate read-only rules gate.
-13. `adlc-security-checklist` - run a separate read-only security gate.
-14. `adlc-review` - review diffs for correctness, maintainability, and risk.
-15. `adlc-docs` - audit and update lifecycle documentation.
-16. `adlc-qa` - create change summaries, test plans, and manual test cases.
-17. `adlc-commit` - prepare conventional commits from staged work.
-18. `adlc-fix` - diagnose, fix, and record a learning patch.
-19. `adlc-loop` - run bounded iterative improvement loops.
-20. `adlc-workstream` - plan grounded epic workstreams for Codex or Hermes handoff.
-21. `adlc-evolve` - turn patches and repeated findings into durable rules or skill updates.
-
-Broad Docker, CI, build automation, and skill-generator surfaces remain deferred until repeated use proves they need dedicated ADLC commands.
-
-The CLI is the public tooling surface:
+The public package name is `adlc-cli`. The installed command is `adlc`.
 
 ```bash
-node bin/adlc.js runtimes
-node bin/adlc.js install /path/to/project --runtime codex-project
-node bin/adlc.js status /path/to/project --runtime codex-project
-node bin/adlc.js update /path/to/project --runtime codex-project
-node bin/adlc.js upgrade
+npm install -g adlc-cli
+cd /path/to/project
+adlc init --agents codex,claude,hermes --mcp github,playwright
+adlc status --strict
+```
+
+Run without a global install:
+
+```bash
+npx adlc-cli init /path/to/project --agents codex,claude,hermes --mcp filesystem
+npx adlc-cli status /path/to/project --strict
+```
+
+## Agent Targets
+
+ADLC supports three agent targets for the public installer:
+
+- `codex`: installs ADLC skills into `.codex/skills/`, Codex TOML agents into `.codex/agents/`, and managed Codex config into `.codex/config.toml`.
+- `claude`: installs ADLC skills into `.claude/skills/` and configures MCP servers through `.mcp.json`.
+- `hermes`: installs `.hermes/config.yaml`, `.hermes/kanban.json`, `.hermes/workstreams/`, and `.hermes/inbox/` for managed workstream execution.
+
+Inspect supported targets:
+
+```bash
+adlc agents
+adlc agents --json
+```
+
+Managed install state is project-local at `.adlc/managed-state.json`.
+
+## CLI
+
+```bash
+adlc init [target-dir] --agents codex,claude,hermes --mcp github,playwright
+adlc update [target-dir]
+adlc status [target-dir] --strict
+adlc doctor [target-dir]
+adlc uninstall [target-dir] --agents codex,claude,hermes
+adlc resolve-config [target-dir] --json
+adlc audit-artifacts [targets...] --strict
+```
+
+MCP templates:
+
+```bash
+adlc mcp list
+adlc mcp configure filesystem /path/to/project --agents codex,claude
+adlc mcp remove filesystem /path/to/project --agents codex,claude
+```
+
+Extensions:
+
+```bash
+adlc extension validate extensions/marketplace/hello-adlc
+adlc extension add extensions/marketplace/hello-adlc /path/to/project --agents codex,claude
+adlc extension list /path/to/project
+adlc extension remove hello-adlc /path/to/project
 ```
 
 ## Workflow
@@ -89,177 +97,73 @@ adlc
 
 Bug work can enter through `adlc-fix`, then continue to `adlc-verify`, `adlc-review`, and `adlc-commit`.
 
-## Artifact Ownership
+## Workstreams
 
-Default target-project paths:
-
-```text
-.adlc/
-  config.yaml
-  DESCRIPTION.md
-  ARCHITECTURE.md
-  ROADMAP.md
-  RULES.md
-  rules/
-  RESEARCH.md
-  PLAN.md
-  plans/
-  fixes/
-  patches/
-  references/
-  skill-context/
-  qa/
-  loops/
-  workstreams/
-```
-
-Ownership is strict:
-
-- `adlc` owns setup context.
-- `adlc-explore` owns research only when explicitly asked to persist it.
-- `adlc-architecture` owns architecture artifacts.
-- `adlc-roadmap` owns roadmap artifacts.
-- `adlc-rules` owns base and area-specific rules.
-- `adlc-reference` owns reference artifacts.
-- `adlc-plan` owns plan files.
-- `adlc-improve` may edit plan files.
-- `adlc-implement` owns code changes for the selected plan tasks.
-- `adlc-verify`, `adlc-rules-check`, `adlc-security-checklist`, `adlc-review`, and sidecars are read-only by default.
-- `adlc-docs` owns documentation updates requested by the plan or gates.
-- `adlc-qa` owns QA artifacts.
-- `adlc-workstream` owns epic workstreams, step cards, Kanban state, and Codex/Hermes handoff exports.
-- `adlc-fix` owns fix plans and patches.
-- `adlc-loop` owns loop notes and iteration state.
-- `adlc-evolve` owns skill-context and proposed ADLC updates.
-
-## Codex Native Agents
-
-Codex agents live in `subagents/codex/agents/`:
-
-- `plan-coordinator`
-- `plan-polisher`
-- `implement-coordinator`
-- `implement-worker`
-- `review-sidecar`
-- `security-sidecar`
-- `rules-sidecar`
-- `docs-auditor`
-- `best-practices-sidecar`
-- `commit-preparer`
-
-The coordinator agents own orchestration. Worker agents own bounded edits. Sidecars are read-only unless their file says otherwise.
-
-## Install For Local Codex
+ADLC workstreams turn large scopes into independent step cards that can move through build, review, test, and commit stages.
 
 ```bash
-scripts/install-codex-adlc.sh
+adlc workstream create project-automation /path/to/project --executor either
+adlc workstream status project-automation /path/to/project
+adlc workstream advance project-automation 0001 /path/to/project --stage build
+adlc workstream sync project-automation /path/to/project --agent hermes
 ```
 
-This syncs skills into `${CODEX_HOME:-~/.codex}/skills` and Codex agent TOML files into `${CODEX_HOME:-~/.codex}/agents`.
+Hermes sync writes cards to `.hermes/workstreams/`, updates `.hermes/kanban.json`, and drops a handoff in `.hermes/inbox/`.
 
-The same flow is available through the ADLC CLI:
+## Skills
 
-```bash
-node bin/adlc.js install-codex
-```
+Use these skills as the public workflow interface:
 
-`install-codex` records managed state in `${CODEX_HOME:-~/.codex}/adlc-managed-state.json` after a successful sync. Use these commands to inspect or refresh the local install:
+1. `adlc` - initialize or refresh `.adlc/` context.
+2. `adlc-explore` - investigate options without committing to a plan.
+3. `adlc-grounded` - answer from evidence only when guessing is unacceptable.
+4. `adlc-architecture` - create or refresh architecture artifacts from repo evidence.
+5. `adlc-roadmap` - maintain milestones and long-range sequencing.
+6. `adlc-rules` - capture project rules and area conventions.
+7. `adlc-reference` - create durable reference artifacts from sources.
+8. `adlc-plan` - create fast or full implementation plans.
+9. `adlc-workstream` - plan epic workstreams for Codex or Hermes handoff.
+10. `adlc-improve` - tighten an existing plan before implementation.
+11. `adlc-implement` - execute a plan with Codex coordinators, workers, and sidecars.
+12. `adlc-verify` - prove completion against plan, rules, and repo behavior.
+13. `adlc-rules-check` - run a separate read-only rules gate.
+14. `adlc-security-checklist` - run a separate read-only security gate.
+15. `adlc-review` - review diffs for correctness, maintainability, and risk.
+16. `adlc-docs` - audit and update lifecycle documentation.
+17. `adlc-qa` - create change summaries, test plans, and manual test cases.
+18. `adlc-commit` - prepare conventional commits from staged work.
+19. `adlc-fix` - diagnose, fix, and record a learning patch.
+20. `adlc-loop` - run bounded iterative improvement loops.
+21. `adlc-evolve` - turn patches and repeated findings into durable rules or skill updates.
 
-```bash
-node bin/adlc.js status
-node bin/adlc.js status --strict --json
-node bin/adlc.js update
-node bin/adlc.js update --force
-```
+## Documentation
 
-`update` stops before overwriting drifted managed artifacts unless `--force` is provided.
-
-Project runtime installs are also supported:
-
-```bash
-node bin/adlc.js install /path/to/project --runtime codex-project
-node bin/adlc.js install /path/to/project --runtime claude-project
-```
-
-The first supported runtimes are `codex-home`, `codex-project`, `claude-project`, and `universal-project`.
-
-For `codex-project`, ADLC also installs and tracks the project-local `.codex/config.toml` from `subagents/codex/config.toml`. ADLC MCP blocks inside that file are ignored for managed-state hashing, so `mcp configure` can add servers without making the baseline Codex agent config look drifted.
-
-## Initialize A Project
-
-```bash
-scripts/init-adlc-project.sh /path/to/project
-```
-
-This creates the `.adlc/` scaffold and preserves existing project context files.
-
-The CLI equivalent is:
-
-```bash
-node bin/adlc.js init /path/to/project
-```
-
-Resolve the effective ADLC paths for a project with:
-
-```bash
-node bin/adlc.js resolve-config /path/to/project
-node bin/adlc.js resolve-config /path/to/project --json
-```
-
-Create durable workstreams for epics that need staged Codex or Hermes execution:
-
-```bash
-node bin/adlc.js workstream create project-automation /path/to/project --executor either
-node bin/adlc.js workstream status project-automation /path/to/project
-node bin/adlc.js workstream advance project-automation 0001 /path/to/project --stage build
-```
-
-## MCP Auto-Config
-
-ADLC includes local templates for `filesystem`, `github`, `postgres`, `playwright`, and `chrome-devtools`.
-
-```bash
-node bin/adlc.js mcp list
-node bin/adlc.js mcp configure filesystem /path/to/project --runtime codex-project
-node bin/adlc.js mcp remove filesystem /path/to/project --runtime codex-project
-```
-
-Codex runtimes write marked TOML blocks. Claude project runtime writes `.mcp.json`.
-
-## Extensions
-
-ADLC supports local extension packs with `extension.json`; the schema lives at [schemas/extension.schema.json](./schemas/extension.schema.json). Extension registry state is project-local under `.adlc/extensions/registry.json`.
-
-```bash
-node bin/adlc.js extension validate extensions/marketplace/hello-adlc
-node bin/adlc.js extension add extensions/marketplace/hello-adlc /path/to/project --runtime codex-project
-node bin/adlc.js extension list /path/to/project
-node bin/adlc.js extension remove hello-adlc /path/to/project --runtime codex-project
-```
-
-## Package Status
-
-The package is private and exposes a local CLI at `bin/adlc.js`. Publish only when public distribution is simpler than private Git/GitHub installation.
-
-## Artifact Audit
-
-```bash
-node bin/adlc.js audit-artifacts docs README.md AGENTS.md
-node bin/adlc.js audit-artifacts --strict --json docs README.md AGENTS.md
-```
-
-The audit scans markdown frontmatter for ADLC artifact IDs, owners, status, type, duplicate IDs, and broken relations. It is intentionally lightweight now so plans, ADRs, QA notes, and reference docs can become traceable before the heavier managed-update system lands.
-
-## Gate Results
-
-Review, verify, and future read-only gates append a final `adlc-gate-result` fenced JSON block. The schema lives in [docs/gate-result-schema.md](./docs/gate-result-schema.md); orchestration should parse that final block instead of scraping prose.
+- [Getting Started](./docs/getting-started.md)
+- [Workflow](./docs/workflow.md)
+- [Configuration](./docs/configuration.md)
+- [Config Reference](./docs/config-reference.md)
+- [Agent Targets](./docs/agents.md)
+- [Skills](./docs/skills.md)
+- [Subagents](./docs/subagents.md)
+- [Plan Files](./docs/plan-files.md)
+- [Workstreams](./docs/workstreams.md)
+- [Quality Gates](./docs/quality-gates.md)
+- [Loop](./docs/loop.md)
+- [Evolve](./docs/evolve.md)
+- [MCP](./docs/mcp.md)
+- [Extensions](./docs/extensions.md)
+- [Artifact Audit](./docs/artifact-audit.md)
+- [Security](./docs/security.md)
+- [Gate Results](./docs/gate-result-schema.md)
 
 ## Validation
 
 ```bash
-scripts/list-adlc.sh
-scripts/validate-adlc.sh
-node bin/adlc.js validate
+npm run validate
+npm run test:cli
+npm run test:skill-fixtures
+adlc audit-artifacts --strict docs README.md AGENTS.md
+npm run pack:dry-run
 ```
 
-Validation fails if removed skill paths remain, if the plugin manifest points at removed skills, if required Codex agents are missing, if package metadata is unsafe to publish accidentally, or if the public docs drift from the ADLC command surface.
+Validation fails when required skills or agents are missing, package metadata drifts from the public install contract, managed installer docs drift from the CLI, or artifact metadata breaks.

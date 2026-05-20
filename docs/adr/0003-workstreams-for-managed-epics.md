@@ -3,7 +3,6 @@ id: adlc-adr-0003-workstreams
 type: adr
 status: accepted
 owner: ADLC
-depends_on: [adlc-adr-0002-framework-foundation]
 ---
 
 # ADR 0003: Workstreams Manage Long-Running Epics

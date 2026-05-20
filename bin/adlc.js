@@ -11,51 +11,53 @@ const defaultAuditTargets = ['.adlc', 'docs', 'README.md', 'AGENTS.md'];
 const relationFields = ['depends_on', 'affects', 'implements', 'verifies', 'documents', 'supersedes'];
 const skipDirs = new Set(['.git', 'node_modules', 'dist', 'coverage', 'docs-html', 'evolution', 'evolutions', 'qa']);
 const knownMcpServers = ['filesystem', 'github', 'postgres', 'playwright', 'chrome-devtools'];
+const packageName = 'adlc-cli';
+const defaultAgentIds = ['codex'];
+const allAgentIds = ['codex', 'claude', 'hermes'];
 
-const runtimeRegistry = {
-  'codex-home': {
-    id: 'codex-home',
-    displayName: 'Codex home',
-    scope: 'home',
-    skillsSubdir: 'skills',
-    agentsSubdir: 'agents',
-    settingsFile: 'config.toml',
-    settingsFormat: 'codex-toml',
-    codexAgents: true,
-  },
-  'codex-project': {
-    id: 'codex-project',
-    displayName: 'Codex project',
-    scope: 'project',
+const agentRegistry = {
+  codex: {
+    id: 'codex',
+    displayName: 'Codex',
     configDir: '.codex',
     skillsSubdir: '.codex/skills',
     agentsSubdir: '.codex/agents',
     settingsFile: '.codex/config.toml',
     settingsFormat: 'codex-toml',
-    codexAgents: true,
-    managedConfig: true,
+    agentFilesRoot: path.join(repoRoot, 'subagents', 'codex', 'agents'),
+    managedConfigSource: path.join(repoRoot, 'subagents', 'codex', 'config.toml'),
+    supportsSkills: true,
+    supportsAgentFiles: true,
+    supportsMcp: true,
   },
-  'claude-project': {
-    id: 'claude-project',
-    displayName: 'Claude project',
-    scope: 'project',
+  claude: {
+    id: 'claude',
+    displayName: 'Claude',
     configDir: '.claude',
     skillsSubdir: '.claude/skills',
     agentsSubdir: '.claude/agents',
     settingsFile: '.mcp.json',
     settingsFormat: 'standard-json',
-    codexAgents: false,
+    agentFilesRoot: path.join(repoRoot, 'subagents', 'claude', 'agents'),
+    managedConfigSource: null,
+    supportsSkills: true,
+    supportsAgentFiles: true,
+    supportsMcp: true,
   },
-  'universal-project': {
-    id: 'universal-project',
-    displayName: 'Universal project',
-    scope: 'project',
-    configDir: '.agents',
-    skillsSubdir: '.agents/skills',
+  hermes: {
+    id: 'hermes',
+    displayName: 'Hermes',
+    configDir: '.hermes',
+    skillsSubdir: null,
     agentsSubdir: null,
     settingsFile: null,
     settingsFormat: null,
-    codexAgents: false,
+    agentFilesRoot: null,
+    managedConfigSource: null,
+    supportsSkills: false,
+    supportsAgentFiles: false,
+    supportsMcp: false,
+    hermes: true,
   },
 };
 
@@ -69,24 +71,25 @@ Commands:
   help                         Show this help.
   validate                     Run package validation.
   list                         List packaged ADLC skills and Codex agents.
-  runtimes                     List supported install runtimes.
+  agents                       List supported agent targets.
+  init [target-dir]            Initialize ADLC and install selected agents.
+  update [target-dir]          Refresh selected agent targets when safe.
   status [target-dir]          Report managed install state.
-  install [target-dir]         Install ADLC into a selected runtime.
-  update [target-dir]          Refresh selected runtime when safe.
-  upgrade                      Print package/self-update guidance.
+  doctor [target-dir]          Check local ADLC setup health.
+  uninstall [target-dir]       Remove managed files for selected agents.
+  upgrade                      Print package/schema migration guidance.
   mcp <list|configure|remove>  Manage supported MCP server config.
   extension <cmd>              Manage local ADLC extensions.
   resolve-config [target-dir]  Print resolved ADLC config paths.
   workstream <cmd>             Manage ADLC workstream scaffolds and stage state.
-  install-codex                Sync packaged skills and agents into local Codex home.
-  init [target-dir]            Initialize a target project's .adlc scaffold.
   audit-artifacts [targets...] Audit markdown artifact metadata.
 
 Options:
   --json                       Print audit output as JSON.
   --strict                     Treat warnings as failures in artifact audit.
   --force                      Allow update to overwrite installed drift.
-  --runtime <id>               Runtime id. Default: codex-home.
+  --agents <ids>               Comma-separated agent ids. Default: codex.
+  --mcp <ids>                  Comma-separated MCP ids for init/configure.
 `);
 }
 
@@ -189,37 +192,99 @@ function removeIfSafe(record, force, log) {
   return 'removed';
 }
 
-function codexHome() {
-  return process.env.CODEX_HOME || path.join(process.env.HOME || '', '.codex');
+function parseCsvList(value) {
+  if (Array.isArray(value)) {
+    return value.flatMap((item) => parseCsvList(item));
+  }
+  if (value === null || typeof value === 'undefined') return [];
+  return String(value)
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
 }
 
-function resolveRuntime(args, defaultRuntime = 'codex-home') {
-  const runtimeId = optionValue(args, '--runtime', defaultRuntime);
-  const runtime = runtimeRegistry[runtimeId];
-  if (!runtime) {
-    throw new Error(`Unknown ADLC runtime: ${runtimeId}. Available: ${Object.keys(runtimeRegistry).join(', ')}`);
+function optionList(args, name, fallback = []) {
+  const value = optionValue(args, name, null);
+  return value === null ? fallback : parseCsvList(value);
+}
+
+function normalizeAgentIds(ids) {
+  const requested = parseCsvList(ids);
+  const expanded = requested.includes('all') ? allAgentIds : requested;
+  const unique = [];
+  for (const id of expanded) {
+    if (!agentRegistry[id]) {
+      throw new Error(`Unknown ADLC agent target: ${id}. Available: ${allAgentIds.join(', ')}`);
+    }
+    if (!unique.includes(id)) unique.push(id);
   }
+  if (unique.length === 0) {
+    throw new Error('At least one ADLC agent target is required.');
+  }
+  return unique;
+}
 
+function projectDirFromArgs(args, position = 0) {
   const positionals = positionalArgs(args);
-  const targetArg = positionals[0];
-  const root = runtime.scope === 'home'
-    ? codexHome()
-    : path.resolve(process.cwd(), targetArg || '.');
+  return path.resolve(process.cwd(), positionals[position] || '.');
+}
 
+function statePath(projectDir) {
+  return path.join(projectDir, '.adlc', 'managed-state.json');
+}
+
+function resolveAgent(projectDir, agentId) {
+  const agent = agentRegistry[agentId];
+  if (!agent) {
+    throw new Error(`Unknown ADLC agent target: ${agentId}. Available: ${allAgentIds.join(', ')}`);
+  }
   return {
-    ...runtime,
-    root,
-    skillsDir: path.join(root, runtime.skillsSubdir),
-    agentsDir: runtime.agentsSubdir ? path.join(root, runtime.agentsSubdir) : null,
-    settingsPath: runtime.settingsFile ? path.join(root, runtime.settingsFile) : null,
-    stateFile: runtime.scope === 'home'
-      ? path.join(root, 'adlc-managed-state.json')
-      : path.join(root, '.adlc', `managed-state.${runtime.id}.json`),
+    ...agent,
+    root: projectDir,
+    skillsDir: agent.skillsSubdir ? path.join(projectDir, agent.skillsSubdir) : null,
+    agentsDir: agent.agentsSubdir ? path.join(projectDir, agent.agentsSubdir) : null,
+    settingsPath: agent.settingsFile ? path.join(projectDir, agent.settingsFile) : null,
+    configPath: agent.configDir ? path.join(projectDir, agent.configDir) : null,
   };
 }
 
-function statePath(runtime) {
-  return runtime.stateFile;
+function loadManagedState(projectDir) {
+  const file = statePath(projectDir);
+  if (!fs.existsSync(file)) {
+    return null;
+  }
+  try {
+    return JSON.parse(fs.readFileSync(file, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+function selectedAgentsFromConfig(projectDir) {
+  const loaded = loadAdlcConfig(projectDir);
+  const configured = loaded.config.install && loaded.config.install.agents
+    ? parseCsvList(loaded.config.install.agents)
+    : [];
+  if (configured.length > 0) return normalizeAgentIds(configured);
+
+  const state = loadManagedState(projectDir);
+  if (state && Array.isArray(state.agents) && state.agents.length > 0) {
+    return normalizeAgentIds(state.agents);
+  }
+
+  return [];
+}
+
+function selectedAgentIds(projectDir, args, fallback = defaultAgentIds) {
+  const explicit = optionList(args, '--agents', null);
+  if (explicit !== null) return normalizeAgentIds(explicit);
+  const configured = selectedAgentsFromConfig(projectDir);
+  if (configured.length > 0) return configured;
+  return normalizeAgentIds(fallback);
+}
+
+function selectedAgents(projectDir, args, fallback = defaultAgentIds) {
+  return selectedAgentIds(projectDir, args, fallback).map((id) => resolveAgent(projectDir, id));
 }
 
 function listFilesRecursive(root) {
@@ -320,63 +385,87 @@ function hashManagedArtifactPath(artifact, targetPath) {
   return hashPath(targetPath);
 }
 
-function managedArtifacts(runtime) {
+function managedArtifactsForAgent(agent, options = {}) {
   const skillsRoot = path.join(repoRoot, 'skills', 'adlc');
-  const agentsRoot = path.join(repoRoot, 'subagents', 'codex', 'agents');
   const artifacts = [];
+  const selectedSkills = options.skills && options.skills.length > 0
+    ? new Set(options.skills.map((name) => (name.startsWith('adlc') ? name : `adlc-${name}`)))
+    : null;
 
-  for (const name of fs.readdirSync(skillsRoot).sort()) {
-    const source = path.join(skillsRoot, name);
-    if (!fs.statSync(source).isDirectory()) continue;
-    if (name !== 'adlc' && !name.startsWith('adlc-')) continue;
-    artifacts.push({
-      kind: 'skill',
-      name,
-      source,
-      target: path.join(runtime.skillsDir, name),
-    });
-  }
-
-  if (runtime.codexAgents && runtime.agentsDir) {
-    for (const name of fs.readdirSync(agentsRoot).sort()) {
-      if (!name.endsWith('.toml')) continue;
+  if (agent.supportsSkills && agent.skillsDir && !options.noSkills) {
+    for (const name of fs.readdirSync(skillsRoot).sort()) {
+      const source = path.join(skillsRoot, name);
+      if (!fs.statSync(source).isDirectory()) continue;
+      if (name !== 'adlc' && !name.startsWith('adlc-')) continue;
+      if (selectedSkills && !selectedSkills.has(name)) continue;
       artifacts.push({
-        kind: 'agent',
+        agent: agent.id,
+        kind: 'skill',
         name,
-        source: path.join(agentsRoot, name),
-        target: path.join(runtime.agentsDir, name),
+        source,
+        target: path.join(agent.skillsDir, name),
       });
     }
   }
 
-  if (runtime.managedConfig && runtime.settingsPath) {
+  if (agent.supportsAgentFiles && agent.agentsDir && agent.agentFilesRoot && fs.existsSync(agent.agentFilesRoot)) {
+    for (const name of fs.readdirSync(agent.agentFilesRoot).sort()) {
+      if (!name.endsWith('.toml')) continue;
+      artifacts.push({
+        agent: agent.id,
+        kind: 'agent',
+        name,
+        source: path.join(agent.agentFilesRoot, name),
+        target: path.join(agent.agentsDir, name),
+      });
+    }
+  }
+
+  if (agent.managedConfigSource && agent.settingsPath) {
     artifacts.push({
+      agent: agent.id,
       kind: 'config',
-      name: 'config.toml',
-      source: path.join(repoRoot, 'subagents', 'codex', 'config.toml'),
-      target: runtime.settingsPath,
+      name: path.basename(agent.settingsPath),
+      source: agent.managedConfigSource,
+      target: agent.settingsPath,
     });
+  }
+
+  if (agent.hermes) {
+    artifacts.push(
+      {
+        agent: agent.id,
+        kind: 'config',
+        name: 'config.yaml',
+        source: path.join(repoRoot, 'templates', 'hermes', 'config.yaml'),
+        target: path.join(agent.root, '.hermes', 'config.yaml'),
+      },
+      {
+        agent: agent.id,
+        kind: 'kanban',
+        name: 'kanban.json',
+        source: path.join(repoRoot, 'templates', 'hermes', 'kanban.json'),
+        target: path.join(agent.root, '.hermes', 'kanban.json'),
+      },
+    );
   }
 
   return artifacts;
 }
 
-function loadManagedState(runtime) {
-  const file = statePath(runtime);
-  if (!fs.existsSync(file)) {
-    return null;
-  }
-  try {
-    return JSON.parse(fs.readFileSync(file, 'utf8'));
-  } catch {
-    return null;
-  }
+function managedArtifacts(agents, options = {}) {
+  return agents.flatMap((agent) => managedArtifactsForAgent(agent, options));
 }
 
-function buildManagedState(runtime) {
+function artifactKey(artifact) {
+  return `${artifact.agent}:${artifact.kind}:${artifact.name}`;
+}
+
+function buildManagedState(projectDir, agents, options = {}) {
   const artifacts = {};
-  for (const artifact of managedArtifacts(runtime)) {
-    artifacts[`${artifact.kind}:${artifact.name}`] = {
+  for (const artifact of managedArtifacts(agents, options)) {
+    artifacts[artifactKey(artifact)] = {
+      agent: artifact.agent,
       kind: artifact.kind,
       name: artifact.name,
       source: path.relative(repoRoot, artifact.source).split(path.sep).join('/'),
@@ -387,26 +476,26 @@ function buildManagedState(runtime) {
   }
 
   return {
-    schema_version: 1,
-    package: '@davidvictor/adlc',
+    schema_version: 2,
+    package: packageName,
     recorded_at: new Date().toISOString(),
-    runtime: runtime.id,
-    root: runtime.root,
+    project_dir: projectDir,
+    agents: agents.map((agent) => agent.id),
     artifacts,
   };
 }
 
-function writeManagedState(runtime) {
-  const file = statePath(runtime);
+function writeManagedState(projectDir, agents, options = {}) {
+  const file = statePath(projectDir);
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  const state = buildManagedState(runtime);
+  const state = buildManagedState(projectDir, agents, options);
   fs.writeFileSync(file, `${JSON.stringify(state, null, 2)}\n`);
   return state;
 }
 
-function computeManagedStatus(runtime) {
-  const previous = loadManagedState(runtime);
-  const current = buildManagedState(runtime);
+function computeManagedStatus(projectDir, agents, options = {}) {
+  const previous = loadManagedState(projectDir);
+  const current = buildManagedState(projectDir, agents, options);
   const entries = [];
 
   for (const [key, artifact] of Object.entries(current.artifacts)) {
@@ -430,6 +519,7 @@ function computeManagedStatus(runtime) {
 
     entries.push({
       key,
+      agent: artifact.agent,
       kind: artifact.kind,
       name: artifact.name,
       status,
@@ -442,9 +532,11 @@ function computeManagedStatus(runtime) {
   if (previous && previous.artifacts) {
     for (const [key, artifact] of Object.entries(previous.artifacts)) {
       if (current.artifacts[key]) continue;
+      if (agents.length > 0 && artifact.agent && !agents.some((agent) => agent.id === artifact.agent)) continue;
       const installedHash = artifact.target ? hashPath(artifact.target) : null;
       entries.push({
         key,
+        agent: artifact.agent || 'unknown',
         kind: artifact.kind,
         name: artifact.name,
         status: installedHash && installedHash !== artifact.installedHash ? 'removed-drifted' : 'removed-from-package',
@@ -460,9 +552,9 @@ function computeManagedStatus(runtime) {
   }
 
   return {
-    runtime: runtime.id,
-    root: runtime.root,
-    state_file: statePath(runtime),
+    project_dir: projectDir,
+    agents: agents.map((agent) => agent.id),
+    state_file: statePath(projectDir),
     has_state: Boolean(previous),
     entries,
   };
@@ -471,8 +563,9 @@ function computeManagedStatus(runtime) {
 function printManagedStatus(args) {
   const json = args.includes('--json');
   const strict = args.includes('--strict');
-  const runtime = resolveRuntime(args);
-  const status = computeManagedStatus(runtime);
+  const projectDir = projectDirFromArgs(args);
+  const agents = selectedAgents(projectDir, args, allAgentIds);
+  const status = computeManagedStatus(projectDir, agents);
   const counts = status.entries.reduce((acc, entry) => {
     acc[entry.status] = (acc[entry.status] || 0) + 1;
     return acc;
@@ -482,101 +575,188 @@ function printManagedStatus(args) {
   if (json) {
     console.log(JSON.stringify({ ...status, counts, blocking }, null, 2));
   } else {
-    console.log(`ADLC runtime: ${runtime.id} (${runtime.displayName})`);
-    console.log(`Root: ${runtime.root}`);
+    console.log(`ADLC project: ${projectDir}`);
+    console.log(`Agents: ${agents.map((agent) => agent.id).join(', ')}`);
     console.log(`ADLC managed state: ${status.has_state ? status.state_file : 'not recorded'}`);
     console.log(`Artifacts: ${status.entries.length}`);
     for (const [name, count] of Object.entries(counts).sort()) {
       console.log(`${name}: ${count}`);
     }
     for (const entry of status.entries.filter((item) => item.status !== 'unchanged')) {
-      console.log(`${entry.status.toUpperCase()}: ${entry.kind}:${entry.name} - ${entry.reason}`);
+      console.log(`${entry.status.toUpperCase()}: ${entry.agent}:${entry.kind}:${entry.name} - ${entry.reason}`);
     }
   }
 
   process.exit(strict && blocking ? 1 : 0);
 }
 
-function installRuntime(args, fixedRuntime = null) {
-  const runtime = resolveRuntime(fixedRuntime ? [...args, `--runtime=${fixedRuntime}`] : args);
+function ensureHermesStructure(agent) {
+  if (!agent.hermes) return;
+  fs.mkdirSync(path.join(agent.root, '.hermes', 'workstreams'), { recursive: true });
+  fs.mkdirSync(path.join(agent.root, '.hermes', 'inbox'), { recursive: true });
+}
+
+function installAgents(args, fixedAgents = null, options = {}) {
+  const projectDir = projectDirFromArgs(args);
+  const agentIds = fixedAgents ? normalizeAgentIds(fixedAgents) : selectedAgentIds(projectDir, args);
+  const agents = agentIds.map((id) => resolveAgent(projectDir, id));
   const force = args.includes('--force');
-  const previous = loadManagedState(runtime);
-  const currentArtifacts = managedArtifacts(runtime);
-  const currentKeys = new Set(currentArtifacts.map((artifact) => `${artifact.kind}:${artifact.name}`));
+  const previous = loadManagedState(projectDir);
+  const currentArtifacts = managedArtifacts(agents, options);
+  const currentKeys = new Set(currentArtifacts.map((artifact) => artifactKey(artifact)));
   const log = (message) => console.log(message);
+
+  fs.mkdirSync(path.join(projectDir, '.adlc'), { recursive: true });
+  for (const agent of agents) {
+    ensureHermesStructure(agent);
+  }
 
   for (const artifact of currentArtifacts) {
     copyManagedPackageArtifact(artifact);
-    log(`Synced ADLC ${artifact.kind}: ${artifact.target}`);
+    log(`Synced ADLC ${artifact.agent} ${artifact.kind}: ${artifact.target}`);
   }
 
   if (previous && previous.artifacts) {
     for (const [key, record] of Object.entries(previous.artifacts)) {
       if (currentKeys.has(key)) continue;
+      if (record.agent && !agentIds.includes(record.agent)) continue;
       removeIfSafe(record, force, log);
     }
   }
 
-  const state = writeManagedState(runtime);
-  console.log(`Recorded managed install state: ${statePath(runtime)}`);
+  const state = writeManagedState(projectDir, agents, options);
+  console.log(`Recorded managed install state: ${statePath(projectDir)}`);
   console.log(`Managed artifacts: ${Object.keys(state.artifacts).length}`);
 }
 
-function installCodex(args) {
-  installRuntime(args, 'codex-home');
-}
-
-function updateRuntime(args, fixedRuntime = null) {
-  const runtime = resolveRuntime(fixedRuntime ? [...args, `--runtime=${fixedRuntime}`] : args);
+function updateAgents(args) {
+  const projectDir = projectDirFromArgs(args);
+  const agents = selectedAgents(projectDir, args);
   const force = args.includes('--force');
-  const status = computeManagedStatus(runtime);
+  const status = computeManagedStatus(projectDir, agents);
   const drifted = status.entries.filter((entry) => ['drifted', 'removed-drifted'].includes(entry.status));
   if (drifted.length > 0 && !force) {
     console.error('ADLC update stopped because installed managed artifacts drifted.');
     for (const entry of drifted) {
-      console.error(`DRIFTED: ${entry.kind}:${entry.name}`);
+      console.error(`DRIFTED: ${entry.agent}:${entry.kind}:${entry.name}`);
     }
     console.error('Review local edits or rerun with --force to overwrite managed artifacts.');
     process.exit(1);
   }
 
-  installRuntime(args.filter((arg) => arg !== '--force'), runtime.id);
+  const nextArgs = args.filter((arg) => arg !== '--force');
+  installAgents(nextArgs, agents.map((agent) => agent.id));
+  const mcpKeys = selectedMcpKeys(projectDir, nextArgs);
+  if (mcpKeys.length > 0) {
+    configureMcpForAgents(projectDir, agents.map((agent) => agent.id), mcpKeys, false);
+    writeManagedState(projectDir, agents);
+  }
 }
 
-function updateCodex(args) {
-  updateRuntime(args, 'codex-home');
+function uninstallAgents(args) {
+  const projectDir = projectDirFromArgs(args);
+  const force = args.includes('--force');
+  const agentIds = selectedAgentIds(projectDir, args);
+  const previous = loadManagedState(projectDir);
+  const log = (message) => console.log(message);
+  const selected = new Set(agentIds);
+
+  if (previous && previous.artifacts) {
+    for (const record of Object.values(previous.artifacts)) {
+      if (record.agent && !selected.has(record.agent)) continue;
+      removeIfSafe(record, force, log);
+    }
+  }
+
+  const mcpKeys = selectedMcpKeys(projectDir, args);
+  if (mcpKeys.length > 0) {
+    configureMcpForAgents(projectDir, agentIds, mcpKeys, true);
+  }
+
+  if (previous && previous.artifacts) {
+    const remainingAgentIds = (previous.agents || []).filter((agentId) => !selected.has(agentId));
+    const remainingAgents = remainingAgentIds.map((id) => resolveAgent(projectDir, id));
+    if (remainingAgents.length > 0) {
+      writeManagedState(projectDir, remainingAgents);
+    } else {
+      fs.rmSync(statePath(projectDir), { force: true });
+    }
+  }
+
+  console.log(`Uninstalled ADLC managed artifacts for agents: ${agentIds.join(', ')}`);
 }
 
-function printRuntimes(args) {
+function printAgents(args) {
   const json = args.includes('--json');
-  const runtimes = Object.values(runtimeRegistry).map((runtime) => ({
-    id: runtime.id,
-    display_name: runtime.displayName,
-    scope: runtime.scope,
-    supports_agents: Boolean(runtime.codexAgents),
-    supports_mcp: Boolean(runtime.settingsFile),
+  const agents = Object.values(agentRegistry).map((agent) => ({
+    id: agent.id,
+    display_name: agent.displayName,
+    config_dir: agent.configDir,
+    supports_skills: Boolean(agent.supportsSkills),
+    supports_agent_files: Boolean(agent.supportsAgentFiles),
+    supports_mcp: Boolean(agent.supportsMcp),
+    supports_workstreams: Boolean(agent.hermes),
   }));
 
   if (json) {
-    console.log(JSON.stringify({ runtimes }, null, 2));
+    console.log(JSON.stringify({ agents }, null, 2));
     return;
   }
 
-  for (const runtime of runtimes) {
-    console.log(`${runtime.id}\t${runtime.display_name}\tagents=${runtime.supports_agents}\tmcp=${runtime.supports_mcp}`);
+  for (const agent of agents) {
+    console.log(`${agent.id}\t${agent.display_name}\tskills=${agent.supports_skills}\tagents=${agent.supports_agent_files}\tmcp=${agent.supports_mcp}\tworkstreams=${agent.supports_workstreams}`);
   }
+}
+
+function doctor(args) {
+  const json = args.includes('--json');
+  const strict = args.includes('--strict');
+  const projectDir = projectDirFromArgs(args);
+  const agents = selectedAgents(projectDir, args, allAgentIds);
+  const loaded = loadAdlcConfig(projectDir);
+  const status = computeManagedStatus(projectDir, agents);
+  const counts = status.entries.reduce((acc, entry) => {
+    acc[entry.status] = (acc[entry.status] || 0) + 1;
+    return acc;
+  }, {});
+  const checks = [
+    { name: 'node', status: process.versions.node ? 'pass' : 'fail', detail: process.versions.node || 'missing' },
+    { name: 'config', status: loaded.configExists ? 'pass' : 'warn', detail: loaded.configExists ? loaded.configPath : 'no .adlc/config.yaml' },
+    { name: 'managed-state', status: status.has_state ? 'pass' : 'warn', detail: status.has_state ? status.state_file : 'not recorded' },
+  ];
+  const blocking = status.entries.some((entry) => ['missing', 'drifted', 'removed-drifted'].includes(entry.status));
+  if (blocking) {
+    checks.push({ name: 'managed-artifacts', status: 'fail', detail: 'missing or drifted managed artifacts' });
+  } else {
+    checks.push({ name: 'managed-artifacts', status: 'pass', detail: `${status.entries.length} artifact(s)` });
+  }
+
+  if (json) {
+    console.log(JSON.stringify({ project_dir: projectDir, agents: agents.map((agent) => agent.id), checks, counts, blocking }, null, 2));
+  } else {
+    console.log(`ADLC doctor: ${projectDir}`);
+    console.log(`Agents: ${agents.map((agent) => agent.id).join(', ')}`);
+    for (const check of checks) {
+      console.log(`${check.status.toUpperCase()}: ${check.name} - ${check.detail}`);
+    }
+    for (const [name, count] of Object.entries(counts).sort()) {
+      console.log(`${name}: ${count}`);
+    }
+  }
+
+  process.exit(strict && blocking ? 1 : 0);
 }
 
 function printUpgradeGuidance() {
   console.log('ADLC upgrade guidance');
   console.log('');
-  console.log('ADLC is currently private and intentionally not published to NPM.');
-  console.log('Update the package source with git, then refresh installed runtime artifacts:');
+  console.log('Use upgrade for ADLC package or schema migrations.');
+  console.log('For normal managed file refreshes, run:');
   console.log('');
-  console.log('  git pull');
-  console.log('  node bin/adlc.js update --runtime codex-home');
+  console.log('  npm update -g adlc-cli');
+  console.log('  adlc update /path/to/project');
   console.log('');
-  console.log('When ADLC becomes publishable, this command should become the package self-update entrypoint.');
+  console.log('No package/schema migration is required by this version.');
 }
 
 function parseScalar(value) {
@@ -634,6 +814,137 @@ function loadAdlcConfig(targetDir) {
   };
 }
 
+function removeSimpleSection(content, sectionName) {
+  const lines = content.split(/\r?\n/);
+  const output = [];
+  let skipping = false;
+
+  for (const line of lines) {
+    const isTopLevel = /^[A-Za-z0-9_-]+:\s*$/.test(line);
+    if (isTopLevel) {
+      skipping = line.replace(':', '').trim() === sectionName;
+      if (skipping) continue;
+    }
+    if (!skipping) output.push(line);
+  }
+
+  return output.join('\n').trimEnd();
+}
+
+function writeInstallConfig(projectDir, agentIds, mcpKeys) {
+  const configPath = path.join(projectDir, '.adlc', 'config.yaml');
+  const current = fs.existsSync(configPath)
+    ? fs.readFileSync(configPath, 'utf8')
+    : fs.readFileSync(path.join(repoRoot, 'templates', 'adlc', 'config.yaml'), 'utf8');
+  const base = removeSimpleSection(current, 'install');
+  const installSection = [
+    '',
+    'install:',
+    `  agents: ${agentIds.join(',')}`,
+    `  mcp: ${mcpKeys.join(',')}`,
+    '',
+  ].join('\n');
+  fs.mkdirSync(path.dirname(configPath), { recursive: true });
+  fs.writeFileSync(configPath, `${base}${installSection}`);
+}
+
+function writeFileIfMissingWithLog(filePath, content, created) {
+  if (fs.existsSync(filePath)) {
+    return false;
+  }
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, content);
+  created.push(filePath);
+  return true;
+}
+
+function initProjectScaffold(projectDir) {
+  if (!fs.existsSync(projectDir) || !fs.statSync(projectDir).isDirectory()) {
+    throw new Error(`Target directory does not exist: ${projectDir}`);
+  }
+
+  const adlcDir = path.join(projectDir, '.adlc');
+  const dirs = [
+    'plans',
+    'fixes',
+    'patches',
+    'skill-context',
+    'references',
+    'qa',
+    'loops',
+    'workstreams',
+    'rules',
+    'extensions',
+  ];
+  for (const dir of dirs) {
+    fs.mkdirSync(path.join(adlcDir, dir), { recursive: true });
+  }
+
+  const created = [];
+  writeFileIfMissingWithLog(
+    path.join(adlcDir, 'config.yaml'),
+    fs.readFileSync(path.join(repoRoot, 'templates', 'adlc', 'config.yaml'), 'utf8'),
+    created,
+  );
+
+  for (const [fileName, title] of Object.entries({
+    'DESCRIPTION.md': 'Project Description',
+    'ARCHITECTURE.md': 'Architecture',
+    'RULES.md': 'Rules',
+  })) {
+    writeFileIfMissingWithLog(
+      path.join(adlcDir, fileName),
+      `# ${title}\n\nStatus: draft\n\nUpdate this file with repo-specific ADLC context before relying on plans or gates.\n`,
+      created,
+    );
+  }
+
+  return created;
+}
+
+function selectedMcpKeys(projectDir, args) {
+  const explicit = optionList(args, '--mcp', null);
+  const normalize = (keys) => {
+    const expanded = keys.includes('all') ? knownMcpServers : keys;
+    for (const key of expanded) {
+      if (!knownMcpServers.includes(key)) {
+        throw new Error(`Unknown MCP server: ${key}. Available: ${knownMcpServers.join(', ')}`);
+      }
+    }
+    return expanded;
+  };
+  if (explicit !== null) {
+    return normalize(explicit);
+  }
+
+  const loaded = loadAdlcConfig(projectDir);
+  const configured = loaded.config.install && loaded.config.install.mcp
+    ? parseCsvList(loaded.config.install.mcp)
+    : [];
+  return normalize(configured);
+}
+
+function initProject(args) {
+  const projectDir = projectDirFromArgs(args);
+  const agentIds = selectedAgentIds(projectDir, args, defaultAgentIds);
+  const mcpKeys = selectedMcpKeys(projectDir, args);
+  const noSkills = args.includes('--no-skills');
+  const skills = optionList(args, '--skills', []);
+
+  const created = initProjectScaffold(projectDir);
+  writeInstallConfig(projectDir, agentIds, mcpKeys);
+  installAgents([projectDir], agentIds, { noSkills, skills });
+  if (mcpKeys.length > 0) {
+    configureMcpForAgents(projectDir, agentIds, mcpKeys, false);
+  }
+  writeManagedState(projectDir, agentIds.map((id) => resolveAgent(projectDir, id)), { noSkills, skills });
+
+  console.log(`ADLC initialized at ${path.join(projectDir, '.adlc')}`);
+  console.log(`Agents: ${agentIds.join(', ')}`);
+  console.log(`MCP: ${mcpKeys.length ? mcpKeys.join(', ') : 'none'}`);
+  console.log(`Created scaffold files: ${created.length}`);
+}
+
 function resolveConfig(args) {
   const json = args.includes('--json');
   const targetArg = args.find((arg) => !arg.startsWith('--'));
@@ -653,6 +964,7 @@ function resolveConfig(args) {
     project_dir: targetDir,
     config_file: loaded.configPath,
     config_exists: loaded.configExists,
+    install: loaded.config.install || {},
     workflow: loaded.config.workflow || {},
     git: loaded.config.git || {},
     paths,
@@ -677,6 +989,7 @@ Usage:
   adlc workstream create <slug> [target-dir] [--title <title>] [--executor codex|hermes|either]
   adlc workstream status <slug> [target-dir] [--json]
   adlc workstream advance <slug> <step-id> [target-dir] --stage ready|build|review|test|commit|done|blocked
+  adlc workstream sync <slug> [target-dir] --agent hermes
 
 Workstreams live under configured paths.workstreams, defaulting to .adlc/workstreams.
 `);
@@ -925,6 +1238,92 @@ function advanceWorkstream(args) {
   console.log(matches[0].file);
 }
 
+function readJsonFile(filePath, fallback) {
+  if (!fs.existsSync(filePath)) return fallback;
+  try {
+    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  } catch {
+    return fallback;
+  }
+}
+
+function hermesLaneForStage(stage) {
+  if (stage === 'ready') return 'planned';
+  if (['build', 'review', 'test', 'commit', 'blocked', 'done'].includes(stage)) return stage;
+  return 'planned';
+}
+
+function writeHermesStepCard(projectDir, slug, step) {
+  const cardDir = path.join(projectDir, '.hermes', 'workstreams', slug, 'steps');
+  fs.mkdirSync(cardDir, { recursive: true });
+  const fileName = `${slugify(step.id)}.md`;
+  const cardPath = path.join(cardDir, fileName);
+  const content = `---\nid: hermes-card-${step.id}\ntype: hermes-card\nstatus: ${step.status}\nowner: Hermes\nstage: ${hermesLaneForStage(step.stage)}\nsource: ${step.file}\nexecutor: ${step.executor}\n---\n\n# ${step.id}\n\nSource ADLC step: \`${step.file}\`\n\nLifecycle: build -> review -> test -> commit\n\n## Execution Notes\n\nUse the source ADLC step as the contract. Keep this card independent enough for Codex execution or Hermes-managed progression.\n`;
+  fs.writeFileSync(cardPath, content);
+  return normalizeRelPath(projectDir, cardPath);
+}
+
+function syncHermesWorkstream(args) {
+  const positionals = positionalArgs(args);
+  const rawSlug = positionals[0];
+  if (!rawSlug) {
+    throw new Error('Usage: adlc workstream sync <slug> [target-dir] --agent hermes');
+  }
+
+  const targetAgent = optionValue(args, '--agent', 'hermes');
+  if (targetAgent !== 'hermes') {
+    throw new Error('Workstream sync currently supports --agent hermes.');
+  }
+
+  const slug = slugify(rawSlug);
+  const targetDir = path.resolve(process.cwd(), positionals[1] || '.');
+  const root = workstreamRoot(targetDir, slug);
+  if (!fs.existsSync(root)) {
+    throw new Error(`Workstream does not exist: ${root}`);
+  }
+
+  const hermesAgent = resolveAgent(targetDir, 'hermes');
+  ensureHermesStructure(hermesAgent);
+
+  const steps = listWorkstreamSteps(root, targetDir);
+  const cards = steps.map((step) => ({
+    ...step,
+    card: writeHermesStepCard(targetDir, slug, step),
+  }));
+
+  const kanbanPath = path.join(targetDir, '.hermes', 'kanban.json');
+  const kanban = readJsonFile(kanbanPath, {
+    schema_version: 1,
+    lanes: {
+      planned: [],
+      build: [],
+      review: [],
+      test: [],
+      commit: [],
+      blocked: [],
+      done: [],
+    },
+  });
+  kanban.lanes = kanban.lanes && typeof kanban.lanes === 'object' ? kanban.lanes : {};
+  for (const lane of ['planned', 'build', 'review', 'test', 'commit', 'blocked', 'done']) {
+    kanban.lanes[lane] = (kanban.lanes[lane] || []).filter((cardId) => !String(cardId).includes(`-${slug}-`));
+  }
+  for (const card of cards) {
+    const lane = hermesLaneForStage(card.stage);
+    kanban.lanes[lane] = kanban.lanes[lane] || [];
+    kanban.lanes[lane].push(`hermes-card-${card.id}`);
+  }
+  fs.writeFileSync(kanbanPath, `${JSON.stringify(kanban, null, 2)}\n`);
+
+  const inboxPath = path.join(targetDir, '.hermes', 'inbox', `${slug}.md`);
+  const inbox = `---\nid: hermes-inbox-${slug}\ntype: hermes-handoff\nstatus: active\nowner: Hermes\nsource: ${normalizeRelPath(targetDir, root)}\n---\n\n# ${titleizeSlug(slug)}\n\nSynced from ADLC workstream \`${normalizeRelPath(targetDir, root)}\`.\n\nCards:\n${cards.map((card) => `- ${card.id}: \`${card.card}\``).join('\n')}\n`;
+  fs.writeFileSync(inboxPath, inbox);
+
+  console.log(`Synced Hermes workstream: ${slug}`);
+  console.log(`Cards: ${cards.length}`);
+  console.log(`Inbox: ${normalizeRelPath(targetDir, inboxPath)}`);
+}
+
 function handleWorkstream(args) {
   const [subcommand = 'help', ...subArgs] = args;
   switch (subcommand) {
@@ -941,6 +1340,9 @@ function handleWorkstream(args) {
       break;
     case 'advance':
       advanceWorkstream(subArgs);
+      break;
+    case 'sync':
+      syncHermesWorkstream(subArgs);
       break;
     default:
       throw new Error(`Unknown workstream command: ${subcommand}`);
@@ -995,34 +1397,33 @@ function renderMcpTomlBlock(key, template) {
   return lines.join('\n');
 }
 
-function configureMcpToml(runtime, keys, remove = false) {
-  if (!runtime.settingsPath) {
-    throw new Error(`Runtime ${runtime.id} does not support MCP settings.`);
+function configureMcpToml(agent, keys, remove = false) {
+  if (!agent.settingsPath) {
+    throw new Error(`Agent ${agent.id} does not support MCP settings.`);
   }
-  fs.mkdirSync(path.dirname(runtime.settingsPath), { recursive: true });
-  if (runtime.managedConfig && !fs.existsSync(runtime.settingsPath)) {
-    const sourceConfig = path.join(repoRoot, 'subagents', 'codex', 'config.toml');
-    fs.copyFileSync(sourceConfig, runtime.settingsPath);
+  fs.mkdirSync(path.dirname(agent.settingsPath), { recursive: true });
+  if (agent.managedConfigSource && !fs.existsSync(agent.settingsPath)) {
+    fs.copyFileSync(agent.managedConfigSource, agent.settingsPath);
   }
-  let content = fs.existsSync(runtime.settingsPath) ? fs.readFileSync(runtime.settingsPath, 'utf8') : '';
+  let content = fs.existsSync(agent.settingsPath) ? fs.readFileSync(agent.settingsPath, 'utf8') : '';
   for (const key of keys) {
     content = removeMcpTomlBlock(content, key);
     if (!remove) {
       content = `${content.trimEnd()}\n\n${renderMcpTomlBlock(key, loadMcpTemplate(key))}\n`;
     }
   }
-  fs.writeFileSync(runtime.settingsPath, content.trimStart());
+  fs.writeFileSync(agent.settingsPath, content.trimStart());
 }
 
-function configureMcpJson(runtime, keys, remove = false) {
-  if (!runtime.settingsPath) {
-    throw new Error(`Runtime ${runtime.id} does not support MCP settings.`);
+function configureMcpJson(agent, keys, remove = false) {
+  if (!agent.settingsPath) {
+    throw new Error(`Agent ${agent.id} does not support MCP settings.`);
   }
-  fs.mkdirSync(path.dirname(runtime.settingsPath), { recursive: true });
+  fs.mkdirSync(path.dirname(agent.settingsPath), { recursive: true });
   let settings = {};
-  if (fs.existsSync(runtime.settingsPath)) {
+  if (fs.existsSync(agent.settingsPath)) {
     try {
-      settings = JSON.parse(fs.readFileSync(runtime.settingsPath, 'utf8'));
+      settings = JSON.parse(fs.readFileSync(agent.settingsPath, 'utf8'));
     } catch {
       settings = {};
     }
@@ -1035,7 +1436,7 @@ function configureMcpJson(runtime, keys, remove = false) {
       settings.mcpServers[key] = loadMcpTemplate(key);
     }
   }
-  fs.writeFileSync(runtime.settingsPath, `${JSON.stringify(settings, null, 2)}\n`);
+  fs.writeFileSync(agent.settingsPath, `${JSON.stringify(settings, null, 2)}\n`);
 }
 
 function parseMcpKeys(args) {
@@ -1044,6 +1445,24 @@ function parseMcpKeys(args) {
   const rawKeys = positionals.slice(1).filter((arg) => knownMcpServers.includes(arg) || arg === 'all');
   const keys = rawKeys.includes('all') ? knownMcpServers : rawKeys;
   return { command, keys };
+}
+
+function configureMcpForAgents(projectDir, agentIds, keys, remove = false) {
+  for (const key of keys) {
+    loadMcpTemplate(key);
+  }
+
+  const changed = [];
+  for (const agent of agentIds.map((id) => resolveAgent(projectDir, id))) {
+    if (!agent.supportsMcp || !agent.settingsPath) continue;
+    if (agent.settingsFormat === 'codex-toml') {
+      configureMcpToml(agent, keys, remove);
+    } else {
+      configureMcpJson(agent, keys, remove);
+    }
+    changed.push(agent.id);
+  }
+  return changed;
 }
 
 function handleMcp(args) {
@@ -1069,20 +1488,13 @@ function handleMcp(args) {
     throw new Error(`MCP ${command} requires one or more server keys, or "all".`);
   }
 
-  const runtimeArgs = args.filter((arg) => !knownMcpServers.includes(arg) && arg !== 'all' && arg !== command);
-  const runtime = resolveRuntime(runtimeArgs);
-  if (!runtime.settingsPath) {
-    throw new Error(`Runtime ${runtime.id} does not support MCP settings.`);
-  }
+  const passthroughArgs = args.filter((arg) => !knownMcpServers.includes(arg) && arg !== 'all' && arg !== command);
+  const projectDir = projectDirFromArgs(passthroughArgs);
+  const agentIds = selectedAgentIds(projectDir, passthroughArgs);
+  const changed = configureMcpForAgents(projectDir, agentIds, keys, command === 'remove');
 
-  if (runtime.settingsFormat === 'codex-toml') {
-    configureMcpToml(runtime, keys, command === 'remove');
-  } else {
-    configureMcpJson(runtime, keys, command === 'remove');
-  }
-
-  console.log(`${command === 'remove' ? 'Removed' : 'Configured'} MCP servers for ${runtime.id}: ${keys.join(', ')}`);
-  console.log(`Settings: ${runtime.settingsPath}`);
+  console.log(`${command === 'remove' ? 'Removed' : 'Configured'} MCP servers for agents: ${changed.join(', ') || 'none'}`);
+  console.log(`Project: ${projectDir}`);
 }
 
 function extensionRegistryPath(projectDir) {
@@ -1140,8 +1552,8 @@ function loadExtensionManifest(sourceDir) {
   for (const agentFile of manifest.agentFiles || []) {
     const abs = path.resolve(sourceDir, agentFile.source || '');
     assertInside(sourceDir, abs);
-    if (!agentFile.runtime || !agentFile.source || !agentFile.target || !fs.existsSync(abs)) {
-      throw new Error('Extension agentFiles entries require runtime, source, target, and an existing source file.');
+    if (!(agentFile.agent || agentFile.runtime) || !agentFile.source || !agentFile.target || !fs.existsSync(abs)) {
+      throw new Error('Extension agentFiles entries require agent, source, target, and an existing source file.');
     }
   }
   for (const server of manifest.mcpServers || []) {
@@ -1222,14 +1634,15 @@ function applyExtensionInjection(skillContent, injectionContent, name, target, p
   return `${content.trimEnd()}\n\n${block}\n`;
 }
 
-function skillFilePath(runtime, skillName) {
-  return path.join(runtime.skillsDir, skillName, 'SKILL.md');
+function skillFilePath(agent, skillName) {
+  return path.join(agent.skillsDir, skillName, 'SKILL.md');
 }
 
-function applyExtensionInjections(runtime, extensionDir, manifest) {
+function applyExtensionInjections(agent, extensionDir, manifest) {
   const installedInjections = [];
+  if (!agent.skillsDir) return installedInjections;
   for (const injection of manifest.injections || []) {
-    const targetFile = skillFilePath(runtime, injection.target);
+    const targetFile = skillFilePath(agent, injection.target);
     if (!fs.existsSync(targetFile)) continue;
     const injectionFile = path.resolve(extensionDir, injection.file);
     assertInside(extensionDir, injectionFile);
@@ -1243,6 +1656,7 @@ function applyExtensionInjections(runtime, extensionDir, manifest) {
     );
     fs.writeFileSync(targetFile, next);
     installedInjections.push({
+      agent: agent.id,
       target: injection.target,
       position: injection.position,
       file: targetFile,
@@ -1252,9 +1666,10 @@ function applyExtensionInjections(runtime, extensionDir, manifest) {
   return installedInjections;
 }
 
-function stripInstalledExtensionInjections(runtime, record) {
+function stripInstalledExtensionInjections(agent, record) {
   const seen = new Set();
   for (const injection of record.installedInjections || []) {
+    if (injection.agent && injection.agent !== agent.id) continue;
     if (!injection.file || seen.has(injection.file) || !fs.existsSync(injection.file)) continue;
     seen.add(injection.file);
     const current = fs.readFileSync(injection.file, 'utf8');
@@ -1264,8 +1679,8 @@ function stripInstalledExtensionInjections(runtime, record) {
     }
   }
 
-  if (runtime.skillsDir && fs.existsSync(runtime.skillsDir)) {
-    for (const file of listFilesRecursive(runtime.skillsDir).filter((item) => item.endsWith('SKILL.md'))) {
+  if (agent.skillsDir && fs.existsSync(agent.skillsDir)) {
+    for (const file of listFilesRecursive(agent.skillsDir).filter((item) => item.endsWith('SKILL.md'))) {
       if (seen.has(file)) continue;
       const current = fs.readFileSync(file, 'utf8');
       if (!current.includes(`adlc-ext:${record.name}:`)) continue;
@@ -1275,12 +1690,12 @@ function stripInstalledExtensionInjections(runtime, record) {
   }
 }
 
-function removeExtensionMcp(runtime, keys) {
-  if (!runtime.settingsPath || keys.length === 0) return;
-  if (runtime.settingsFormat === 'codex-toml') {
-    configureMcpToml(runtime, keys, true);
+function removeExtensionMcp(agent, keys) {
+  if (!agent.settingsPath || keys.length === 0) return;
+  if (agent.settingsFormat === 'codex-toml') {
+    configureMcpToml(agent, keys, true);
   } else {
-    configureMcpJson(runtime, keys, true);
+    configureMcpJson(agent, keys, true);
   }
 }
 
@@ -1290,81 +1705,94 @@ function installExtension(args) {
   if (!sourceArg) throw new Error('extension add requires a local source directory.');
   const sourceDir = path.resolve(process.cwd(), sourceArg);
   const projectDir = extensionProjectDir(args);
-  const runtime = resolveRuntime([projectDir, `--runtime=${optionValue(args, '--runtime', 'codex-project')}`]);
+  const agentIds = selectedAgentIds(projectDir, args);
+  const agents = agentIds.map((id) => resolveAgent(projectDir, id));
   const manifest = loadExtensionManifest(sourceDir);
   const extensionDir = extensionInstallDir(projectDir, manifest.name);
   const registry = loadExtensionRegistry(projectDir);
   const existingIndex = registry.extensions.findIndex((entry) => entry.name === manifest.name);
-  const installedSkills = [];
-  const installedAgentFiles = [];
-  const installedMcpServers = [];
-  const installedReplacements = [];
+  const installedAgents = [];
 
   fs.rmSync(extensionDir, { recursive: true, force: true });
   fs.mkdirSync(path.dirname(extensionDir), { recursive: true });
   fs.cpSync(sourceDir, extensionDir, { recursive: true });
 
   const replacementPaths = new Set(Object.keys(manifest.replaces || {}));
-  for (const skillPath of manifest.skills || []) {
-    if (replacementPaths.has(skillPath)) continue;
-    const sourceSkill = path.resolve(extensionDir, skillPath);
-    const skillName = path.basename(sourceSkill);
-    const target = path.join(runtime.skillsDir, skillName);
-    copyManagedArtifact(sourceSkill, target);
-    installedSkills.push({ name: skillName, target, installedHash: hashPath(target) });
-  }
 
-  for (const [skillPath, baseSkillName] of Object.entries(manifest.replaces || {})) {
-    const sourceSkill = path.resolve(extensionDir, skillPath);
-    const target = path.join(runtime.skillsDir, baseSkillName);
-    copyManagedArtifact(sourceSkill, target);
-    installedReplacements.push({ name: baseSkillName, target, installedHash: hashPath(target) });
-  }
+  for (const agent of agents) {
+    const installedSkills = [];
+    const installedAgentFiles = [];
+    const installedMcpServers = [];
+    const installedReplacements = [];
 
-  for (const agentFile of manifest.agentFiles || []) {
-    if (agentFile.runtime !== runtime.id) continue;
-    if (!runtime.agentsDir) continue;
-    const sourceFile = path.resolve(extensionDir, agentFile.source);
-    const target = path.join(runtime.agentsDir, agentFile.target);
-    copyManagedArtifact(sourceFile, target);
-    installedAgentFiles.push({ target, installedHash: hashPath(target) });
-  }
-
-  for (const server of manifest.mcpServers || []) {
-    if (!runtime.settingsPath) continue;
-    const template = readExtensionMcpTemplate(extensionDir, server);
-    if (runtime.settingsFormat === 'codex-toml') {
-      fs.mkdirSync(path.dirname(runtime.settingsPath), { recursive: true });
-      let content = fs.existsSync(runtime.settingsPath) ? fs.readFileSync(runtime.settingsPath, 'utf8') : '';
-      content = removeMcpTomlBlock(content, server.key);
-      content = `${content.trimEnd()}\n\n${renderMcpTomlBlock(server.key, template)}\n`;
-      fs.writeFileSync(runtime.settingsPath, content.trimStart());
-    } else {
-      fs.mkdirSync(path.dirname(runtime.settingsPath), { recursive: true });
-      let settings = {};
-      if (fs.existsSync(runtime.settingsPath)) {
-        try { settings = JSON.parse(fs.readFileSync(runtime.settingsPath, 'utf8')); } catch { settings = {}; }
+    if (agent.skillsDir) {
+      for (const skillPath of manifest.skills || []) {
+        if (replacementPaths.has(skillPath)) continue;
+        const sourceSkill = path.resolve(extensionDir, skillPath);
+        const skillName = path.basename(sourceSkill);
+        const target = path.join(agent.skillsDir, skillName);
+        copyManagedArtifact(sourceSkill, target);
+        installedSkills.push({ name: skillName, target, installedHash: hashPath(target) });
       }
-      settings.mcpServers = settings.mcpServers && typeof settings.mcpServers === 'object' ? settings.mcpServers : {};
-      settings.mcpServers[server.key] = template;
-      fs.writeFileSync(runtime.settingsPath, `${JSON.stringify(settings, null, 2)}\n`);
-    }
-    installedMcpServers.push(server.key);
-  }
 
-  const installedInjections = applyExtensionInjections(runtime, extensionDir, manifest);
+      for (const [skillPath, baseSkillName] of Object.entries(manifest.replaces || {})) {
+        const sourceSkill = path.resolve(extensionDir, skillPath);
+        const target = path.join(agent.skillsDir, baseSkillName);
+        copyManagedArtifact(sourceSkill, target);
+        installedReplacements.push({ name: baseSkillName, target, installedHash: hashPath(target) });
+      }
+    }
+
+    for (const agentFile of manifest.agentFiles || []) {
+      const targetAgent = agentFile.agent || agentFile.runtime;
+      if (targetAgent !== agent.id) continue;
+      if (!agent.agentsDir) continue;
+      const sourceFile = path.resolve(extensionDir, agentFile.source);
+      const target = path.join(agent.agentsDir, agentFile.target);
+      copyManagedArtifact(sourceFile, target);
+      installedAgentFiles.push({ target, installedHash: hashPath(target) });
+    }
+
+    for (const server of manifest.mcpServers || []) {
+      if (!agent.settingsPath) continue;
+      const template = readExtensionMcpTemplate(extensionDir, server);
+      if (agent.settingsFormat === 'codex-toml') {
+        fs.mkdirSync(path.dirname(agent.settingsPath), { recursive: true });
+        let content = fs.existsSync(agent.settingsPath) ? fs.readFileSync(agent.settingsPath, 'utf8') : '';
+        content = removeMcpTomlBlock(content, server.key);
+        content = `${content.trimEnd()}\n\n${renderMcpTomlBlock(server.key, template)}\n`;
+        fs.writeFileSync(agent.settingsPath, content.trimStart());
+      } else {
+        fs.mkdirSync(path.dirname(agent.settingsPath), { recursive: true });
+        let settings = {};
+        if (fs.existsSync(agent.settingsPath)) {
+          try { settings = JSON.parse(fs.readFileSync(agent.settingsPath, 'utf8')); } catch { settings = {}; }
+        }
+        settings.mcpServers = settings.mcpServers && typeof settings.mcpServers === 'object' ? settings.mcpServers : {};
+        settings.mcpServers[server.key] = template;
+        fs.writeFileSync(agent.settingsPath, `${JSON.stringify(settings, null, 2)}\n`);
+      }
+      installedMcpServers.push(server.key);
+    }
+
+    const installedInjections = applyExtensionInjections(agent, extensionDir, manifest);
+    installedAgents.push({
+      agent: agent.id,
+      installedSkills,
+      installedReplacements,
+      installedAgentFiles,
+      installedMcpServers,
+      installedInjections,
+    });
+  }
 
   const record = {
     name: manifest.name,
     version: manifest.version,
     source: sourceDir,
-    runtime: runtime.id,
+    agents: agentIds,
     installed_at: new Date().toISOString(),
-    installedSkills,
-    installedReplacements,
-    installedAgentFiles,
-    installedMcpServers,
-    installedInjections,
+    installedAgents,
   };
   if (existingIndex >= 0) registry.extensions[existingIndex] = record;
   else registry.extensions.push(record);
@@ -1385,26 +1813,36 @@ function removeExtension(args) {
   if (index < 0) throw new Error(`Extension is not installed: ${name}`);
   const record = registry.extensions[index];
   const log = (message) => console.log(message);
-  const runtime = resolveRuntime([projectDir, `--runtime=${record.runtime || optionValue(args, '--runtime', 'codex-project')}`]);
+  const installedAgents = record.installedAgents || [{
+    agent: record.runtime || 'codex',
+    installedSkills: record.installedSkills || [],
+    installedReplacements: record.installedReplacements || [],
+    installedAgentFiles: record.installedAgentFiles || [],
+    installedMcpServers: record.installedMcpServers || [],
+    installedInjections: record.installedInjections || [],
+  }];
 
-  stripInstalledExtensionInjections(runtime, record);
+  for (const installedAgent of installedAgents) {
+    const agent = resolveAgent(projectDir, installedAgent.agent);
+    stripInstalledExtensionInjections(agent, { ...record, installedInjections: installedAgent.installedInjections || [] });
 
-  for (const replacement of record.installedReplacements || []) {
-    const status = removeIfSafe({ kind: 'extension-replacement', name: replacement.name, target: replacement.target, installedHash: replacement.installedHash }, force, log);
-    const packagedSource = path.join(repoRoot, 'skills', 'adlc', replacement.name);
-    if (status !== 'skipped-drifted' && fs.existsSync(packagedSource)) {
-      copyManagedPackageArtifact({ kind: 'skill', name: replacement.name, source: packagedSource, target: replacement.target });
-      log(`Restored ADLC skill: ${replacement.name}`);
+    for (const replacement of installedAgent.installedReplacements || []) {
+      const status = removeIfSafe({ kind: 'extension-replacement', name: replacement.name, target: replacement.target, installedHash: replacement.installedHash }, force, log);
+      const packagedSource = path.join(repoRoot, 'skills', 'adlc', replacement.name);
+      if (status !== 'skipped-drifted' && fs.existsSync(packagedSource)) {
+        copyManagedPackageArtifact({ kind: 'skill', name: replacement.name, source: packagedSource, target: replacement.target });
+        log(`Restored ADLC skill: ${replacement.name}`);
+      }
     }
-  }
 
-  for (const skill of record.installedSkills || []) {
-    removeIfSafe({ kind: 'extension-skill', name: skill.name, target: skill.target, installedHash: skill.installedHash }, force, log);
+    for (const skill of installedAgent.installedSkills || []) {
+      removeIfSafe({ kind: 'extension-skill', name: skill.name, target: skill.target, installedHash: skill.installedHash }, force, log);
+    }
+    for (const agentFile of installedAgent.installedAgentFiles || []) {
+      removeIfSafe({ kind: 'extension-agent', name: path.basename(agentFile.target), target: agentFile.target, installedHash: agentFile.installedHash }, force, log);
+    }
+    removeExtensionMcp(agent, installedAgent.installedMcpServers || []);
   }
-  for (const agentFile of record.installedAgentFiles || []) {
-    removeIfSafe({ kind: 'extension-agent', name: path.basename(agentFile.target), target: agentFile.target, installedHash: agentFile.installedHash }, force, log);
-  }
-  removeExtensionMcp(runtime, record.installedMcpServers || []);
 
   fs.rmSync(extensionInstallDir(projectDir, name), { recursive: true, force: true });
   registry.extensions.splice(index, 1);
@@ -1452,7 +1890,7 @@ function handleExtension(args) {
     return;
   }
   for (const extension of registry.extensions) {
-    console.log(`${extension.name}\t${extension.version}\t${extension.runtime}`);
+    console.log(`${extension.name}\t${extension.version}\t${(extension.agents || [extension.runtime || 'unknown']).join(',')}`);
   }
 }
 
@@ -1756,17 +2194,20 @@ switch (command) {
   case 'list':
     runScript('list-adlc.sh', args);
     break;
-  case 'runtimes':
-    printRuntimes(args);
+  case 'agents':
+    printAgents(args);
     break;
   case 'status':
     printManagedStatus(args);
     break;
-  case 'install':
-    installRuntime(args);
-    break;
   case 'update':
-    updateRuntime(args);
+    updateAgents(args);
+    break;
+  case 'doctor':
+    doctor(args);
+    break;
+  case 'uninstall':
+    uninstallAgents(args);
     break;
   case 'upgrade':
     printUpgradeGuidance();
@@ -1783,11 +2224,8 @@ switch (command) {
   case 'workstream':
     handleWorkstream(args);
     break;
-  case 'install-codex':
-    installCodex(args);
-    break;
   case 'init':
-    runScript('init-adlc-project.sh', args);
+    initProject(args);
     break;
   case 'audit-artifacts':
     auditArtifacts(args);

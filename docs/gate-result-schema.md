@@ -3,7 +3,6 @@ id: adlc-doc-gate-result-schema
 type: contract
 status: active
 owner: ADLC
-depends_on: [adlc-doc-factory-parity-gap-plan]
 ---
 
 # ADLC Gate Result Schema

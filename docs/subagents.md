@@ -9,7 +9,7 @@ owner: ADLC
 
 ADLC uses native Codex agents for bounded parallel work and independent read-only checks.
 
-Project-runtime installs copy the bundled Codex TOML files into `.codex/agents/` and copy the managed Codex agent defaults into `.codex/config.toml`. ADLC tracks that config file as a managed artifact for `codex-project` installs, while ignoring ADLC MCP blocks during hash checks so MCP setup remains independently configurable.
+`adlc init --agents codex` copies the bundled Codex TOML files into `.codex/agents/` and copies managed Codex defaults into `.codex/config.toml`. ADLC tracks managed files in `.adlc/managed-state.json`, while ignoring ADLC MCP blocks during Codex config hash checks so MCP setup remains independently configurable.
 
 ## Coordinators
 

@@ -1,9 +1,28 @@
 {
-  "name": "@davidvictor/adlc",
+  "name": "adlc-cli",
   "version": "0.1.0",
-  "private": true,
-  "description": "ADLC skills, templates, and Codex agents for David Victor's agent-driven development lifecycle.",
+  "description": "Agent-driven lifecycle tooling for Codex, Claude, and Hermes workstreams.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davidvictor/adlc-skills.git"
+  },
+  "homepage": "https://github.com/davidvictor/adlc-skills#readme",
+  "bugs": {
+    "url": "https://github.com/davidvictor/adlc-skills/issues"
+  },
+  "keywords": [
+    "adlc",
+    "codex",
+    "claude",
+    "hermes",
+    "agents",
+    "workstreams"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "npm@10.9.4",
   "bin": {
     "adlc": "./bin/adlc.js"
   },
@@ -27,16 +46,18 @@
     "validate": "bash scripts/validate-adlc.sh",
     "test:cli": "bash scripts/test-adlc-cli.sh",
     "test:skill-fixtures": "bash scripts/test-adlc-skill-fixtures.sh",
+    "test:package-smoke": "bash scripts/test-package-smoke.sh",
     "audit:artifacts": "node bin/adlc.js audit-artifacts",
-    "runtimes": "node bin/adlc.js runtimes",
+    "agents": "node bin/adlc.js agents",
+    "init": "node bin/adlc.js init",
     "status": "node bin/adlc.js status",
-    "install:runtime": "node bin/adlc.js install",
-    "update:codex": "node bin/adlc.js update",
+    "update": "node bin/adlc.js update",
+    "doctor": "node bin/adlc.js doctor",
+    "uninstall": "node bin/adlc.js uninstall",
     "resolve:config": "node bin/adlc.js resolve-config",
     "workstream": "node bin/adlc.js workstream",
     "mcp:list": "node bin/adlc.js mcp list",
     "extension:list": "node bin/adlc.js extension list",
-    "install:codex": "bash scripts/install-codex-adlc.sh",
-    "init:project": "bash scripts/init-adlc-project.sh"
+    "pack:dry-run": "npm --cache /private/tmp/adlc-npm-cache pack --dry-run"
   }
 }

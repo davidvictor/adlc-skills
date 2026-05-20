@@ -47,7 +47,7 @@ grep -q "bounded" skills/adlc/adlc-implement/references/IMPLEMENTATION-GUIDE.md
 grep -q "Pass Criteria" skills/adlc/adlc-qa/templates/TEST-PLAN.md
 grep -q "architecture artifact" skills/adlc/adlc-architecture/SKILL.md
 grep -q '"gate": "security"' skills/adlc/adlc-security-checklist/SKILL.md
-grep -q "build -> review -> test -> commit" skills/adlc/adlc-workstream/references/WORKSTREAM-CONTRACT.md
+grep -q "build -> review -> fix -> test -> commit" skills/adlc/adlc-workstream/references/WORKSTREAM-CONTRACT.md
 grep -q "Hermes" skills/adlc/adlc-workstream/templates/HERMES-HANDOFF.md
 
 tmp_dir="$(mktemp -d "${TMPDIR:-/tmp}/adlc-skill-install.XXXXXX")"

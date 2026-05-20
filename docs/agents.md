@@ -51,6 +51,16 @@ Claude agent definitions will be added when they are intentionally authored for 
 
 Hermes is the managed workstream target. ADLC projects grounded epics into Hermes cards; Hermes owns board progression after handoff.
 
+Codex is the Hermes board operator for ADLC workstreams. Codex prepares the
+source workstream, syncs the Hermes Kanban, and starts or assigns the requested
+tasks. Hermes tasks should run on a Codex GPT-5.5 profile with xhigh reasoning
+unless a project override says otherwise. Worktree use is configurable and
+should be asked for unless already required by config or user instruction.
+
+ADLC stop commands are task-scoped. Do not stop Hermes gateway, daemon,
+scheduler, or other global services unless the operator explicitly names that
+service.
+
 ## Managed State
 
 ADLC records managed file hashes in `.adlc/managed-state.json`.

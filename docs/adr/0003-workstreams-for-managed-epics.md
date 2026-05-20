@@ -22,14 +22,14 @@ Workstreams live under `paths.workstreams`, default `.adlc/workstreams/`. A work
 Every step moves through:
 
 ```text
-ready -> build -> review -> test -> commit -> done
+ready -> build -> review -> fix -> test -> commit -> done
 ```
 
 `blocked` is available whenever an executor cannot proceed safely.
 
 ## Boundaries
 
-ADLC does not become a Hermes runner. ADLC creates source artifacts and handoff contracts. Hermes owns its own Kanban once cards are imported. Codex steps continue to use `adlc-implement`, `adlc-verify`, `adlc-review`, and `adlc-commit`.
+ADLC does not become a Hermes runner. ADLC creates source artifacts and handoff contracts. Codex manages Hermes board setup for ADLC handoffs, and Hermes owns task execution once cards are imported. Codex steps continue to use `adlc-implement`, `adlc-verify`, `adlc-review`, and `adlc-commit`.
 
 ## Consequences
 

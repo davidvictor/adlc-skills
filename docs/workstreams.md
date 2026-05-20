@@ -16,7 +16,7 @@ A workstream turns an epic into grounded, independent step cards. Each card has 
 The lifecycle is:
 
 ```text
-ready -> build -> review -> test -> commit -> done
+ready -> build -> review -> fix -> test -> commit -> done
 ```
 
 `blocked` can replace any stage when the executor needs a human decision, credential, missing dependency, or safer plan.
@@ -59,6 +59,18 @@ Do not create a step from intuition alone. If the evidence is missing, create a 
 - `either`: safe for Codex or Hermes.
 
 ADLC does not run Hermes. ADLC owns the source workstream and the handoff contract. Hermes owns its own Kanban once work is imported.
+
+When a human asks Codex to use Hermes, Codex manages the board setup and handoff.
+Each Hermes card maps to one ADLC workstream step and carries the same lifecycle
+gates: build, review, fix, test, and commit. Hermes workers should use a Codex
+GPT-5.5 profile with xhigh reasoning unless a target project overrides that
+profile. Worktree execution is configurable; ask before using a worktree unless
+the project config or user request already requires it.
+
+Codex must not stop global Hermes services while managing a workstream. It may
+stop only the Hermes task, session, or process it launched for the current work.
+Stopping a gateway, daemon, scheduler, or other global service requires an
+explicit operator request.
 
 ## CLI
 

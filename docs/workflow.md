@@ -18,6 +18,18 @@ ADLC has two phases: project setup and the repeatable development loop.
 
 The setup skill `adlc` owns project context. It should not write plans or implement feature code.
 
+## Delegation Intake
+
+Before planning or launching an external worker, inspect the target repo status
+and decide whether the current work needs a checkpoint.
+
+- If the dirty tree is small, coherent, and clearly related to the requested
+  work, commit it first with an accurate conventional message.
+- If the dirty tree is large, mixed, unrelated, or hard to classify, stop and
+  ask the operator how to handle it.
+- Do not hand a dirty tree to a worker unless the workstream or operator has
+  explicitly chosen that state.
+
 ## Development Loop
 
 1. `adlc-explore` investigates options when the problem is unclear.
@@ -35,9 +47,30 @@ The setup skill `adlc` owns project context. It should not write plans or implem
 
 ## Workstream Loop
 
-Workstreams are for epics that will not finish in one session. A workstream step moves through `ready -> build -> review -> test -> commit -> done`, with `blocked` available at every point.
+Workstreams are for epics that will not finish in one session. A workstream step moves through `ready -> build -> review -> fix -> test -> commit -> done`, with `blocked` available at every point.
 
 Codex steps are executed with normal ADLC implementation, verification, review, and commit commands. Hermes steps are exported as Kanban-ready cards; Hermes owns its board state after handoff while ADLC preserves the source artifact and step IDs.
+
+When Codex is asked to use Hermes, Codex is the board operator: it prepares the
+ADLC workstream, syncs the Hermes Kanban, assigns or starts the requested lane,
+and then leaves Hermes to work through the board. Codex should not replace the
+Kanban with one giant ad-hoc Hermes prompt.
+
+Stopping a global worker service is never implied by stopping one task. Stop
+only the worker/session/process launched for the current task. A gateway,
+daemon, scheduler, or global service may be stopped only when the operator asks
+for that exact service to stop.
+
+## Mainline Closeout
+
+When the requested destination is `main`, close the loop explicitly:
+
+1. Commit the finished feature branch or working branch.
+2. Run the strongest practical verification gate.
+3. Merge or fast-forward the verified work into `main`.
+4. Push `main` to `origin`.
+5. Record release proof: current branch, clean status, relevant gate output,
+   local `main` SHA, remote `origin/main` SHA, and divergence count.
 
 ## Artifact Ownership
 

@@ -36,6 +36,26 @@ Default config lives in [templates/adlc/config.yaml](../templates/adlc/config.ya
 - `verify_before_review`: whether verify should precede review.
 - `review_before_commit`: whether review should precede commit.
 - `evolve_from_patches`: whether patch notes should feed `adlc-evolve`.
+- `dirty_tree_before_delegation`: how to handle existing changes before worker
+  handoff. Default `small_commit_large_ask` means commit a small coherent dirty
+  tree and ask before delegating a large or mixed tree.
+- `release_proof_before_push`: whether mainline pushes should include explicit
+  status, verification, SHA, and divergence proof.
+
+## `external_workers`
+
+- `default_worktree_mode`: whether external workers should use worktrees by
+  default. `ask` means ask unless the project or user already requires one.
+- `stop_global_services`: whether ADLC may stop global worker services. Default
+  `explicit_only` means task stop does not imply stopping gateways, daemons, or
+  schedulers.
+
+## `hermes`
+
+- `board_manager`: who prepares and syncs the Hermes Kanban. Default `codex`.
+- `worker_provider`: preferred Hermes worker provider.
+- `worker_model`: preferred Hermes worker model.
+- `worker_reasoning_effort`: preferred Hermes worker reasoning effort.
 
 ## `git`
 

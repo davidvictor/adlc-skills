@@ -30,7 +30,7 @@ Out of scope:
 
 - Codex lane:
 - Hermes lane:
-- Shared gates: build -> review -> test -> commit
+- Shared gates: build -> review -> fix -> test -> commit
 
 ## Step Index
 

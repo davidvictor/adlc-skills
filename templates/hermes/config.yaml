@@ -3,4 +3,8 @@ agent: hermes
 kanban: .hermes/kanban.json
 workstreams: .hermes/workstreams
 inbox: .hermes/inbox
-lanes: planned,build,review,test,commit,blocked,done
+lanes: planned,build,review,fix,test,commit,blocked,done
+# ADLC expects Hermes workers to run on a Codex GPT-5.5 profile with xhigh
+# reasoning unless a target project explicitly overrides the worker profile.
+# Ask before using isolated worktrees unless the target repo or user request
+# already makes worktree execution mandatory.

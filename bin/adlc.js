@@ -988,7 +988,7 @@ function workstreamHelp() {
 Usage:
   adlc workstream create <slug> [target-dir] [--title <title>] [--executor codex|hermes|either]
   adlc workstream status <slug> [target-dir] [--json]
-  adlc workstream advance <slug> <step-id> [target-dir] --stage ready|build|review|test|commit|done|blocked
+  adlc workstream advance <slug> <step-id> [target-dir] --stage ready|build|review|fix|test|commit|done|blocked
   adlc workstream sync <slug> [target-dir] --agent hermes
 
 Workstreams live under configured paths.workstreams, defaulting to .adlc/workstreams.
@@ -1083,7 +1083,7 @@ function createWorkstream(args) {
     created.push('WORKSTREAM.md');
   }
 
-  const kanban = `---\nid: ${workstreamId}-kanban\ntype: kanban\nstatus: active\nowner: ADLC\ndocuments: [${workstreamId}]\n---\n\n# ${title} Kanban\n\n| Stage | Steps |\n| --- | --- |\n| ready | ${stepId} |\n| build |  |\n| review |  |\n| test |  |\n| commit |  |\n| done |  |\n| blocked |  |\n`;
+  const kanban = `---\nid: ${workstreamId}-kanban\ntype: kanban\nstatus: active\nowner: ADLC\ndocuments: [${workstreamId}]\n---\n\n# ${title} Kanban\n\n| Stage | Steps |\n| --- | --- |\n| ready | ${stepId} |\n| build |  |\n| review |  |\n| fix |  |\n| test |  |\n| commit |  |\n| done |  |\n| blocked |  |\n`;
   if (writeFileIfMissing(path.join(root, 'kanban.md'), kanban)) {
     created.push('kanban.md');
   }
@@ -1206,7 +1206,7 @@ function advanceWorkstream(args) {
   }
 
   const stage = optionValue(args, '--stage');
-  const allowedStages = ['ready', 'build', 'review', 'test', 'commit', 'done', 'blocked'];
+  const allowedStages = ['ready', 'build', 'review', 'fix', 'test', 'commit', 'done', 'blocked'];
   if (!allowedStages.includes(stage)) {
     throw new Error(`Stage must be one of: ${allowedStages.join(', ')}`);
   }
@@ -1249,7 +1249,7 @@ function readJsonFile(filePath, fallback) {
 
 function hermesLaneForStage(stage) {
   if (stage === 'ready') return 'planned';
-  if (['build', 'review', 'test', 'commit', 'blocked', 'done'].includes(stage)) return stage;
+  if (['build', 'review', 'fix', 'test', 'commit', 'blocked', 'done'].includes(stage)) return stage;
   return 'planned';
 }
 
@@ -1258,7 +1258,7 @@ function writeHermesStepCard(projectDir, slug, step) {
   fs.mkdirSync(cardDir, { recursive: true });
   const fileName = `${slugify(step.id)}.md`;
   const cardPath = path.join(cardDir, fileName);
-  const content = `---\nid: hermes-card-${step.id}\ntype: hermes-card\nstatus: ${step.status}\nowner: Hermes\nstage: ${hermesLaneForStage(step.stage)}\nsource: ${step.file}\nexecutor: ${step.executor}\n---\n\n# ${step.id}\n\nSource ADLC step: \`${step.file}\`\n\nLifecycle: build -> review -> test -> commit\n\n## Execution Notes\n\nUse the source ADLC step as the contract. Keep this card independent enough for Codex execution or Hermes-managed progression.\n`;
+  const content = `---\nid: hermes-card-${step.id}\ntype: hermes-card\nstatus: ${step.status}\nowner: Hermes\nstage: ${hermesLaneForStage(step.stage)}\nsource: ${step.file}\nexecutor: ${step.executor}\n---\n\n# ${step.id}\n\nSource ADLC step: \`${step.file}\`\n\nLifecycle: build -> review -> fix -> test -> commit\n\n## Execution Notes\n\nUse the source ADLC step as the contract. Codex manages the Hermes board and should preserve this card's ADLC IDs, gates, and commit checkpoint.\n`;
   fs.writeFileSync(cardPath, content);
   return normalizeRelPath(projectDir, cardPath);
 }
@@ -1298,6 +1298,7 @@ function syncHermesWorkstream(args) {
       planned: [],
       build: [],
       review: [],
+      fix: [],
       test: [],
       commit: [],
       blocked: [],
@@ -1305,7 +1306,7 @@ function syncHermesWorkstream(args) {
     },
   });
   kanban.lanes = kanban.lanes && typeof kanban.lanes === 'object' ? kanban.lanes : {};
-  for (const lane of ['planned', 'build', 'review', 'test', 'commit', 'blocked', 'done']) {
+  for (const lane of ['planned', 'build', 'review', 'fix', 'test', 'commit', 'blocked', 'done']) {
     kanban.lanes[lane] = (kanban.lanes[lane] || []).filter((cardId) => !String(cardId).includes(`-${slug}-`));
   }
   for (const card of cards) {

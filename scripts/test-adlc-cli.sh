@@ -51,13 +51,18 @@ node bin/adlc.js mcp configure filesystem "$tmp_dir" --agents codex,claude >/dev
 node bin/adlc.js workstream create project-automation "$tmp_dir" --executor hermes >/dev/null
 test -f "$tmp_dir/.adlc/workstreams/project-automation/WORKSTREAM.md"
 test -f "$tmp_dir/.adlc/workstreams/project-automation/handoff/hermes.md"
+grep -q "| fix |" "$tmp_dir/.adlc/workstreams/project-automation/kanban.md"
 node bin/adlc.js workstream status project-automation "$tmp_dir" --json | grep -q '"stage": "ready"'
 node bin/adlc.js workstream advance project-automation 0001 "$tmp_dir" --stage build >/dev/null
 node bin/adlc.js workstream status project-automation "$tmp_dir" --json | grep -q '"stage": "build"'
+node bin/adlc.js workstream advance project-automation 0001 "$tmp_dir" --stage review >/dev/null
+node bin/adlc.js workstream advance project-automation 0001 "$tmp_dir" --stage fix >/dev/null
+node bin/adlc.js workstream status project-automation "$tmp_dir" --json | grep -q '"stage": "fix"'
 node bin/adlc.js workstream sync project-automation "$tmp_dir" --agent hermes >/dev/null
 test -f "$tmp_dir/.hermes/inbox/project-automation.md"
 test -d "$tmp_dir/.hermes/workstreams/project-automation/steps"
 grep -q "hermes-card-adlc-workstream-project-automation-0001" "$tmp_dir/.hermes/kanban.json"
+node -e "const kanban = require(process.argv[1]); const card = 'hermes-card-adlc-workstream-project-automation-0001'; if (!Array.isArray(kanban.lanes.fix) || !kanban.lanes.fix.includes(card)) process.exit(1)" "$tmp_dir/.hermes/kanban.json"
 
 node bin/adlc.js extension validate extensions/marketplace/hello-adlc >/dev/null
 node bin/adlc.js extension add extensions/marketplace/hello-adlc "$tmp_dir" --agents codex >/dev/null

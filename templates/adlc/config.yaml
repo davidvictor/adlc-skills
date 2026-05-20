@@ -25,6 +25,18 @@ workflow:
   verify_before_review: true
   review_before_commit: true
   evolve_from_patches: true
+  dirty_tree_before_delegation: small_commit_large_ask
+  release_proof_before_push: true
+
+external_workers:
+  default_worktree_mode: ask
+  stop_global_services: explicit_only
+
+hermes:
+  board_manager: codex
+  worker_provider: openai-codex
+  worker_model: gpt-5.5
+  worker_reasoning_effort: xhigh
 
 git:
   enabled: true

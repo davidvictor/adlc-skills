@@ -16,7 +16,7 @@ Use `adlc-implement` for one step at a time unless the workstream explicitly mar
 Execute ADLC workstream step <step-id> from <path>.
 
 Follow the step write scope exactly.
-Move through build -> review -> test -> commit.
+Move through build -> review -> fix -> test -> commit.
 Update the step card and kanban state before closeout.
 Report verification, review findings, commit status, blockers, and next runnable step.
 ```

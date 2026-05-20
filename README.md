@@ -13,6 +13,26 @@ It packages:
 
 ADLC keeps operator documentation under [docs/](./docs/README.md) so the workflow is visible, repeatable, and easy to maintain.
 
+## Documentation
+
+- [Getting Started](./docs/getting-started.md)
+- [Workflow](./docs/workflow.md)
+- [Configuration](./docs/configuration.md)
+- [Config Reference](./docs/config-reference.md)
+- [Agent Targets](./docs/agents.md)
+- [Skills](./docs/skills.md)
+- [Subagents](./docs/subagents.md)
+- [Plan Files](./docs/plan-files.md)
+- [Workstreams](./docs/workstreams.md)
+- [Quality Gates](./docs/quality-gates.md)
+- [Loop](./docs/loop.md)
+- [Evolve](./docs/evolve.md)
+- [MCP](./docs/mcp.md)
+- [Extensions](./docs/extensions.md)
+- [Artifact Audit](./docs/artifact-audit.md)
+- [Security](./docs/security.md)
+- [Gate Results](./docs/gate-result-schema.md)
+
 ## Install
 
 The public package name is `adlc-cli`. The installed command is `adlc`.
@@ -135,26 +155,6 @@ Use these skills as the public workflow interface:
 19. `adlc-fix` - diagnose, fix, and record a learning patch.
 20. `adlc-loop` - run bounded iterative improvement loops.
 21. `adlc-evolve` - turn patches and repeated findings into durable rules or skill updates.
-
-## Documentation
-
-- [Getting Started](./docs/getting-started.md)
-- [Workflow](./docs/workflow.md)
-- [Configuration](./docs/configuration.md)
-- [Config Reference](./docs/config-reference.md)
-- [Agent Targets](./docs/agents.md)
-- [Skills](./docs/skills.md)
-- [Subagents](./docs/subagents.md)
-- [Plan Files](./docs/plan-files.md)
-- [Workstreams](./docs/workstreams.md)
-- [Quality Gates](./docs/quality-gates.md)
-- [Loop](./docs/loop.md)
-- [Evolve](./docs/evolve.md)
-- [MCP](./docs/mcp.md)
-- [Extensions](./docs/extensions.md)
-- [Artifact Audit](./docs/artifact-audit.md)
-- [Security](./docs/security.md)
-- [Gate Results](./docs/gate-result-schema.md)
 
 ## Validation
 

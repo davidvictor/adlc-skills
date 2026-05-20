@@ -38,10 +38,16 @@ Each Hermes card must preserve:
 
 1. Build the bounded step.
 2. Review the diff against the step card and ADLC rules.
-3. Fix review findings or mark blocked when the fix would exceed scope.
+3. Fix review findings, then route back to an autonomous review/verify gate.
 4. Test with the listed verification commands or mark missing tests as blockers.
 5. Commit only the completed step slice.
 6. Update the ADLC step card or return a precise status report for Codex to update it.
+
+## Autonomous Gate Loop
+
+Hermes should not ask the operator to review ordinary code, docs, tests, rules, or security fixes. A `review-required` or `fix-required` handoff means start the next ADLC gate or fixer unless the card names a human-gated blocker.
+
+Use human-blocked only for explicit human decisions, credentials or external accounts, destructive or production operations, legal/security sign-off, scope or product ambiguity, or user-requested approval. If the board only has coarse statuses, create a linked review/fix card for the autonomous gate rather than marking the work human-blocked.
 
 ## Worker Profile
 

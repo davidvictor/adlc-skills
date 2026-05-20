@@ -56,6 +56,12 @@ Supported gates:
 - `suggested_next.command`: one of `adlc-fix`, `adlc-rules`, `adlc-plan`, `adlc-implement`, `adlc-verify`, `adlc-security-checklist`, `adlc-review`, `adlc-commit`, or `null`.
 - `suggested_next.reason`: short reason for the recommended next command.
 
+## Orchestration Semantics
+
+Gate results drive autonomous routing. A `fail` or `blocking: true` result is not automatically a human review request. If `suggested_next.command` names another ADLC command, orchestration should run or schedule that command and continue the gate loop.
+
+Use `suggested_next.command: null` only when the blocker is human-gated: an explicit decision, credential or external account, destructive or production operation, legal/security sign-off, scope or product ambiguity, or user-requested approval point. Ordinary code, docs, tests, rules, and security findings should route to `adlc-fix` and then back to `adlc-review` or `adlc-verify`.
+
 ## Pass Example
 
 ```adlc-gate-result

@@ -14,7 +14,8 @@ Use this after implementation and before review or commit.
 3. Map each plan task and acceptance criterion to evidence.
 4. Run the strongest practical repo checks.
 5. Look for leftover TODOs, env/config drift, skipped tests, stale docs, and plan-vs-code gaps.
-6. Use strict mode before merge or release.
+6. Classify failures as autonomous-fixable or human-gated. Code, docs, tests, rules, and security gaps should suggest `adlc-fix`; human-gated blockers are limited to explicit decisions, credentials or external accounts, destructive or production operations, legal/security sign-off, scope or product ambiguity, or user-requested approval points.
+7. Use strict mode before merge or release.
 
 ## Output
 
@@ -34,3 +35,5 @@ End with a final parseable `adlc-gate-result` fenced block:
   }
 }
 ```
+
+Use `suggested_next.command: "adlc-fix"` for autonomous-fixable blockers. Use `null` only when a human-gated blocker prevents the next autonomous gate.

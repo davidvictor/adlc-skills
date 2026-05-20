@@ -57,6 +57,13 @@ tasks. Hermes tasks should run on a Codex GPT-5.5 profile with xhigh reasoning
 unless a project override says otherwise. Worktree use is configurable and
 should be asked for unless already required by config or user instruction.
 
+Codex keeps Hermes review/fix/test loops autonomous. Code-level review findings,
+docs fixes, tests, rules, and security remediations should route to the next ADLC
+gate or fixer and back to review/verify without asking the operator. Human
+review is reserved for explicit decisions, credentials or external accounts,
+destructive or production operations, legal/security sign-off, scope or product
+ambiguity, or user-requested approval points.
+
 ADLC stop commands are task-scoped. Do not stop Hermes gateway, daemon,
 scheduler, or other global services unless the operator explicitly names that
 service.

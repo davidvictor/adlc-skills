@@ -26,6 +26,18 @@ ready -> build -> review -> fix -> test -> commit -> done
 
 `blocked` can replace any active stage when a human decision, missing credential, failing dependency, or unsafe operation prevents progress.
 
+## Gate Routing
+
+Review, fix, and test gates are autonomous by default. `blocked` is not a synonym for "needs the next ADLC gate." When a review or verify gate fails with actionable code, docs, tests, rules, or security findings, route to the suggested fixer or next gate and continue the loop:
+
+```text
+review/verify fail -> fix -> scoped checks -> review/verify -> test -> commit
+```
+
+Pause for a human only when the blocker is an explicit decision, credential or external account, destructive or production operation, legal/security sign-off, scope or product ambiguity, or user-requested approval point.
+
+If a Kanban target has coarse states only, represent the next autonomous gate as a linked or child card instead of marking the current card human-blocked. A post-fix handoff that only says `review-required` should start the autonomous reviewer/verifier, not page the operator.
+
 ## Step Contract
 
 Each step card must include:

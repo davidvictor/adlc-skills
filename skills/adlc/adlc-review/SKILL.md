@@ -14,7 +14,8 @@ Use this for correctness, regression, maintainability, and risk review.
 3. Read the active plan, configured rules, and architecture.
 4. Review behavior first, then maintainability, security, docs, and release risk.
 5. Prefer `review-sidecar`, `security-sidecar`, and `rules-sidecar` for independent read-only checks when available.
-6. Lead with blocking findings. Say clearly when there are none.
+6. Classify blockers as autonomous-fixable or human-gated. Code, docs, tests, rules, and security findings should suggest `adlc-fix`; human-gated blockers are limited to explicit decisions, credentials or external accounts, destructive or production operations, legal/security sign-off, scope or product ambiguity, or user-requested approval points.
+7. Lead with blocking findings. Say clearly when there are none.
 
 ## Output
 
@@ -34,3 +35,5 @@ End with a final parseable `adlc-gate-result` fenced block:
   }
 }
 ```
+
+Use `suggested_next.command: "adlc-fix"` for autonomous-fixable blockers. Use `null` only when a human-gated blocker prevents the next autonomous gate.

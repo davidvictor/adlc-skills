@@ -25,7 +25,7 @@ ADLC ships 21 public skills.
 ## Planning And Implementation
 
 - `adlc-plan`: create executable plans.
-- `adlc-workstream`: create grounded long-running workstreams with Codex or Hermes handoffs.
+- `adlc-workstream`: create grounded long-running workstreams with Codex goal-managed execution.
 - `adlc-improve`: refine plans before execution.
 - `adlc-implement`: execute plans with coordinator, workers, and sidecars.
 - `adlc-fix`: diagnose and repair bugs.

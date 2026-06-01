@@ -1,6 +1,6 @@
 interface:
   display_name: ADLC Workstream
-  short_description: Plan staged Codex or Hermes workstreams
+  short_description: Plan Codex goal-managed workstreams
   default_prompt: "$adlc-workstream"
 policy:
   allow_implicit_invocation: true

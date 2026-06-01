@@ -39,7 +39,7 @@
         "additionalProperties": false,
         "required": ["agent", "source", "target"],
         "properties": {
-          "agent": { "type": "string", "enum": ["codex", "claude", "hermes"] },
+          "agent": { "type": "string", "enum": ["codex", "claude"] },
           "source": { "type": "string" },
           "target": { "type": "string" }
         }

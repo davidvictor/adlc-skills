@@ -10,7 +10,7 @@ owner: ADLC
 ADLC installs into selected agent targets through one `init` command.
 
 ```bash
-adlc init /path/to/project --agents codex,claude,hermes --mcp github,playwright
+adlc init /path/to/project --agents codex,claude --mcp github,playwright
 ```
 
 List supported targets:
@@ -30,6 +30,7 @@ adlc agents --json
 - selected MCP blocks into `.codex/config.toml`
 
 Codex is the main build, review, test, and commit execution target.
+Codex goals manage long-running workstream objectives while `.adlc/workstreams/` stores milestone, step, evidence, decision, and gate state.
 
 ## Claude
 
@@ -39,34 +40,6 @@ Codex is the main build, review, test, and commit execution target.
 - selected MCP config into `.mcp.json`
 
 Claude agent definitions will be added when they are intentionally authored for ADLC.
-
-## Hermes
-
-`hermes` installs:
-
-- `.hermes/config.yaml`
-- `.hermes/kanban.json`
-- `.hermes/workstreams/`
-- `.hermes/inbox/`
-
-Hermes is the managed workstream target. ADLC projects grounded epics into Hermes cards; Hermes owns board progression after handoff.
-
-Codex is the Hermes board operator for ADLC workstreams. Codex prepares the
-source workstream, syncs the Hermes Kanban, and starts or assigns the requested
-tasks. Hermes tasks should run on a Codex GPT-5.5 profile with xhigh reasoning
-unless a project override says otherwise. Worktree use is configurable and
-should be asked for unless already required by config or user instruction.
-
-Codex keeps Hermes review/fix/test loops autonomous. Code-level review findings,
-docs fixes, tests, rules, and security remediations should route to the next ADLC
-gate or fixer and back to review/verify without asking the operator. Human
-review is reserved for explicit decisions, credentials or external accounts,
-destructive or production operations, legal/security sign-off, scope or product
-ambiguity, or user-requested approval points.
-
-ADLC stop commands are task-scoped. Do not stop Hermes gateway, daemon,
-scheduler, or other global services unless the operator explicitly names that
-service.
 
 ## Managed State
 
@@ -78,5 +51,5 @@ Use:
 adlc status /path/to/project --strict
 adlc update /path/to/project
 adlc doctor /path/to/project
-adlc uninstall /path/to/project --agents codex,claude,hermes
+adlc uninstall /path/to/project --agents codex,claude
 ```

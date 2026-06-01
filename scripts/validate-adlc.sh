@@ -56,8 +56,6 @@ required_files = [
     "mcp/templates/chrome-devtools.json",
     "subagents/codex/config.toml",
     "templates/adlc/config.yaml",
-    "templates/hermes/config.yaml",
-    "templates/hermes/kanban.json",
     "scripts/test-adlc-cli.sh",
     "scripts/test-adlc-skill-fixtures.sh",
     "scripts/test-package-smoke.sh",
@@ -78,8 +76,8 @@ required_files = [
     "skills/adlc/adlc-workstream/references/WORKSTREAM-CONTRACT.md",
     "skills/adlc/adlc-workstream/templates/WORKSTREAM.md",
     "skills/adlc/adlc-workstream/templates/STEP.md",
+    "skills/adlc/adlc-workstream/templates/MILESTONE.md",
     "skills/adlc/adlc-workstream/templates/CODEX-HANDOFF.md",
-    "skills/adlc/adlc-workstream/templates/HERMES-HANDOFF.md",
     "skills/adlc/adlc-qa/references/CHANGE-SUMMARY.md",
     "skills/adlc/adlc-qa/references/TEST-PLAN.md",
     "skills/adlc/adlc-qa/references/TEST-CASES.md",
@@ -147,7 +145,7 @@ readme = Path("README.md").read_text() if Path("README.md").exists() else ""
 for forbidden_readme_text in ["David", "Victor", "Factory", "factory", "lee-to", "upstream", "`aif", "install-codex", "--runtime", "codex-project", "claude-project", "codex-home", "universal-project"]:
     if forbidden_readme_text in readme:
         fail(f"README contains removed framing or command: {forbidden_readme_text}")
-for required_text in ["npm install -g adlc-cli", "adlc init", "--agents codex,claude,hermes", ".adlc/managed-state.json", ".codex/config.toml", ".hermes/kanban.json", "mcp configure", "extension add", "audit-artifacts", "gate-result-schema.md"]:
+for required_text in ["npm install -g adlc-cli", "adlc init", "--agents codex,claude", ".adlc/managed-state.json", ".codex/config.toml", "mcp configure", "extension add", "audit-artifacts", "gate-result-schema.md"]:
     if required_text not in readme:
         fail(f"README must document {required_text}")
 for required_doc in [
@@ -283,7 +281,7 @@ for command_name in ["agents", "status", "update", "doctor", "uninstall", "upgra
 for removed_command in ["case 'runtimes'", "case 'install'", "case 'install-codex'"]:
     if removed_command in cli_text:
         fail(f"adlc CLI still exposes removed command: {removed_command}")
-for required_cli_text in ["agentRegistry", "managedConfigSource", "stripAdlcMcpBlocks", "kind: 'config'", "config.toml", "syncHermesWorkstream", "hermes"]:
+for required_cli_text in ["agentRegistry", "managedConfigSource", "stripAdlcMcpBlocks", "kind: 'config'", "config.toml", "workstreamRoot", "codex-goal"]:
     if required_cli_text not in cli_text:
         fail(f"adlc CLI missing installer capability: {required_cli_text}")
 for required_cli_text in ["applyExtensionInjection", "installedReplacements", "installedInjections", "removeExtensionMcp"]:

@@ -20,7 +20,7 @@ The package installs the `adlc` command.
 ## Initialize A Project
 
 ```bash
-adlc init /path/to/project --agents codex,claude,hermes --mcp github,playwright
+adlc init /path/to/project --agents codex,claude --mcp github,playwright
 adlc status /path/to/project --strict
 ```
 
@@ -29,7 +29,7 @@ This creates `.adlc/`, installs the selected agent targets, configures selected 
 Run without a global install:
 
 ```bash
-npx adlc-cli init /path/to/project --agents codex,claude,hermes --mcp filesystem
+npx adlc-cli init /path/to/project --agents codex,claude --mcp filesystem
 ```
 
 ## Use The Lifecycle
@@ -53,14 +53,14 @@ adlc-evolve when reusable learning exists
 
 Bug work can start at `adlc-fix`, then move through verify, review, and commit.
 
-## Workstream Handoff
+## Goal-Managed Workstream
 
 ```bash
-adlc workstream create project-automation /path/to/project --executor either
-adlc workstream sync project-automation /path/to/project --agent hermes
+adlc workstream create project-automation /path/to/project --lane coordinator
+adlc workstream status project-automation /path/to/project
 ```
 
-Hermes receives cards under `.hermes/workstreams/`, a board at `.hermes/kanban.json`, and an inbox handoff under `.hermes/inbox/`.
+Use Codex goals for the long-running objective. Use the workstream files for milestones, steps, evidence, decisions, gates, and commit checkpoints.
 
 ## Verify The Package
 

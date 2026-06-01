@@ -40,4 +40,4 @@ When a plan has five or more tasks, include a commit plan. Commit checkpoints sh
 
 ## Workstreams
 
-Use `adlc-workstream` instead of stretching one plan file when an epic needs many independent steps, multiple executors, or staged handoff to Hermes. Workstream steps still point back to ordinary ADLC plans when a step needs deeper implementation detail.
+Use `adlc-workstream` instead of stretching one plan file when an epic needs milestones, many independent steps, Codex goal continuity, or staged handoff across sessions. Workstream steps still point back to ordinary ADLC plans when a step needs deeper implementation detail.

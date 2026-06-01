@@ -3,6 +3,7 @@ id: {{WORKSTREAM_ID}}
 type: workstream
 status: active
 owner: ADLC
+codex_goal: ""
 ---
 
 # {{TITLE}}
@@ -10,6 +11,12 @@ owner: ADLC
 ## Goal
 
 Describe the epic outcome.
+
+## Codex Goal
+
+- Objective:
+- Status: active
+- Last checked:
 
 ## Grounding Evidence
 
@@ -28,15 +35,22 @@ Out of scope:
 
 ## Execution Model
 
-- Codex lane:
-- Hermes lane:
+- Coordinator lane:
+- Worker lane:
+- Parallel lanes:
 - Shared gates: build -> review -> fix -> test -> commit
+
+## Milestone Index
+
+| Milestone | Status | Depends On | Outcome |
+| --- | --- | --- | --- |
+| `M0001` | ready | none | Replace with first milestone. |
 
 ## Step Index
 
-| Step | Stage | Executor | Depends On | Summary |
-| --- | --- | --- | --- | --- |
-| `0001` | ready | either | none | Replace with first step. |
+| Step | Milestone | Stage | Lane | Depends On | Summary |
+| --- | --- | --- | --- | --- | --- |
+| `0001` | `M0001` | ready | coordinator | none | Replace with first step. |
 
 ## Blocked Decisions
 
@@ -44,6 +58,7 @@ Out of scope:
 
 ## Completion Criteria
 
+- All milestone cards meet exit criteria.
 - All step cards are `done`.
 - Verification and review gates are recorded for each committed slice.
 - Commit checkpoints are complete or explicitly deferred with rationale.

@@ -36,7 +36,7 @@ and decide whether the current work needs a checkpoint.
 2. `adlc-grounded` answers from evidence when certainty matters more than ideation.
 3. `adlc-architecture`, `adlc-roadmap`, `adlc-rules`, and `adlc-reference` create durable context only when needed.
 4. `adlc-plan` writes executable task plans.
-5. `adlc-workstream` creates staged epic workstreams when the scope needs long-running Codex or Hermes handoff.
+5. `adlc-workstream` creates staged epic workstreams when the scope needs Codex goal continuity across sessions.
 6. `adlc-improve` tightens plans before implementation.
 7. `adlc-implement` executes selected tasks with coordinator, workers, and read-only sidecars.
 8. `adlc-verify` proves completion against plan, rules, and repo behavior.
@@ -49,12 +49,7 @@ and decide whether the current work needs a checkpoint.
 
 Workstreams are for epics that will not finish in one session. A workstream step moves through `ready -> build -> review -> fix -> test -> commit -> done`, with `blocked` available at every point.
 
-Codex steps are executed with normal ADLC implementation, verification, review, and commit commands. Hermes steps are exported as Kanban-ready cards; Hermes owns its board state after handoff while ADLC preserves the source artifact and step IDs.
-
-When Codex is asked to use Hermes, Codex is the board operator: it prepares the
-ADLC workstream, syncs the Hermes Kanban, assigns or starts the requested lane,
-and then leaves Hermes to work through the board. Codex should not replace the
-Kanban with one giant ad-hoc Hermes prompt.
+Codex goals carry the active objective. ADLC workstream files carry the detailed milestone, step, evidence, decision, gate, and commit state. Codex executes steps with normal ADLC implementation, verification, review, and commit commands.
 
 Stopping a global worker service is never implied by stopping one task. Stop
 only the worker/session/process launched for the current task. A gateway,

@@ -17,11 +17,10 @@ npm --cache "$tmp_dir/npm-cache" install "$tarball" --prefix "$tmp_dir/consumer"
 adlc_bin="$tmp_dir/consumer/node_modules/.bin/adlc"
 "$adlc_bin" help >/dev/null
 "$adlc_bin" agents >/dev/null
-"$adlc_bin" init "$tmp_dir/project" --agents codex,claude,hermes --mcp filesystem >/dev/null
+"$adlc_bin" init "$tmp_dir/project" --agents codex,claude --mcp filesystem >/dev/null
 "$adlc_bin" status "$tmp_dir/project" --strict >/dev/null
-"$adlc_bin" workstream create smoke-work "$tmp_dir/project" --executor either >/dev/null
-"$adlc_bin" workstream sync smoke-work "$tmp_dir/project" --agent hermes >/dev/null
+"$adlc_bin" workstream create smoke-work "$tmp_dir/project" --lane coordinator >/dev/null
 (cd "$tmp_dir/project" && "$adlc_bin" audit-artifacts .adlc --strict >/dev/null)
-"$adlc_bin" uninstall "$tmp_dir/project" --agents codex,claude,hermes >/dev/null
+"$adlc_bin" uninstall "$tmp_dir/project" --agents codex,claude >/dev/null
 
 echo "ADLC package smoke test passed."

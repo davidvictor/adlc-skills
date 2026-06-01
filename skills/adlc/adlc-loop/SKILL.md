@@ -12,9 +12,10 @@ Use this for bounded iterative improvement where one pass is unlikely to be enou
 1. Resolve effective ADLC paths from `.adlc/config.yaml`; use `adlc resolve-config` when the CLI is available.
 2. Define the loop goal, criteria, maximum iterations, and stop conditions.
 3. Read roadmap, rules, active plan, verification history, QA artifacts, and patches.
-4. For each iteration, plan the smallest useful change, implement it through `adlc-implement` or `adlc-fix`, then run `adlc-verify` and relevant gates.
-5. Record loop notes under the configured loops path.
-6. Stop when criteria pass, risk rises, the iteration budget is exhausted, or a human decision is required.
+4. For workstream loops, attach the loop to the active Codex goal and current milestone before editing.
+5. For each iteration, plan the smallest useful change, implement it through `adlc-implement` or `adlc-fix`, then run `adlc-verify` and relevant gates.
+6. Record loop notes under the configured loops path or active workstream step.
+7. Stop when criteria pass, risk rises, the iteration budget is exhausted, or a human decision is required.
 
 ## Output
 

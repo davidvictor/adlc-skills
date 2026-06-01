@@ -1,6 +1,6 @@
 # ADLC Workstream Contract
 
-Workstreams are durable epic execution plans. They sit above ordinary ADLC plans and create staged, executor-ready step cards.
+Workstreams are durable epic execution plans. They sit above ordinary ADLC plans and create Codex goal-managed milestones, step cards, and gate state for large software efforts.
 
 ## Directory Shape
 
@@ -9,12 +9,29 @@ Workstreams are durable epic execution plans. They sit above ordinary ADLC plans
   WORKSTREAM.md
   kanban.md
   evidence.md
+  decisions.md
+  milestones/
+    0001-<slug>.md
   steps/
     0001-<slug>.md
   handoff/
-    codex.md
-    hermes.md
+    codex-goal.md
 ```
+
+## Required Hierarchy
+
+Use this hierarchy for large work:
+
+```text
+workstream -> milestone -> step -> task -> gate -> commit
+```
+
+- Workstream: the whole multi-sprint objective and Codex goal context.
+- Milestone: a coherent sprint-scale outcome with exit criteria.
+- Step: a reviewable, commit-capable implementation slice.
+- Task: a concrete action inside one step.
+- Gate: verify, review, rules, security, docs, QA, or commit readiness.
+- Commit: the smallest coherent landed unit for the completed slice.
 
 ## Required Stages
 
@@ -44,7 +61,8 @@ Each step card must include:
 
 - stable `id`
 - `stage`
-- `executor`
+- `milestone`
+- execution `lane`
 - evidence sources
 - bounded write scope
 - dependencies
@@ -56,20 +74,29 @@ Each step card must include:
 - done criteria
 - next-stage transition rule
 
-## Executor Lanes
+## Execution Lanes
 
-- `codex`: executable through `adlc-implement`, Codex workers, and read-only sidecars.
-- `hermes`: exported as a Hermes Kanban card; Hermes owns active board movement after handoff.
-- `either`: safe for Codex or Hermes, with the same lifecycle contract.
+- `coordinator`: tightly coupled edits that should stay in the current Codex thread.
+- `worker`: one independent bounded task for a Codex subagent.
+- `parallel`: multiple independent bounded tasks with disjoint write scopes.
+- `human-gated`: blocked on an explicit human decision, credential, external account, destructive or production operation, legal/security sign-off, scope ambiguity, or user-requested approval point.
 
-For Hermes workstreams, Codex is the board operator. Codex prepares and syncs
-the Kanban, then Hermes executes cards with their ADLC IDs and gates intact.
-Hermes worker profiles should use Codex GPT-5.5 with xhigh reasoning unless the
-target project overrides that profile.
+## Goal Management
+
+The active Codex goal represents the long-running workstream objective. Use it for continuity across resumes and multi-sprint execution. Keep detailed state in ADLC artifacts:
+
+- `WORKSTREAM.md`: objective, scope, active goal, milestone index, completion criteria.
+- `kanban.md`: stage state for milestones and steps.
+- `evidence.md`: source files, runtime output, docs, decisions, and verification links.
+- `decisions.md`: material decisions and human-gated blockers.
+- `milestones/*.md`: milestone outcomes, dependencies, exit criteria, and release notes.
+- `steps/*.md`: step contracts, task lists, gates, and commit checkpoints.
+
+On resume, read the workstream artifacts before relying on conversation history. Use Codex goal status for active objective tracking; update it only when the full objective is complete or the same blocking condition has reached the tool's blocked threshold.
 
 ## Long-Running Management
 
-The workstream root is the source of truth. Chat summaries are not state. Executors must update step cards and Kanban state as work moves across lifecycle stages.
+The workstream root is the source of truth. Chat summaries are not state. Agents must update step cards, milestone cards, and Kanban state as work moves across lifecycle stages.
 
 ## Grounding Rule
 

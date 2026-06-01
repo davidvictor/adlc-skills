@@ -36,8 +36,12 @@ Use `paths.plans/<slug>.md` when the work has dependencies or parallelizable tas
 
 Status: pending
 Owner: coordinator
+Lane: coordinator
+Milestone: none
 Depends on: none
 Write scope: bin/adlc.js, scripts/test-adlc-cli.sh
+Interfaces touched: CLI, config
+Risk: medium
 
 ### Goal
 
@@ -53,8 +57,12 @@ Track project Codex config as a managed artifact.
 
 Status: pending
 Owner: worker:docs
+Lane: worker
+Milestone: none
 Depends on: 0001
 Write scope: README.md, docs/agents.md, docs/subagents.md
+Interfaces touched: docs
+Risk: low
 
 ### Goal
 
@@ -64,4 +72,23 @@ Document managed Codex config behavior.
 
 - Docs name the installed file and drift behavior.
 - Validation covers the docs link.
+```
+
+## Workstream Escalation
+
+Use `adlc-workstream` when the plan needs milestone state or Codex goal continuity:
+
+```markdown
+# Payments Platform Modernization
+
+Granularity: workstream
+Codex goal objective: Modernize the payments platform through staged, verified milestone slices.
+
+Milestones:
+- M0001: Stabilize current payment contract and regression coverage.
+- M0002: Introduce the new provider abstraction behind existing behavior.
+- M0003: Migrate checkout and billing flows with release gates.
+
+Next action:
+- Create `.adlc/workstreams/payments-platform-modernization/`.
 ```

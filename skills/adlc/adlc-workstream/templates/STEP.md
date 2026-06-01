@@ -4,8 +4,9 @@ type: workstream-step
 status: active
 owner: ADLC
 workstream: {{WORKSTREAM_ID}}
+milestone: {{MILESTONE_ID}}
 stage: ready
-executor: either
+lane: coordinator
 depends_on: []
 ---
 
@@ -23,6 +24,10 @@ State the smallest useful outcome for this step.
 
 - 
 
+## Task Breakdown
+
+-
+
 ## Dependencies
 
 - None.
@@ -37,7 +42,7 @@ State the smallest useful outcome for this step.
 
 ## Fix
 
-- TBD
+-
 
 ## Test
 
@@ -53,4 +58,4 @@ State the smallest useful outcome for this step.
 
 ## Transition Rule
 
-Move to `build` when dependencies and write scope are clear. Move to `blocked` when an executor cannot proceed safely.
+Move to `build` when dependencies and write scope are clear. Move to `blocked` only for a human-gated blocker that prevents safe progress.

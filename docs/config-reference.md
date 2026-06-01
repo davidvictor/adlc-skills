@@ -26,7 +26,7 @@ Default config lives in [templates/adlc/config.yaml](../templates/adlc/config.ya
 - `references`: durable source/reference notes.
 - `qa`: QA artifact root.
 - `loops`: loop iteration notes.
-- `workstreams`: long-running epic workstreams and executor handoffs.
+- `workstreams`: long-running epic workstreams, milestones, steps, and Codex goal handoffs.
 
 ## `workflow`
 
@@ -50,13 +50,6 @@ Default config lives in [templates/adlc/config.yaml](../templates/adlc/config.ya
   `explicit_only` means task stop does not imply stopping gateways, daemons, or
   schedulers.
 
-## `hermes`
-
-- `board_manager`: who prepares and syncs the Hermes Kanban. Default `codex`.
-- `worker_provider`: preferred Hermes worker provider.
-- `worker_model`: preferred Hermes worker model.
-- `worker_reasoning_effort`: preferred Hermes worker reasoning effort.
-
 ## `git`
 
 - `enabled`: whether ADLC should use git context.
@@ -65,7 +58,7 @@ Default config lives in [templates/adlc/config.yaml](../templates/adlc/config.ya
 
 ## `install`
 
-- `agents`: comma-separated agent targets selected during setup, such as `codex,claude,hermes`.
+- `agents`: comma-separated agent targets selected during setup, such as `codex,claude`.
 - `mcp`: comma-separated MCP server templates selected during setup.
 
 ## `agents`

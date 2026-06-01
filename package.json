@@ -1,7 +1,7 @@
 {
   "name": "adlc-cli",
   "version": "0.1.0",
-  "description": "Agent-driven lifecycle tooling for Codex, Claude, and Hermes workstreams.",
+  "description": "Agent-driven lifecycle tooling for Codex, Claude, and goal-managed workstreams.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -15,7 +15,6 @@
     "adlc",
     "codex",
     "claude",
-    "hermes",
     "agents",
     "workstreams"
   ],

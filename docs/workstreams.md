@@ -7,11 +7,11 @@ owner: ADLC
 
 # Workstreams
 
-Workstreams are ADLC's durable epic-planning layer. Use them when a scope is too large for one plan file or one execution turn, especially when work may be handed to Codex or Hermes over multiple sessions.
+Workstreams are ADLC's durable epic-planning layer. Use them when a scope is too large for one plan file or one execution turn, especially when Codex goals need file-backed continuity across multiple sessions.
 
 ## Purpose
 
-A workstream turns an epic into grounded, independent step cards. Each card has enough context to be executed later without replaying chat history.
+A workstream turns an epic into grounded milestones and independent step cards. Each card has enough context to be executed later without replaying chat history.
 
 The lifecycle is:
 
@@ -19,7 +19,7 @@ The lifecycle is:
 ready -> build -> review -> fix -> test -> commit -> done
 ```
 
-`blocked` can replace any stage when the executor needs a human decision, credential, missing dependency, or safer plan.
+`blocked` can replace any stage when the active lane needs a human decision, credential, missing dependency, or safer plan.
 
 Review, fix, and test gates are autonomous by default. A failed review or verify gate with actionable code, docs, tests, rules, or security findings should route to the suggested fixer or next gate, then return to review/verify without operator approval. Do not treat an ordinary post-fix `review-required` handoff as a human blocker.
 
@@ -32,22 +32,13 @@ Workstreams live under configured `paths.workstreams`, default `.adlc/workstream
 ```text
 .adlc/workstreams/<slug>/
   WORKSTREAM.md
-  evidence.md
   kanban.md
+  evidence.md
+  decisions.md
+  milestones/
   steps/
   handoff/
-    codex.md
-    hermes.md
-```
-
-Hermes sync also writes:
-
-```text
-.hermes/
-  config.yaml
-  kanban.json
-  inbox/
-  workstreams/
+    codex-goal.md
 ```
 
 ## Grounding
@@ -56,36 +47,30 @@ Every step must cite evidence. Acceptable evidence includes repo files, ADLC doc
 
 Do not create a step from intuition alone. If the evidence is missing, create a blocked discovery step or run `adlc-grounded` first.
 
-## Executor Lanes
+## Execution Lanes
 
-- `codex`: use `adlc-implement` and Codex workers/sidecars.
-- `hermes`: export as a Hermes Kanban card; Hermes owns active board movement after handoff.
-- `either`: safe for Codex or Hermes.
+- `coordinator`: keep tightly coupled edits in the current Codex thread.
+- `worker`: delegate one bounded task to a Codex worker.
+- `parallel`: delegate independent tasks with disjoint write scopes.
+- `human-gated`: pause for an explicit human decision, credential, external account, destructive or production operation, legal/security sign-off, scope ambiguity, or user-requested approval point.
 
-ADLC does not run Hermes. ADLC owns the source workstream and the handoff contract. Hermes owns its own Kanban once work is imported.
+## Goal Management
 
-When a human asks Codex to use Hermes, Codex manages the board setup and handoff.
-Each Hermes card maps to one ADLC workstream step and carries the same lifecycle
-gates: build, review, fix, test, and commit. Hermes workers should use a Codex
-GPT-5.5 profile with xhigh reasoning unless a target project overrides that
-profile. Worktree execution is configurable; ask before using a worktree unless
-the project config or user request already requires it.
+Codex goals carry the long-running objective. ADLC artifacts carry the detailed state:
 
-Codex should keep Hermes moving through autonomous review/fix/test loops. Human
-review is a blocker only when the card identifies a human-gated reason such as a
-decision, credential, production/destructive action, sign-off, or scope change.
-
-Codex must not stop global Hermes services while managing a workstream. It may
-stop only the Hermes task, session, or process it launched for the current work.
-Stopping a gateway, daemon, scheduler, or other global service requires an
-explicit operator request.
+- `WORKSTREAM.md`: objective, scope, goal status, and completion criteria.
+- `milestones/*.md`: sprint-scale outcomes and exit criteria.
+- `steps/*.md`: reviewable, commit-capable slices.
+- `kanban.md`: stage state.
+- `evidence.md`: source files, runtime output, and verification evidence.
+- `decisions.md`: material decisions and human-gated blockers.
 
 ## CLI
 
 Create a scaffold:
 
 ```bash
-adlc workstream create project-automation /path/to/project --title "Project Automation" --executor either
+adlc workstream create project-automation /path/to/project --title "Project Automation" --lane coordinator
 ```
 
 Inspect stage state:
@@ -101,11 +86,18 @@ Advance a step:
 adlc workstream advance project-automation 0001 /path/to/project --stage build
 ```
 
-Sync to Hermes:
+## Milestone Requirements
 
-```bash
-adlc workstream sync project-automation /path/to/project --agent hermes
-```
+Each milestone card must include:
+
+- outcome
+- evidence
+- dependencies
+- step scope
+- exit criteria
+- verification strategy
+- release or rollback notes
+- blockers
 
 ## Step Requirements
 
@@ -114,9 +106,11 @@ Each step card must include:
 - goal
 - evidence
 - bounded write scope
+- task breakdown
 - dependencies
 - build instructions
 - review gate
+- fix gate
 - test gate
 - commit checkpoint
 - done criteria
@@ -124,6 +118,6 @@ Each step card must include:
 
 ## Relationship To Plans
 
-`adlc-workstream` plans the epic and creates step cards. `adlc-plan` can still create detailed implementation plans for one step when needed. `adlc-implement`, `adlc-verify`, `adlc-review`, and `adlc-commit` execute the selected step lifecycle.
+`adlc-workstream` plans the epic and creates milestone and step cards. `adlc-plan` can still create detailed implementation plans for one step when needed. `adlc-implement`, `adlc-verify`, `adlc-review`, and `adlc-commit` execute the selected step lifecycle.
 
 Workstreams should not become a second hidden project tracker. They exist to make long-running work explicit, file-backed, and handoff-safe.

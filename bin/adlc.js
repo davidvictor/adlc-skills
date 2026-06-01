@@ -13,7 +13,7 @@ const skipDirs = new Set(['.git', 'node_modules', 'dist', 'coverage', 'docs-html
 const knownMcpServers = ['filesystem', 'github', 'postgres', 'playwright', 'chrome-devtools'];
 const packageName = 'adlc-cli';
 const defaultAgentIds = ['codex'];
-const allAgentIds = ['codex', 'claude', 'hermes'];
+const allAgentIds = ['codex', 'claude'];
 
 const agentRegistry = {
   codex: {
@@ -43,21 +43,6 @@ const agentRegistry = {
     supportsSkills: true,
     supportsAgentFiles: true,
     supportsMcp: true,
-  },
-  hermes: {
-    id: 'hermes',
-    displayName: 'Hermes',
-    configDir: '.hermes',
-    skillsSubdir: null,
-    agentsSubdir: null,
-    settingsFile: null,
-    settingsFormat: null,
-    agentFilesRoot: null,
-    managedConfigSource: null,
-    supportsSkills: false,
-    supportsAgentFiles: false,
-    supportsMcp: false,
-    hermes: true,
   },
 };
 
@@ -431,25 +416,6 @@ function managedArtifactsForAgent(agent, options = {}) {
     });
   }
 
-  if (agent.hermes) {
-    artifacts.push(
-      {
-        agent: agent.id,
-        kind: 'config',
-        name: 'config.yaml',
-        source: path.join(repoRoot, 'templates', 'hermes', 'config.yaml'),
-        target: path.join(agent.root, '.hermes', 'config.yaml'),
-      },
-      {
-        agent: agent.id,
-        kind: 'kanban',
-        name: 'kanban.json',
-        source: path.join(repoRoot, 'templates', 'hermes', 'kanban.json'),
-        target: path.join(agent.root, '.hermes', 'kanban.json'),
-      },
-    );
-  }
-
   return artifacts;
 }
 
@@ -590,12 +556,6 @@ function printManagedStatus(args) {
   process.exit(strict && blocking ? 1 : 0);
 }
 
-function ensureHermesStructure(agent) {
-  if (!agent.hermes) return;
-  fs.mkdirSync(path.join(agent.root, '.hermes', 'workstreams'), { recursive: true });
-  fs.mkdirSync(path.join(agent.root, '.hermes', 'inbox'), { recursive: true });
-}
-
 function installAgents(args, fixedAgents = null, options = {}) {
   const projectDir = projectDirFromArgs(args);
   const agentIds = fixedAgents ? normalizeAgentIds(fixedAgents) : selectedAgentIds(projectDir, args);
@@ -607,10 +567,6 @@ function installAgents(args, fixedAgents = null, options = {}) {
   const log = (message) => console.log(message);
 
   fs.mkdirSync(path.join(projectDir, '.adlc'), { recursive: true });
-  for (const agent of agents) {
-    ensureHermesStructure(agent);
-  }
-
   for (const artifact of currentArtifacts) {
     copyManagedPackageArtifact(artifact);
     log(`Synced ADLC ${artifact.agent} ${artifact.kind}: ${artifact.target}`);
@@ -692,11 +648,11 @@ function printAgents(args) {
     id: agent.id,
     display_name: agent.displayName,
     config_dir: agent.configDir,
-    supports_skills: Boolean(agent.supportsSkills),
-    supports_agent_files: Boolean(agent.supportsAgentFiles),
-    supports_mcp: Boolean(agent.supportsMcp),
-    supports_workstreams: Boolean(agent.hermes),
-  }));
+	    supports_skills: Boolean(agent.supportsSkills),
+	    supports_agent_files: Boolean(agent.supportsAgentFiles),
+	    supports_mcp: Boolean(agent.supportsMcp),
+	    supports_workstreams: agent.id === 'codex',
+	  }));
 
   if (json) {
     console.log(JSON.stringify({ agents }, null, 2));
@@ -986,10 +942,9 @@ function workstreamHelp() {
   console.log(`ADLC workstream
 
 Usage:
-  adlc workstream create <slug> [target-dir] [--title <title>] [--executor codex|hermes|either]
+  adlc workstream create <slug> [target-dir] [--title <title>] [--lane coordinator|worker|parallel|human-gated]
   adlc workstream status <slug> [target-dir] [--json]
   adlc workstream advance <slug> <step-id> [target-dir] --stage ready|build|review|fix|test|commit|done|blocked
-  adlc workstream sync <slug> [target-dir] --agent hermes
 
 Workstreams live under configured paths.workstreams, defaulting to .adlc/workstreams.
 `);
@@ -1060,22 +1015,26 @@ function createWorkstream(args) {
 
   const targetDir = path.resolve(process.cwd(), positionals[1] || '.');
   const title = optionValue(args, '--title', titleizeSlug(slug));
-  const executor = optionValue(args, '--executor', 'either');
-  if (!['codex', 'hermes', 'either'].includes(executor)) {
-    throw new Error('Workstream executor must be codex, hermes, or either.');
+  const lane = optionValue(args, '--lane', 'coordinator');
+  if (!['coordinator', 'worker', 'parallel', 'human-gated'].includes(lane)) {
+    throw new Error('Workstream lane must be coordinator, worker, parallel, or human-gated.');
   }
 
   const root = workstreamRoot(targetDir, slug);
   const workstreamId = `adlc-workstream-${slug}`;
+  const milestoneId = `${workstreamId}-M0001`;
   const stepId = `${workstreamId}-0001`;
   const values = {
     WORKSTREAM_ID: workstreamId,
     TITLE: title,
+    MILESTONE_ID: milestoneId,
+    MILESTONE_TITLE: 'First Milestone',
     STEP_ID: stepId,
     STEP_TITLE: 'Define First Executable Step',
   };
   const created = [];
 
+  fs.mkdirSync(path.join(root, 'milestones'), { recursive: true });
   fs.mkdirSync(path.join(root, 'steps'), { recursive: true });
   fs.mkdirSync(path.join(root, 'handoff'), { recursive: true });
 
@@ -1093,21 +1052,27 @@ function createWorkstream(args) {
     created.push('evidence.md');
   }
 
-  const stepContent = renderTemplate(readWorkstreamTemplate('STEP.md'), values).replace('executor: either', `executor: ${executor}`);
+  const decisions = `---\nid: ${workstreamId}-decisions\ntype: decisions\nstatus: active\nowner: ADLC\ndocuments: [${workstreamId}]\n---\n\n# ${title} Decisions\n\nRecord material decisions, human-gated blockers, and scope changes here.\n`;
+  if (writeFileIfMissing(path.join(root, 'decisions.md'), decisions)) {
+    created.push('decisions.md');
+  }
+
+  if (writeFileIfMissing(path.join(root, 'milestones', '0001-first-milestone.md'), renderTemplate(readWorkstreamTemplate('MILESTONE.md'), values))) {
+    created.push('milestones/0001-first-milestone.md');
+  }
+
+  const stepContent = renderTemplate(readWorkstreamTemplate('STEP.md'), values).replace('lane: coordinator', `lane: ${lane}`);
   if (writeFileIfMissing(path.join(root, 'steps', '0001-define-first-executable-step.md'), stepContent)) {
     created.push('steps/0001-define-first-executable-step.md');
   }
 
-  if (writeFileIfMissing(path.join(root, 'handoff', 'codex.md'), renderTemplate(readWorkstreamTemplate('CODEX-HANDOFF.md'), values))) {
-    created.push('handoff/codex.md');
-  }
-  if (writeFileIfMissing(path.join(root, 'handoff', 'hermes.md'), renderTemplate(readWorkstreamTemplate('HERMES-HANDOFF.md'), values))) {
-    created.push('handoff/hermes.md');
+  if (writeFileIfMissing(path.join(root, 'handoff', 'codex-goal.md'), renderTemplate(readWorkstreamTemplate('CODEX-HANDOFF.md'), values))) {
+    created.push('handoff/codex-goal.md');
   }
 
   console.log(`ADLC workstream: ${root}`);
   console.log(`Workstream id: ${workstreamId}`);
-  console.log(`Executor lane: ${executor}`);
+  console.log(`Execution lane: ${lane}`);
   console.log(`Created files: ${created.length ? created.join(', ') : 'none; existing scaffold preserved'}`);
 }
 
@@ -1127,7 +1092,7 @@ function listWorkstreamSteps(root, projectDir) {
         id: first(fields, 'id') || entry.replace(/\.md$/, ''),
         stage: first(fields, 'stage') || 'unknown',
         status: first(fields, 'status') || 'unknown',
-        executor: first(fields, 'executor') || 'unknown',
+        lane: first(fields, 'lane') || 'unknown',
         depends_on: fields.depends_on || [],
       };
     });
@@ -1168,13 +1133,13 @@ function statusWorkstream(args) {
 
   console.log(`ADLC workstream: ${root}`);
   console.log(`Steps: ${steps.length}`);
-  for (const stage of ['ready', 'build', 'review', 'test', 'commit', 'done', 'blocked', 'unknown']) {
+  for (const stage of ['ready', 'build', 'review', 'fix', 'test', 'commit', 'done', 'blocked', 'unknown']) {
     if (byStage[stage]) {
       console.log(`${stage}: ${byStage[stage]}`);
     }
   }
   for (const step of steps) {
-    console.log(`${step.id}\t${step.stage}\t${step.executor}\t${step.file}`);
+    console.log(`${step.id}\t${step.stage}\t${step.lane}\t${step.file}`);
   }
 }
 
@@ -1238,93 +1203,6 @@ function advanceWorkstream(args) {
   console.log(matches[0].file);
 }
 
-function readJsonFile(filePath, fallback) {
-  if (!fs.existsSync(filePath)) return fallback;
-  try {
-    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  } catch {
-    return fallback;
-  }
-}
-
-function hermesLaneForStage(stage) {
-  if (stage === 'ready') return 'planned';
-  if (['build', 'review', 'fix', 'test', 'commit', 'blocked', 'done'].includes(stage)) return stage;
-  return 'planned';
-}
-
-function writeHermesStepCard(projectDir, slug, step) {
-  const cardDir = path.join(projectDir, '.hermes', 'workstreams', slug, 'steps');
-  fs.mkdirSync(cardDir, { recursive: true });
-  const fileName = `${slugify(step.id)}.md`;
-  const cardPath = path.join(cardDir, fileName);
-  const content = `---\nid: hermes-card-${step.id}\ntype: hermes-card\nstatus: ${step.status}\nowner: Hermes\nstage: ${hermesLaneForStage(step.stage)}\nsource: ${step.file}\nexecutor: ${step.executor}\n---\n\n# ${step.id}\n\nSource ADLC step: \`${step.file}\`\n\nLifecycle: build -> review -> fix -> test -> commit\n\n## Execution Notes\n\nUse the source ADLC step as the contract. Codex manages the Hermes board and should preserve this card's ADLC IDs, gates, and commit checkpoint.\n`;
-  fs.writeFileSync(cardPath, content);
-  return normalizeRelPath(projectDir, cardPath);
-}
-
-function syncHermesWorkstream(args) {
-  const positionals = positionalArgs(args);
-  const rawSlug = positionals[0];
-  if (!rawSlug) {
-    throw new Error('Usage: adlc workstream sync <slug> [target-dir] --agent hermes');
-  }
-
-  const targetAgent = optionValue(args, '--agent', 'hermes');
-  if (targetAgent !== 'hermes') {
-    throw new Error('Workstream sync currently supports --agent hermes.');
-  }
-
-  const slug = slugify(rawSlug);
-  const targetDir = path.resolve(process.cwd(), positionals[1] || '.');
-  const root = workstreamRoot(targetDir, slug);
-  if (!fs.existsSync(root)) {
-    throw new Error(`Workstream does not exist: ${root}`);
-  }
-
-  const hermesAgent = resolveAgent(targetDir, 'hermes');
-  ensureHermesStructure(hermesAgent);
-
-  const steps = listWorkstreamSteps(root, targetDir);
-  const cards = steps.map((step) => ({
-    ...step,
-    card: writeHermesStepCard(targetDir, slug, step),
-  }));
-
-  const kanbanPath = path.join(targetDir, '.hermes', 'kanban.json');
-  const kanban = readJsonFile(kanbanPath, {
-    schema_version: 1,
-    lanes: {
-      planned: [],
-      build: [],
-      review: [],
-      fix: [],
-      test: [],
-      commit: [],
-      blocked: [],
-      done: [],
-    },
-  });
-  kanban.lanes = kanban.lanes && typeof kanban.lanes === 'object' ? kanban.lanes : {};
-  for (const lane of ['planned', 'build', 'review', 'fix', 'test', 'commit', 'blocked', 'done']) {
-    kanban.lanes[lane] = (kanban.lanes[lane] || []).filter((cardId) => !String(cardId).includes(`-${slug}-`));
-  }
-  for (const card of cards) {
-    const lane = hermesLaneForStage(card.stage);
-    kanban.lanes[lane] = kanban.lanes[lane] || [];
-    kanban.lanes[lane].push(`hermes-card-${card.id}`);
-  }
-  fs.writeFileSync(kanbanPath, `${JSON.stringify(kanban, null, 2)}\n`);
-
-  const inboxPath = path.join(targetDir, '.hermes', 'inbox', `${slug}.md`);
-  const inbox = `---\nid: hermes-inbox-${slug}\ntype: hermes-handoff\nstatus: active\nowner: Hermes\nsource: ${normalizeRelPath(targetDir, root)}\n---\n\n# ${titleizeSlug(slug)}\n\nSynced from ADLC workstream \`${normalizeRelPath(targetDir, root)}\`.\n\nCards:\n${cards.map((card) => `- ${card.id}: \`${card.card}\``).join('\n')}\n`;
-  fs.writeFileSync(inboxPath, inbox);
-
-  console.log(`Synced Hermes workstream: ${slug}`);
-  console.log(`Cards: ${cards.length}`);
-  console.log(`Inbox: ${normalizeRelPath(targetDir, inboxPath)}`);
-}
-
 function handleWorkstream(args) {
   const [subcommand = 'help', ...subArgs] = args;
   switch (subcommand) {
@@ -1341,9 +1219,6 @@ function handleWorkstream(args) {
       break;
     case 'advance':
       advanceWorkstream(subArgs);
-      break;
-    case 'sync':
-      syncHermesWorkstream(subArgs);
       break;
     default:
       throw new Error(`Unknown workstream command: ${subcommand}`);

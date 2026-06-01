@@ -25,7 +25,7 @@ adlc mcp remove filesystem /path/to/project --agents codex,claude
 `adlc init` can configure MCP during setup:
 
 ```bash
-adlc init /path/to/project --agents codex,claude,hermes --mcp github,playwright
+adlc init /path/to/project --agents codex,claude --mcp github,playwright
 ```
 
 ## Templates
@@ -42,4 +42,3 @@ Templates live under `mcp/templates/`:
 
 - Codex writes marked TOML blocks into `.codex/config.toml`.
 - Claude writes MCP entries into `.mcp.json`.
-- Hermes does not configure MCP in the first public release.

@@ -11,13 +11,13 @@ Status: accepted
 
 ## Context
 
-Some scopes are too large for a single ADLC plan or one Codex session. Recent Hermes usage also needs a clean handoff shape: Hermes maintains its own Kanban, but the source scope still needs ADLC grounding, step boundaries, and lifecycle gates.
+Some scopes are too large for a single ADLC plan or one Codex session. Large work needs goal continuity, grounded step boundaries, milestone state, and lifecycle gates that survive resumes.
 
 ## Decision
 
 ADLC adds `adlc-workstream` and `adlc workstream` as the durable epic-planning surface.
 
-Workstreams live under `paths.workstreams`, default `.adlc/workstreams/`. A workstream contains an overview, evidence, Kanban state, step cards, and Codex/Hermes handoff files.
+Workstreams live under `paths.workstreams`, default `.adlc/workstreams/`. A workstream contains an overview, evidence, decisions, Kanban state, milestone cards, step cards, and a Codex goal handoff.
 
 Every step moves through:
 
@@ -25,11 +25,11 @@ Every step moves through:
 ready -> build -> review -> fix -> test -> commit -> done
 ```
 
-`blocked` is available whenever an executor cannot proceed safely.
+`blocked` is available whenever the lane cannot proceed safely.
 
 ## Boundaries
 
-ADLC does not become a Hermes runner. ADLC creates source artifacts and handoff contracts. Codex manages Hermes board setup for ADLC handoffs, and Hermes owns task execution once cards are imported. Codex steps continue to use `adlc-implement`, `adlc-verify`, `adlc-review`, and `adlc-commit`.
+Codex goals own the long-running objective. ADLC artifacts own detailed scope, evidence, decisions, gates, and commit checkpoints. Codex steps continue to use `adlc-implement`, `adlc-verify`, `adlc-review`, and `adlc-commit`.
 
 ## Consequences
 

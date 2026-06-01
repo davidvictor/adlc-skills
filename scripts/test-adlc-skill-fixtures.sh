@@ -33,8 +33,8 @@ required_paths=(
   "skills/adlc/adlc-workstream/references/WORKSTREAM-CONTRACT.md"
   "skills/adlc/adlc-workstream/templates/WORKSTREAM.md"
   "skills/adlc/adlc-workstream/templates/STEP.md"
+  "skills/adlc/adlc-workstream/templates/MILESTONE.md"
   "skills/adlc/adlc-workstream/templates/CODEX-HANDOFF.md"
-  "skills/adlc/adlc-workstream/templates/HERMES-HANDOFF.md"
 )
 
 for path in "${required_paths[@]}"; do
@@ -48,7 +48,7 @@ grep -q "Pass Criteria" skills/adlc/adlc-qa/templates/TEST-PLAN.md
 grep -q "architecture artifact" skills/adlc/adlc-architecture/SKILL.md
 grep -q '"gate": "security"' skills/adlc/adlc-security-checklist/SKILL.md
 grep -q "build -> review -> fix -> test -> commit" skills/adlc/adlc-workstream/references/WORKSTREAM-CONTRACT.md
-grep -q "Hermes" skills/adlc/adlc-workstream/templates/HERMES-HANDOFF.md
+grep -q "Codex Goal" skills/adlc/adlc-workstream/templates/CODEX-HANDOFF.md
 
 tmp_dir="$(mktemp -d "${TMPDIR:-/tmp}/adlc-skill-install.XXXXXX")"
 trap 'rm -rf "$tmp_dir"' EXIT
@@ -56,6 +56,7 @@ trap 'rm -rf "$tmp_dir"' EXIT
 node bin/adlc.js init "$tmp_dir" --agents codex >/dev/null
 test -f "$tmp_dir/.codex/skills/adlc-plan/references/TASK-FORMAT.md"
 test -f "$tmp_dir/.codex/skills/adlc-workstream/templates/WORKSTREAM.md"
+test -f "$tmp_dir/.codex/skills/adlc-workstream/templates/MILESTONE.md"
 test ! -e "$tmp_dir/.codex/skills/adlc-plan/tests"
 
 echo "ADLC skill fixture test passed."

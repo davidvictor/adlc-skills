@@ -7,7 +7,7 @@ It packages:
 - ADLC skills and workflow guidance
 - Codex-native coordinator, worker, and sidecar agents
 - Claude project skill and MCP setup
-- Hermes workstream handoff and Kanban state
+- Codex goal-managed workstream state
 - project-local lifecycle artifacts under `.adlc/`
 - a small CLI for install, update, status, extensions, workstreams, and artifact audits
 
@@ -40,24 +40,23 @@ The public package name is `adlc-cli`. The installed command is `adlc`.
 ```bash
 npm install -g adlc-cli
 cd /path/to/project
-adlc init --agents codex,claude,hermes --mcp github,playwright
+adlc init --agents codex,claude --mcp github,playwright
 adlc status --strict
 ```
 
 Run without a global install:
 
 ```bash
-npx adlc-cli init /path/to/project --agents codex,claude,hermes --mcp filesystem
+npx adlc-cli init /path/to/project --agents codex,claude --mcp filesystem
 npx adlc-cli status /path/to/project --strict
 ```
 
 ## Agent Targets
 
-ADLC supports three agent targets for the public installer:
+ADLC supports two agent targets for the public installer:
 
 - `codex`: installs ADLC skills into `.codex/skills/`, Codex TOML agents into `.codex/agents/`, and managed Codex config into `.codex/config.toml`.
 - `claude`: installs ADLC skills into `.claude/skills/` and configures MCP servers through `.mcp.json`.
-- `hermes`: installs `.hermes/config.yaml`, `.hermes/kanban.json`, `.hermes/workstreams/`, and `.hermes/inbox/` for managed workstream execution.
 
 Inspect supported targets:
 
@@ -71,11 +70,11 @@ Managed install state is project-local at `.adlc/managed-state.json`.
 ## CLI
 
 ```bash
-adlc init [target-dir] --agents codex,claude,hermes --mcp github,playwright
+adlc init [target-dir] --agents codex,claude --mcp github,playwright
 adlc update [target-dir]
 adlc status [target-dir] --strict
 adlc doctor [target-dir]
-adlc uninstall [target-dir] --agents codex,claude,hermes
+adlc uninstall [target-dir] --agents codex,claude
 adlc resolve-config [target-dir] --json
 adlc audit-artifacts [targets...] --strict
 ```
@@ -119,16 +118,15 @@ Bug work can enter through `adlc-fix`, then continue to `adlc-verify`, `adlc-rev
 
 ## Workstreams
 
-ADLC workstreams turn large scopes into independent step cards that can move through build, review, test, and commit stages.
+ADLC workstreams turn large scopes into Codex goal-managed milestones and independent step cards that can move through build, review, test, and commit stages.
 
 ```bash
-adlc workstream create project-automation /path/to/project --executor either
+adlc workstream create project-automation /path/to/project --lane coordinator
 adlc workstream status project-automation /path/to/project
 adlc workstream advance project-automation 0001 /path/to/project --stage build
-adlc workstream sync project-automation /path/to/project --agent hermes
 ```
 
-Hermes sync writes cards to `.hermes/workstreams/`, updates `.hermes/kanban.json`, and drops a handoff in `.hermes/inbox/`.
+The active Codex goal carries the long-running objective. ADLC files carry the detailed milestone, step, evidence, decision, and gate state.
 
 ## Skills
 
@@ -142,7 +140,7 @@ Use these skills as the public workflow interface:
 6. `adlc-rules` - capture project rules and area conventions.
 7. `adlc-reference` - create durable reference artifacts from sources.
 8. `adlc-plan` - create fast or full implementation plans.
-9. `adlc-workstream` - plan epic workstreams for Codex or Hermes handoff.
+9. `adlc-workstream` - plan epic workstreams for Codex goal-managed execution.
 10. `adlc-improve` - tighten an existing plan before implementation.
 11. `adlc-implement` - execute a plan with Codex coordinators, workers, and sidecars.
 12. `adlc-verify` - prove completion against plan, rules, and repo behavior.

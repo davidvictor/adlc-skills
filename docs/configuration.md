@@ -12,7 +12,7 @@ Target projects use `.adlc/config.yaml` to define artifact paths, workflow defau
 Create it with:
 
 ```bash
-adlc init /path/to/project --agents codex,claude,hermes --mcp github,playwright
+adlc init /path/to/project --agents codex,claude --mcp github,playwright
 ```
 
 Inspect the effective paths with:
@@ -47,7 +47,7 @@ Relative paths are resolved from the target project root. If a target project om
 
 `paths.workstreams` controls where `adlc-workstream` and `adlc workstream` create long-running epic artifacts. The default is `.adlc/workstreams`.
 
-`install.agents` records selected setup targets such as `codex,claude,hermes`.
+`install.agents` records selected setup targets such as `codex,claude`.
 
 `install.mcp` records MCP server templates selected during setup.
 

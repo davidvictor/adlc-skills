@@ -8,7 +8,7 @@
 - [adlc-rules](./adlc-rules/SKILL.md) - Capture project rules.
 - [adlc-reference](./adlc-reference/SKILL.md) - Create durable references.
 - [adlc-plan](./adlc-plan/SKILL.md) - Create executable plans.
-- [adlc-workstream](./adlc-workstream/SKILL.md) - Create long-running Codex or Hermes workstreams.
+- [adlc-workstream](./adlc-workstream/SKILL.md) - Create long-running Codex goal-managed workstreams.
 - [adlc-improve](./adlc-improve/SKILL.md) - Refine plans before execution.
 - [adlc-implement](./adlc-implement/SKILL.md) - Execute plans with Codex agents.
 - [adlc-verify](./adlc-verify/SKILL.md) - Verify plan completion.

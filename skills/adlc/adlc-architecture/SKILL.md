@@ -10,12 +10,13 @@ Use this when project structure, ownership boundaries, runtime behavior, or majo
 ## Process
 
 1. Resolve effective ADLC paths from `.adlc/config.yaml`; use `adlc resolve-config` when the CLI is available.
-2. Read the configured description, rules, roadmap, active plans, and relevant source files.
+2. Read the configured description, rules, roadmap, interview specs, active plans, and relevant source files.
 3. Identify actual modules, data/control flow, runtime boundaries, agent responsibilities, and integration points.
-4. Update only the configured architecture artifact unless the user asks for broader docs.
-5. Preserve uncertainty as open questions rather than inventing architecture.
-6. Keep diagrams and summaries focused on the system operators actually need to maintain.
+4. Use `adlc-interview` when structural choices require human priorities or decision boundaries before the architecture can be settled.
+5. Update only the configured architecture artifact unless the user asks for broader docs.
+6. Preserve uncertainty as open questions rather than inventing architecture.
+7. Keep diagrams and summaries focused on the system operators actually need to maintain.
 
 ## Output
 
-Report the architecture artifact path, evidence sources, changed sections, unresolved questions, and whether `adlc-plan`, `adlc-docs`, or `adlc-rules` should follow.
+Report the architecture artifact path, evidence sources, changed sections, unresolved questions, interview spec path when used, and whether `adlc-plan`, `adlc-docs`, or `adlc-rules` should follow.

@@ -39,6 +39,7 @@ Common flow:
 ```text
 adlc
 adlc-explore or adlc-grounded
+adlc-interview when scope, non-goals, or decision boundaries need choices
 adlc-roadmap / adlc-rules / adlc-reference when needed
 adlc-plan
 adlc-workstream for long-running epics

@@ -3,6 +3,7 @@
 - [adlc](./adlc/SKILL.md) - Initialize or refresh ADLC project context.
 - [adlc-explore](./adlc-explore/SKILL.md) - Explore options before planning.
 - [adlc-grounded](./adlc-grounded/SKILL.md) - Answer from evidence only.
+- [adlc-interview](./adlc-interview/SKILL.md) - Clarify ambiguous scope with optioned questions.
 - [adlc-architecture](./adlc-architecture/SKILL.md) - Maintain architecture artifacts.
 - [adlc-roadmap](./adlc-roadmap/SKILL.md) - Maintain roadmap artifacts.
 - [adlc-rules](./adlc-rules/SKILL.md) - Capture project rules.

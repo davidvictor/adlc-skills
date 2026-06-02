@@ -826,6 +826,7 @@ function initProjectScaffold(projectDir) {
     'patches',
     'skill-context',
     'references',
+    'interviews',
     'qa',
     'loops',
     'workstreams',

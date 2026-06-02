@@ -34,16 +34,23 @@ and decide whether the current work needs a checkpoint.
 
 1. `adlc-explore` investigates options when the problem is unclear.
 2. `adlc-grounded` answers from evidence when certainty matters more than ideation.
-3. `adlc-architecture`, `adlc-roadmap`, `adlc-rules`, and `adlc-reference` create durable context only when needed.
-4. `adlc-plan` writes executable task plans.
-5. `adlc-workstream` creates staged epic workstreams when the scope needs Codex goal continuity across sessions.
-6. `adlc-improve` tightens plans before implementation.
-7. `adlc-implement` executes selected tasks with coordinator, workers, and read-only sidecars.
-8. `adlc-verify` proves completion against plan, rules, and repo behavior.
-9. `adlc-rules-check`, `adlc-security-checklist`, `adlc-docs`, and `adlc-qa` add optional gates and artifacts.
-10. `adlc-review` checks diffs for correctness, maintainability, security, docs, and release risk.
-11. `adlc-commit` stages and commits verified work.
-12. `adlc-evolve` promotes repeated lessons into rules or skill-context.
+3. `adlc-interview` clarifies scope, non-goals, decision boundaries, and acceptance criteria through optioned one-question rounds.
+4. `adlc-architecture`, `adlc-roadmap`, `adlc-rules`, and `adlc-reference` create durable context only when needed.
+5. `adlc-plan` writes executable task plans.
+6. `adlc-workstream` creates staged epic workstreams when the scope needs Codex goal continuity across sessions.
+7. `adlc-improve` tightens plans before implementation.
+8. `adlc-implement` executes selected tasks with coordinator, workers, and read-only sidecars.
+9. `adlc-verify` proves completion against plan, rules, and repo behavior.
+10. `adlc-rules-check`, `adlc-security-checklist`, `adlc-docs`, and `adlc-qa` add optional gates and artifacts.
+11. `adlc-review` checks diffs for correctness, maintainability, security, docs, and release risk.
+12. `adlc-commit` stages and commits verified work.
+13. `adlc-evolve` promotes repeated lessons into rules or skill-context.
+
+## Interview Loop
+
+Use `adlc-interview` after evidence gathering when a plan would otherwise encode product ambiguity as implementation work. The interview reads repo context first, asks one question at a time, includes definitions, lettered options, and a recommendation with every question, then writes a source-of-truth spec under configured `paths.interviews`.
+
+Downstream planning and workstream skills should treat that spec as binding unless the user changes it. Open questions that remain after the interview become explicit plan blockers or decision log entries.
 
 ## Workstream Loop
 

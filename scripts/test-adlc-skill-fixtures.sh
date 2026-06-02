@@ -8,6 +8,10 @@ required_paths=(
   "skills/adlc/adlc-plan/references/TASK-FORMAT.md"
   "skills/adlc/adlc-plan/references/EXAMPLES.md"
   "skills/adlc/adlc-plan/tests/fast-creates-plan-md.yaml"
+  "skills/adlc/adlc-interview/references/SCORING.md"
+  "skills/adlc/adlc-interview/templates/CONTEXT.md"
+  "skills/adlc/adlc-interview/templates/TRANSCRIPT.md"
+  "skills/adlc/adlc-interview/templates/SPEC.md"
   "skills/adlc/adlc-implement/references/IMPLEMENTATION-GUIDE.md"
   "skills/adlc/adlc-implement/references/LOGGING-GUIDE.md"
   "skills/adlc/adlc-implement/tests/without-plan-empty-errors.yaml"
@@ -43,6 +47,10 @@ done
 
 grep -q "adlc-gate-result" skills/adlc/adlc-verify/references/GATE-RESULT-CONTRACT.md
 grep -q "Write scope" skills/adlc/adlc-plan/references/TASK-FORMAT.md
+grep -q "Definitions" skills/adlc/adlc-interview/SKILL.md
+grep -q "Options" skills/adlc/adlc-interview/SKILL.md
+grep -q "Recommendation" skills/adlc/adlc-interview/SKILL.md
+grep -q "ambiguity = 1 - clarity" skills/adlc/adlc-interview/references/SCORING.md
 grep -q "bounded" skills/adlc/adlc-implement/references/IMPLEMENTATION-GUIDE.md
 grep -q "Pass Criteria" skills/adlc/adlc-qa/templates/TEST-PLAN.md
 grep -q "architecture artifact" skills/adlc/adlc-architecture/SKILL.md
@@ -55,6 +63,7 @@ trap 'rm -rf "$tmp_dir"' EXIT
 
 node bin/adlc.js init "$tmp_dir" --agents codex >/dev/null
 test -f "$tmp_dir/.codex/skills/adlc-plan/references/TASK-FORMAT.md"
+test -f "$tmp_dir/.codex/skills/adlc-interview/templates/SPEC.md"
 test -f "$tmp_dir/.codex/skills/adlc-workstream/templates/WORKSTREAM.md"
 test -f "$tmp_dir/.codex/skills/adlc-workstream/templates/MILESTONE.md"
 test ! -e "$tmp_dir/.codex/skills/adlc-plan/tests"

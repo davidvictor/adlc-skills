@@ -14,6 +14,7 @@ Plans are executable handoff artifacts. They should make implementation unambigu
 - Fast plans: configured `paths.plan`, default `.adlc/PLAN.md`.
 - Full plans: configured `paths.plans`, default `.adlc/plans/`.
 - Fix plans: configured `paths.fixes`, default `.adlc/fixes/`.
+- Interview specs: configured `paths.interviews`, default `.adlc/interviews/`.
 - Workstreams: configured `paths.workstreams`, default `.adlc/workstreams/`.
 
 ## Required Content
@@ -29,6 +30,8 @@ Plans should include:
 - docs and QA needs
 - commit checkpoints when useful
 - open decisions
+
+When an interview spec exists for the work, plans should consume it as the clarified source of truth. Carry its non-goals, decision boundaries, evidence, pressure-pass findings, and acceptance criteria into the plan instead of reopening the same questions.
 
 ## Status
 

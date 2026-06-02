@@ -14,7 +14,8 @@ Use this when the user asks for certainty, current facts, or a no-guess answer.
 3. Prefer primary sources: live repo files, runtime output, official docs, current database/tool state.
 4. Separate observed facts from inference.
 5. Stop with `INSUFFICIENT INFORMATION` when the evidence cannot support the answer.
-6. Do not implement or plan unless the user redirects.
+6. When evidence is sufficient but the remaining gap is a human decision, recommend `adlc-interview`.
+7. Do not implement or plan unless the user redirects.
 
 ## Output
 

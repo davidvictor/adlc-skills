@@ -4,6 +4,7 @@
     "./skills/adlc/adlc",
     "./skills/adlc/adlc-explore",
     "./skills/adlc/adlc-grounded",
+    "./skills/adlc/adlc-interview",
     "./skills/adlc/adlc-architecture",
     "./skills/adlc/adlc-roadmap",
     "./skills/adlc/adlc-rules",

@@ -7,13 +7,14 @@ owner: ADLC
 
 # Skills
 
-ADLC ships 21 public skills.
+ADLC ships 22 public skills.
 
 ## Setup And Discovery
 
 - `adlc`: initialize or refresh project context.
 - `adlc-explore`: investigate options before planning.
 - `adlc-grounded`: answer from evidence when guessing is unsafe.
+- `adlc-interview`: clarify ambiguous scope through optioned one-question rounds.
 
 ## Durable Context
 

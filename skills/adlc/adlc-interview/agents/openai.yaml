@@ -1,0 +1,6 @@
+interface:
+  display_name: ADLC Interview
+  short_description: Clarify requirements with optioned questions
+  default_prompt: "$adlc-interview"
+policy:
+  allow_implicit_invocation: true

@@ -23,6 +23,7 @@ ADLC keeps operator documentation under [docs/](./docs/README.md) so the workflo
 - [Skills](./docs/skills.md)
 - [Subagents](./docs/subagents.md)
 - [Plan Files](./docs/plan-files.md)
+- [Interviews](./docs/interviews.md)
 - [Workstreams](./docs/workstreams.md)
 - [Quality Gates](./docs/quality-gates.md)
 - [Loop](./docs/loop.md)
@@ -101,6 +102,7 @@ adlc extension remove hello-adlc /path/to/project
 ```text
 adlc
   -> adlc-explore or adlc-grounded
+  -> optional adlc-interview when scope, non-goals, or decision boundaries are unclear
   -> optional adlc-architecture / adlc-roadmap / adlc-rules / adlc-reference
   -> adlc-plan
   -> optional adlc-workstream for long-running epics
@@ -135,24 +137,25 @@ Use these skills as the public workflow interface:
 1. `adlc` - initialize or refresh `.adlc/` context.
 2. `adlc-explore` - investigate options without committing to a plan.
 3. `adlc-grounded` - answer from evidence only when guessing is unacceptable.
-4. `adlc-architecture` - create or refresh architecture artifacts from repo evidence.
-5. `adlc-roadmap` - maintain milestones and long-range sequencing.
-6. `adlc-rules` - capture project rules and area conventions.
-7. `adlc-reference` - create durable reference artifacts from sources.
-8. `adlc-plan` - create fast or full implementation plans.
-9. `adlc-workstream` - plan epic workstreams for Codex goal-managed execution.
-10. `adlc-improve` - tighten an existing plan before implementation.
-11. `adlc-implement` - execute a plan with Codex coordinators, workers, and sidecars.
-12. `adlc-verify` - prove completion against plan, rules, and repo behavior.
-13. `adlc-rules-check` - run a separate read-only rules gate.
-14. `adlc-security-checklist` - run a separate read-only security gate.
-15. `adlc-review` - review diffs for correctness, maintainability, and risk.
-16. `adlc-docs` - audit and update lifecycle documentation.
-17. `adlc-qa` - create change summaries, test plans, and manual test cases.
-18. `adlc-commit` - prepare conventional commits from staged work.
-19. `adlc-fix` - diagnose, fix, and record a learning patch.
-20. `adlc-loop` - run bounded iterative improvement loops.
-21. `adlc-evolve` - turn patches and repeated findings into durable rules or skill updates.
+4. `adlc-interview` - clarify scope through optioned one-question rounds.
+5. `adlc-architecture` - create or refresh architecture artifacts from repo evidence.
+6. `adlc-roadmap` - maintain milestones and long-range sequencing.
+7. `adlc-rules` - capture project rules and area conventions.
+8. `adlc-reference` - create durable reference artifacts from sources.
+9. `adlc-plan` - create fast or full implementation plans.
+10. `adlc-workstream` - plan epic workstreams for Codex goal-managed execution.
+11. `adlc-improve` - tighten an existing plan before implementation.
+12. `adlc-implement` - execute a plan with Codex coordinators, workers, and sidecars.
+13. `adlc-verify` - prove completion against plan, rules, and repo behavior.
+14. `adlc-rules-check` - run a separate read-only rules gate.
+15. `adlc-security-checklist` - run a separate read-only security gate.
+16. `adlc-review` - review diffs for correctness, maintainability, and risk.
+17. `adlc-docs` - audit and update lifecycle documentation.
+18. `adlc-qa` - create change summaries, test plans, and manual test cases.
+19. `adlc-commit` - prepare conventional commits from staged work.
+20. `adlc-fix` - diagnose, fix, and record a learning patch.
+21. `adlc-loop` - run bounded iterative improvement loops.
+22. `adlc-evolve` - turn patches and repeated findings into durable rules or skill updates.
 
 ## Validation
 

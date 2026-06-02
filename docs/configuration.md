@@ -45,6 +45,8 @@ Supported sections:
 
 Relative paths are resolved from the target project root. If a target project omits `.adlc/config.yaml`, the CLI falls back to the packaged template.
 
+`paths.interviews` controls where `adlc-interview` writes context snapshots, transcripts, and clarified specs. The default is `.adlc/interviews`.
+
 `paths.workstreams` controls where `adlc-workstream` and `adlc workstream` create long-running epic artifacts. The default is `.adlc/workstreams`.
 
 `install.agents` records selected setup targets such as `codex,claude`.

@@ -33,6 +33,7 @@ required_files = [
     "docs/subagents.md",
     "docs/quality-gates.md",
     "docs/plan-files.md",
+    "docs/interviews.md",
     "docs/workstreams.md",
     "docs/loop.md",
     "docs/evolve.md",
@@ -43,6 +44,7 @@ required_files = [
     "docs/gate-result-schema.md",
     "docs/adr/0003-workstreams-for-managed-epics.md",
     "docs/adr/0004-agent-target-installer.md",
+    "docs/adr/0005-interviews-as-clarification-artifacts.md",
     ".adlc/plans/public-installability.md",
     "schemas/extension.schema.json",
     "extensions/README.md",
@@ -66,6 +68,10 @@ required_files = [
     "skills/adlc/adlc-security-checklist/scripts/audit.sh",
     "skills/adlc/adlc-plan/references/TASK-FORMAT.md",
     "skills/adlc/adlc-plan/references/EXAMPLES.md",
+    "skills/adlc/adlc-interview/references/SCORING.md",
+    "skills/adlc/adlc-interview/templates/CONTEXT.md",
+    "skills/adlc/adlc-interview/templates/TRANSCRIPT.md",
+    "skills/adlc/adlc-interview/templates/SPEC.md",
     "skills/adlc/adlc-implement/references/IMPLEMENTATION-GUIDE.md",
     "skills/adlc/adlc-implement/references/LOGGING-GUIDE.md",
     "skills/adlc/adlc-verify/references/CONTEXT-GATES-AND-OWNERSHIP.md",
@@ -158,6 +164,7 @@ for required_doc in [
     "docs/subagents.md",
     "docs/quality-gates.md",
     "docs/plan-files.md",
+    "docs/interviews.md",
     "docs/workstreams.md",
     "docs/loop.md",
     "docs/evolve.md",
@@ -187,7 +194,7 @@ for path in public_text_files:
             fail(f"{path} contains removed public surface: {forbidden}")
 
 docs_index = Path("docs/README.md").read_text() if Path("docs/README.md").exists() else ""
-for doc in ["getting-started.md", "workflow.md", "configuration.md", "config-reference.md", "agents.md", "skills.md", "subagents.md", "quality-gates.md", "plan-files.md", "loop.md", "evolve.md", "extensions.md", "security.md", "mcp.md", "artifact-audit.md", "workstreams.md"]:
+for doc in ["getting-started.md", "workflow.md", "configuration.md", "config-reference.md", "agents.md", "skills.md", "subagents.md", "quality-gates.md", "plan-files.md", "interviews.md", "loop.md", "evolve.md", "extensions.md", "security.md", "mcp.md", "artifact-audit.md", "workstreams.md"]:
     if doc not in docs_index:
         fail(f"docs index must mention {doc}")
 
@@ -197,6 +204,7 @@ expected = {
     "adlc",
     "adlc-explore",
     "adlc-grounded",
+    "adlc-interview",
     "adlc-architecture",
     "adlc-roadmap",
     "adlc-rules",
@@ -269,7 +277,7 @@ for skill_name in ["adlc-plan", "adlc-implement", "adlc-verify"]:
     if not tests_dir.is_dir() or not list(tests_dir.glob("*.yaml")):
         fail(f"{skill_name} must keep YAML fixture tests")
 
-for skill_name in ["adlc-architecture", "adlc-plan", "adlc-workstream", "adlc-implement", "adlc-verify", "adlc-loop", "adlc-qa", "adlc-reference", "adlc-rules-check", "adlc-security-checklist", "adlc-docs"]:
+for skill_name in ["adlc-architecture", "adlc-plan", "adlc-interview", "adlc-workstream", "adlc-implement", "adlc-verify", "adlc-loop", "adlc-qa", "adlc-reference", "adlc-rules-check", "adlc-security-checklist", "adlc-docs"]:
     refs_dir = Path("skills/adlc", skill_name, "references")
     if not refs_dir.is_dir() or not list(refs_dir.glob("*.md")):
         fail(f"{skill_name} must keep ADLC-native reference docs")

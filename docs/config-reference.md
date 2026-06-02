@@ -24,6 +24,7 @@ Default config lives in [templates/adlc/config.yaml](../templates/adlc/config.ya
 - `patches`: learning patch directory.
 - `skill_context`: skill-context overrides.
 - `references`: durable source/reference notes.
+- `interviews`: clarification interviews and source-of-truth specs.
 - `qa`: QA artifact root.
 - `loops`: loop iteration notes.
 - `workstreams`: long-running epic workstreams, milestones, steps, and Codex goal handoffs.

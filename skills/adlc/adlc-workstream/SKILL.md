@@ -10,7 +10,7 @@ Use this when an epic is too large for one plan execution pass and needs durable
 ## Process
 
 1. Resolve effective ADLC paths from `.adlc/config.yaml`; use `adlc resolve-config` when the CLI is available.
-2. Ground the epic in live repo evidence, existing plans, architecture, rules, and user constraints before creating steps.
+2. Ground the epic in live repo evidence, relevant interview specs, existing plans, architecture, rules, and user constraints before creating steps.
 3. For long-running or multi-sprint execution, create or attach the active Codex goal and record the goal objective in `WORKSTREAM.md`.
 4. Inspect the dirty tree before delegation. Commit small coherent existing work first; stop and ask for large, mixed, or unrelated dirty trees.
 5. Create or update `paths.workstreams/<slug>/` with a workstream overview, Kanban board, evidence log, decision log, milestone cards, step cards, and Codex handoff.
@@ -24,6 +24,7 @@ Use this when an epic is too large for one plan execution pass and needs durable
 
 - Workstreams coordinate execution; they do not replace `adlc-plan`, `adlc-implement`, `adlc-verify`, `adlc-review`, or `adlc-commit`.
 - Codex goals manage the active long-running objective. ADLC artifacts remain the detailed source of truth for scope, state, evidence, and decisions.
+- Interview specs remain binding clarification artifacts. Carry their non-goals, decision boundaries, pressure-pass findings, and acceptance criteria into milestones and step cards.
 - Every milestone must have a concrete outcome, dependency notes, exit criteria, and release or rollback considerations when relevant.
 - Every step must have evidence, scope, acceptance criteria, verification, commit checkpoint, and next-stage rules.
 - Split any step whose acceptance criteria span unrelated subsystems, cannot be verified in one pass, or would create a mixed commit.

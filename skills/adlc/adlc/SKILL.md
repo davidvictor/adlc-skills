@@ -21,4 +21,4 @@ Use this when a repo needs ADLC context before planning or implementation.
 
 ## Output
 
-Report created/updated files, missing context, and the recommended next command: `adlc-explore`, `adlc-grounded`, or `adlc-plan`.
+Report created/updated files, missing context, and the recommended next command: `adlc-explore`, `adlc-grounded`, `adlc-interview`, or `adlc-plan`.

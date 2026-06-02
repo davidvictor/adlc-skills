@@ -22,6 +22,7 @@ This directory is the operator guide for ADLC.
 ## Lifecycle Guides
 
 - [Plan Files](./plan-files.md)
+- [Interviews](./interviews.md)
 - [Workstreams](./workstreams.md)
 - [Quality Gates](./quality-gates.md)
 - [Loop](./loop.md)

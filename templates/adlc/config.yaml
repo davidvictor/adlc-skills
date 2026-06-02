@@ -14,6 +14,7 @@ paths:
   patches: .adlc/patches
   skill_context: .adlc/skill-context
   references: .adlc/references
+  interviews: .adlc/interviews
   qa: .adlc/qa
   loops: .adlc/loops
   workstreams: .adlc/workstreams

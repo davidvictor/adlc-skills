@@ -10,8 +10,8 @@ Use this after implementation and before review or commit.
 ## Process
 
 1. Resolve effective ADLC paths from `.adlc/config.yaml`; use `adlc resolve-config` when the CLI is available.
-2. Read the active plan, configured rules, architecture, and git diff.
-3. Map each plan task and acceptance criterion to evidence.
+2. Read the active plan, any cited interview spec, configured rules, architecture, and git diff.
+3. Map each plan task and acceptance criterion to evidence, including interview acceptance criteria when present.
 4. Run the strongest practical repo checks.
 5. Look for leftover TODOs, env/config drift, skipped tests, stale docs, and plan-vs-code gaps.
 6. Classify failures as autonomous-fixable or human-gated. Code, docs, tests, rules, and security gaps should suggest `adlc-fix`; human-gated blockers are limited to explicit decisions, credentials or external accounts, destructive or production operations, legal/security sign-off, scope or product ambiguity, or user-requested approval points.
